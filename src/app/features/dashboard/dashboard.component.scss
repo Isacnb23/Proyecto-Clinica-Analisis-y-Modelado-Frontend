@@ -1,0 +1,469 @@
+// ============================================
+// DASHBOARD - AZUL REY & DORADO BRONCE
+// ============================================
+
+.dashboard-container {
+  padding: 0;
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.dashboard-header {
+  margin-bottom: 32px;
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px 0;
+    font-size: 2rem;
+    color: #030e24;
+    font-weight: 700;
+
+    mat-icon {
+      font-size: 2.2rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      color: #C49B63;
+      filter: drop-shadow(0 2px 4px rgba(196, 155, 99, 0.4));
+    }
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 1rem;
+  }
+}
+
+// ============================================
+// TARJETAS DE RESUMEN
+// ============================================
+
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px !important;
+  border-radius: 16px !important;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    opacity: 0.15;
+    transition: all 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+
+    &::before {
+      transform: scale(1.5);
+    }
+  }
+
+  .stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: white;
+    }
+  }
+
+  .stat-content {
+    flex: 1;
+
+    h3 {
+      margin: 0 0 4px 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    p {
+      margin: 0 0 4px 0;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .stat-detail {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  // Azul rey para pacientes
+  &.patients {
+    background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%);
+
+    .stat-icon {
+      background: rgba(196, 155, 99, 0.3);
+    }
+
+    &::before {
+      background: #C49B63;
+    }
+  }
+
+  // Rosa/Magenta para citas
+  &.appointments {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+
+    .stat-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    &::before {
+      background: white;
+    }
+  }
+
+  // Cyan para tratamientos
+  &.treatments {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+    .stat-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    &::before {
+      background: white;
+    }
+  }
+
+  // Verde/Dorado para ingresos
+  &.revenue {
+    background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%);
+
+    .stat-icon {
+      background: rgba(3, 14, 36, 0.2);
+    }
+
+    .stat-content h3,
+    .stat-content p,
+    .stat-content .stat-detail {
+      color: #030e24;
+    }
+
+    &::before {
+      background: #030e24;
+    }
+  }
+}
+
+// ============================================
+// GRÁFICAS
+// ============================================
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.chart-card {
+  border-radius: 16px !important;
+  overflow: hidden;
+  border: 1px solid rgba(196, 155, 99, 0.2);
+
+  mat-card-header {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%);
+    padding: 20px;
+    margin: -16px -16px 16px -16px;
+    border-bottom: 2px solid #C49B63;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.2rem;
+      color: #030e24;
+      margin: 0 0 4px 0;
+      font-weight: 600;
+
+      mat-icon {
+        color: #C49B63;
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+
+    mat-card-subtitle {
+      color: #666;
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  }
+
+  .chart-wrapper {
+    height: 300px;
+    padding: 16px;
+  }
+}
+
+// ============================================
+// SECCIÓN INFERIOR
+// ============================================
+
+.bottom-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.citas-card,
+.alertas-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(196, 155, 99, 0.2);
+
+  mat-card-header {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%);
+    padding: 20px;
+    margin: -16px -16px 16px -16px;
+    border-bottom: 2px solid #C49B63;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.2rem;
+      color: #030e24;
+      margin: 0;
+      font-weight: 600;
+
+      mat-icon {
+        color: #C49B63;
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+  }
+
+  .card-footer {
+    text-align: right;
+    padding-top: 16px;
+    border-top: 1px solid rgba(196, 155, 99, 0.2);
+    margin-top: 16px;
+
+    button {
+      mat-icon {
+        margin-left: 8px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}
+
+// Tabla de Citas
+.citas-table {
+  width: 100%;
+
+  th {
+    background: rgba(3, 14, 36, 0.05);
+    font-weight: 600;
+    color: #030e24;
+    padding: 12px;
+    border-bottom: 2px solid rgba(196, 155, 99, 0.3);
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .paciente-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      color: #C49B63;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+// Alertas
+.alertas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.alerta-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  border-left: 4px solid;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .alerta-icon {
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .alerta-content {
+    flex: 1;
+
+    strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  }
+
+  &.urgencia-alta {
+    background: #ffebee;
+    border-color: #f44336;
+
+    .alerta-icon mat-icon {
+      color: #f44336;
+    }
+
+    .chip-alta {
+      background: #f44336 !important;
+      color: white !important;
+    }
+  }
+
+  &.urgencia-media {
+    background: #fff8e1;
+    border-color: #ff9800;
+
+    .alerta-icon mat-icon {
+      color: #ff9800;
+    }
+
+    .chip-media {
+      background: #ff9800 !important;
+      color: white !important;
+    }
+  }
+
+  &.urgencia-baja {
+    background: rgba(196, 155, 99, 0.1);
+    border-color: #C49B63;
+
+    .alerta-icon mat-icon {
+      color: #C49B63;
+    }
+
+    .chip-baja {
+      background: #C49B63 !important;
+      color: white !important;
+    }
+  }
+}
+
+// ============================================
+// LOADING
+// ============================================
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: #999;
+
+  .loading-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
+    color: #C49B63;
+    animation: spin 2s linear infinite;
+    filter: drop-shadow(0 2px 8px rgba(196, 155, 99, 0.4));
+  }
+
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #030e24;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 1200px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}

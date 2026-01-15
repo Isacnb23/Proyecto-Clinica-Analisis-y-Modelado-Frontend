@@ -1,0 +1,377 @@
+// ============================================
+// PACIENTE DETALLE - AZUL REY & DORADO BRONCE
+// ============================================
+
+.detalle-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.detalle-header {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  margin-bottom: 24px;
+  border-top: 4px solid #C49B63;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .btn-back {
+        transition: all 0.3s ease;
+        &:hover {
+          transform: translateX(-4px);
+          mat-icon { color: #C49B63; }
+        }
+        mat-icon { color: #030e24; }
+      }
+
+      .paciente-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .avatar {
+          mat-icon {
+            font-size: 4rem;
+            width: 4rem;
+            height: 4rem;
+            color: #C49B63;
+            filter: drop-shadow(0 2px 8px rgba(196, 155, 99, 0.4));
+          }
+        }
+
+        .info {
+          h1 {
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+            color: #030e24;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            .estado-chip {
+              font-size: 0.8rem;
+              padding: 4px 12px;
+            }
+          }
+
+          .detalles {
+            display: flex;
+            gap: 24px;
+            color: #666;
+            font-size: 0.95rem;
+
+            .detalle-item {
+              display: flex;
+              align-items: center;
+              gap: 6px;
+
+              mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+                color: #C49B63;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+
+      button {
+        font-weight: 600;
+
+        &.btn-primary {
+          background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%) !important;
+          mat-icon { color: #C49B63; }
+        }
+
+        &.btn-secondary {
+          border: 2px solid #030e24 !important;
+          color: #030e24 !important;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// TABS
+// ============================================
+
+::ng-deep {
+  .mat-mdc-tab-group {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+    border-top: 4px solid #C49B63;
+  }
+
+  .mat-mdc-tab-header {
+    background: rgba(3, 14, 36, 0.02);
+    border-bottom: 2px solid rgba(196, 155, 99, 0.2);
+  }
+
+  .mat-mdc-tab.mdc-tab--active {
+    .mdc-tab__text-label {
+      color: #C49B63 !important;
+      font-weight: 700 !important;
+    }
+  }
+
+  .mdc-tab-indicator__content--underline {
+    border-color: #C49B63 !important;
+    border-top-width: 3px !important;
+  }
+
+  .mat-mdc-tab-body-content {
+    padding: 24px;
+  }
+}
+
+// ============================================
+// TARJETAS DE INFORMACIÓN
+// ============================================
+
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+
+  .info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(196, 155, 99, 0.2);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(3, 14, 36, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(196, 155, 99, 0.2);
+
+      mat-icon {
+        color: #C49B63;
+        font-size: 1.8rem;
+      }
+
+      h3 {
+        margin: 0;
+        color: #030e24;
+        font-weight: 600;
+      }
+    }
+
+    .card-content {
+      .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(196, 155, 99, 0.1);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .label {
+          color: #666;
+          font-weight: 500;
+        }
+
+        .value {
+          color: #030e24;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// HISTORIAL Y TABLAS
+// ============================================
+
+.historial-section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  margin-bottom: 24px;
+  border-top: 4px solid #C49B63;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(196, 155, 99, 0.2);
+
+    h3 {
+      margin: 0;
+      color: #030e24;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      mat-icon { color: #C49B63; }
+    }
+  }
+}
+
+.historial-table {
+  width: 100%;
+
+  th {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%) !important;
+    font-weight: 600;
+    color: #030e24 !important;
+    padding: 16px;
+    border-bottom: 2px solid rgba(196, 155, 99, 0.3) !important;
+  }
+
+  td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .table-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(196, 155, 99, 0.05) !important;
+    }
+  }
+}
+
+// Timeline de tratamientos
+.timeline {
+  position: relative;
+  padding-left: 40px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(196, 155, 99, 0.3);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 24px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -31px;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #C49B63;
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px rgba(196, 155, 99, 0.3);
+    }
+
+    .timeline-content {
+      background: rgba(196, 155, 99, 0.05);
+      border: 1px solid rgba(196, 155, 99, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+
+      .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+
+        .timeline-title {
+          font-weight: 600;
+          color: #030e24;
+        }
+
+        .timeline-date {
+          color: #666;
+          font-size: 0.85rem;
+        }
+      }
+
+      .timeline-description {
+        color: #666;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .detalle-header .header-content {
+    flex-direction: column;
+    gap: 20px;
+
+    .header-actions {
+      width: 100%;
+      button { flex: 1; }
+    }
+  }
+
+  .info-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .detalle-header {
+    .header-left {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .paciente-info {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .info .detalles {
+          flex-direction: column;
+          gap: 8px;
+        }
+      }
+    }
+  }
+
+  .timeline {
+    padding-left: 30px;
+  }
+}

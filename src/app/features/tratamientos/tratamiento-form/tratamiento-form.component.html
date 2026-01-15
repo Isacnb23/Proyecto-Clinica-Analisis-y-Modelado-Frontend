@@ -1,0 +1,223 @@
+<div class="form-container">
+  
+  <!-- Header -->
+  <div class="form-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="cancelar()" class="btn-back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-section">
+        <h1>
+          <mat-icon>medical_services</mat-icon>
+          {{ isEditMode ? 'Editar Tratamiento' : 'Nuevo Tratamiento' }}
+        </h1>
+        <p>{{ isEditMode ? 'Modifica los datos del tratamiento' : 'Complete el formulario para crear un nuevo tratamiento' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <form [formGroup]="tratamientoForm" (ngSubmit)="onSubmit()">
+    <mat-card class="form-card">
+      
+      <!-- Sección 1: Información Básica -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>info</mat-icon>
+          Información Básica
+        </h2>
+
+        <div class="form-grid">
+          <!-- Código -->
+          <mat-form-field appearance="outline">
+            <mat-label>Código</mat-label>
+            <input 
+              matInput 
+              formControlName="codigo"
+              placeholder="Ej: OG-001"
+              maxlength="20">
+            <mat-icon matPrefix>qr_code</mat-icon>
+            <mat-hint>Código único del tratamiento</mat-hint>
+            <mat-error *ngIf="codigo?.hasError('required')">
+              El código es requerido
+            </mat-error>
+            <mat-error *ngIf="codigo?.hasError('minlength')">
+              Mínimo 3 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Nombre -->
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre del Tratamiento</mat-label>
+            <input 
+              matInput 
+              formControlName="nombre"
+              placeholder="Ej: Limpieza Dental"
+              maxlength="100">
+            <mat-icon matPrefix>medical_services</mat-icon>
+            <mat-error *ngIf="nombre?.hasError('required')">
+              El nombre es requerido
+            </mat-error>
+            <mat-error *ngIf="nombre?.hasError('minlength')">
+              Mínimo 3 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Descripción -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea 
+              matInput 
+              formControlName="descripcion"
+              rows="3"
+              placeholder="Descripción detallada del tratamiento..."
+              maxlength="500"></textarea>
+            <mat-icon matPrefix>description</mat-icon>
+            <mat-hint align="end">{{ descripcion?.value?.length || 0 }}/500</mat-hint>
+            <mat-error *ngIf="descripcion?.hasError('required')">
+              La descripción es requerida
+            </mat-error>
+            <mat-error *ngIf="descripcion?.hasError('minlength')">
+              Mínimo 10 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Categoría -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="categoriaId">
+              <mat-option 
+                *ngFor="let categoria of categorias" 
+                [value]="categoria.id">
+                <div class="categoria-option">
+                  <mat-icon [style.color]="categoria.color">{{ categoria.icono }}</mat-icon>
+                  <div>
+                    <strong>{{ categoria.nombre }}</strong>
+                    <span class="categoria-desc">{{ categoria.descripcion }}</span>
+                  </div>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix [style.color]="getCategoriaColor()">category</mat-icon>
+            <mat-error *ngIf="categoriaId?.hasError('required')">
+              La categoría es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sección 2: Detalles del Servicio -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>settings</mat-icon>
+          Detalles del Servicio
+        </h2>
+
+        <div class="form-grid">
+          <!-- Duración Estimada -->
+          <mat-form-field appearance="outline">
+            <mat-label>Duración Estimada (minutos)</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="duracionEstimada"
+              placeholder="30"
+              min="15"
+              max="240">
+            <mat-icon matPrefix>schedule</mat-icon>
+            <mat-hint>Entre 15 y 240 minutos</mat-hint>
+            <mat-error *ngIf="duracionEstimada?.hasError('required')">
+              La duración es requerida
+            </mat-error>
+            <mat-error *ngIf="duracionEstimada?.hasError('min')">
+              Mínimo 15 minutos
+            </mat-error>
+            <mat-error *ngIf="duracionEstimada?.hasError('max')">
+              Máximo 240 minutos (4 horas)
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Costo -->
+          <mat-form-field appearance="outline">
+            <mat-label>Costo (₡)</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="costo"
+              placeholder="25000"
+              min="0"
+              step="1000">
+            <mat-icon matPrefix>payments</mat-icon>
+            <span matTextPrefix>₡&nbsp;</span>
+            <mat-hint>Precio en colones</mat-hint>
+            <mat-error *ngIf="costo?.hasError('required')">
+              El costo es requerido
+            </mat-error>
+            <mat-error *ngIf="costo?.hasError('min')">
+              El costo debe ser mayor a 0
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Requiere Autorización -->
+          <div class="checkbox-section full-width">
+            <mat-checkbox formControlName="requiereAutorizacion">
+              <div class="checkbox-content">
+                <mat-icon>warning</mat-icon>
+                <div>
+                  <strong>Requiere Autorización Previa</strong>
+                  <p>Marque esta opción si el tratamiento necesita autorización antes de realizarse</p>
+                </div>
+              </div>
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sección 3: Información Adicional -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>note</mat-icon>
+          Información Adicional (Opcional)
+        </h2>
+
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Observaciones</mat-label>
+            <textarea 
+              matInput 
+              formControlName="observaciones"
+              rows="3"
+              placeholder="Notas adicionales, contraindicaciones, recomendaciones..."
+              maxlength="500"></textarea>
+            <mat-icon matPrefix>edit_note</mat-icon>
+            <mat-hint align="end">{{ tratamientoForm.get('observaciones')?.value?.length || 0 }}/500</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="form-actions">
+        <button 
+          mat-button 
+          type="button"
+          (click)="cancelar()">
+          Cancelar
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          [disabled]="loading || tratamientoForm.invalid">
+          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          {{ loading ? 'Guardando...' : (isEditMode ? 'Actualizar Tratamiento' : 'Crear Tratamiento') }}
+        </button>
+      </div>
+
+    </mat-card>
+  </form>
+
+</div>

@@ -1,0 +1,540 @@
+.main-layout {
+  height: 100vh;
+  overflow: hidden;
+  display: flex; // CRÍTICO: Asegura layout flexbox
+  flex-direction: column; // CRÍTICO: Stack vertical
+}
+
+.sidenav-container {
+  height: 100%;
+  flex: 1; // CRÍTICO: Ocupa todo el espacio disponible
+}
+
+// ============================================
+// SIDEBAR - AZUL REY & DORADO
+// ============================================
+
+.sidenav {
+  width: 280px !important;
+  min-width: 280px;
+  max-width: 280px;
+  // Gradiente azul oscuro 
+  background: linear-gradient(180deg, #030e24 0%, #0a1f47 50%, #0a1f47 100%);
+  color: white;
+  transition: width 0.3s ease;
+  box-shadow: 4px 0 20px rgba(3, 14, 36, 0.6);
+  position: fixed;
+  border-right: 1px solid rgba(196, 155, 99, 0.3);
+
+  // Borde dorado bronce en el lado derecho MÁS VISIBLE
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #C49B63 0%, #D4AF37 50%, #C49B63 100%);
+    box-shadow: -2px 0 8px rgba(196, 155, 99, 0.5);
+  }
+
+  // Cuando está cerrado (colapsado)
+  &:not(.mat-drawer-opened) {
+    width: 70px !important;
+    min-width: 70px;
+  }
+}
+
+.sidenav-header {
+  padding: 24px 16px;
+  border-bottom: 2px solid rgba(196, 155, 99, 0.3);
+  background: rgba(3, 14, 36, 0.7);
+  backdrop-filter: blur(10px);
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    i, mat-icon {
+      font-size: 2.5rem;
+      color: #C49B63; // Dorado bronce
+      min-width: 40px;
+      filter: drop-shadow(0 2px 8px rgba(196, 155, 99, 0.8));
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.15) rotate(10deg);
+        filter: drop-shadow(0 4px 12px rgba(196, 155, 99, 1));
+      }
+    }
+
+    .clinic-info {
+      h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: white;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        letter-spacing: 0.5px;
+      }
+
+      p {
+        margin: 4px 0 0 0;
+        font-size: 1rem;
+        color: #C49B63; // Dorado bronce
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
+}
+
+.nav-list {
+  padding: 16px 0;
+
+  .nav-item {
+    margin: 4px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.95);
+    border-left: 3px solid transparent;
+    position: relative;
+
+    &:hover {
+      background: rgba(196, 155, 99, 0.15);
+      border-left-color: #C49B63;
+      transform: translateX(4px);
+      box-shadow: 0 2px 8px rgba(196, 155, 99, 0.2);
+    }
+
+    &.active {
+      background: linear-gradient(90deg, rgba(196, 155, 99, 0.3) 0%, rgba(196, 155, 99, 0.15) 100%);
+      border-left-color: #C49B63;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(196, 155, 99, 0.4);
+      border-left-width: 5px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(180deg, #C49B63 0%, #D4AF37 100%);
+        border-radius: 0 4px 4px 0;
+        box-shadow: 0 0 10px rgba(196, 155, 99, 0.8);
+      }
+
+      mat-icon {
+        color: #C49B63 !important;
+        transform: scale(1.15);
+        filter: drop-shadow(0 2px 4px rgba(196, 155, 99, 0.6));
+      }
+
+      span {
+        color: #C49B63 !important;
+        font-weight: 700;
+      }
+    }
+
+    mat-icon {
+      color: #C49B63; // Dorado bronce
+      transition: all 0.3s ease;
+    }
+
+    span {
+      color: white;
+      font-weight: 500;
+    }
+
+    .badge-text {
+      font-size: 0.75rem;
+      color: #E8D5B7; // Dorado claro
+      font-weight: 600;
+    }
+
+    // Badge de Material
+    ::ng-deep .mat-badge-content {
+      background: #C49B63 !important;
+      color: #030e24 !important;
+      font-weight: 700;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.sidenav-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+  border-top: 1px solid rgba(196, 155, 99, 0.2);
+  background: rgba(3, 14, 36, 0.5);
+
+  p {
+    margin: 4px 0;
+    font-size: 0.75rem;
+    color: rgba(196, 155, 99, 0.8);
+    font-weight: 500;
+
+    &.version {
+      color: #C49B63;
+      font-weight: 600;
+    }
+  }
+}
+
+// ============================================
+// NAVBAR - BLANCO CON BORDE DORADO
+// ============================================
+
+.navbar {
+  background: white !important;
+  color: #030e24 !important; // Texto azul oscuro
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.15);
+  border-bottom: 3px solid #C49B63; // Borde dorado bronce
+  z-index: 10;
+  position: sticky; // CRÍTICO: sticky en lugar de relative
+  top: 0; // CRÍTICO: Pega el navbar arriba
+  min-height: 64px; // CRÍTICO: Altura mínima del navbar
+
+  // Sutil gradiente en el borde inferior
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #C49B63 0%, #D4AF37 50%, #C49B63 100%);
+  }
+
+  .page-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-left: 16px;
+    color: #030e24;
+    text-shadow: 0 1px 2px rgba(3, 14, 36, 0.1);
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  button {
+    margin: 0 4px;
+    color: #030e24;
+
+    mat-icon {
+      color: #030e24;
+      transition: all 0.3s ease;
+    }
+
+    &:hover {
+      background: rgba(3, 14, 36, 0.08);
+
+      mat-icon {
+        color: #C49B63;
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .user-button {
+    margin-left: 8px;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: #030e24;
+    }
+  }
+
+  // Badges en navbar
+  ::ng-deep .mat-badge-content {
+    background: #C49B63 !important;
+    color: white !important;
+    font-weight: 700;
+  }
+}
+
+// ============================================
+// MENÚS - CON ACENTOS DORADOS
+// ============================================
+
+.notifications-menu,
+.user-menu {
+  min-width: 320px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(13, 71, 161, 0.2);
+}
+
+.menu-header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(13, 71, 161, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%);
+  border-bottom: 2px solid #C49B63;
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #030e24;
+    font-weight: 600;
+  }
+
+  button {
+    color: #C49B63 !important;
+    font-weight: 600;
+  }
+}
+
+.notification-item {
+  padding: 12px 16px !important;
+  height: auto !important;
+  min-height: 64px;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-left-color: #C49B63;
+  }
+
+  mat-icon {
+    margin-right: 12px;
+
+    &[color="primary"] {
+      color: #030e24 !important;
+    }
+
+    &[color="warn"] {
+      color: #F57C00 !important;
+    }
+
+    &[color="accent"] {
+      color: #C49B63 !important;
+    }
+  }
+
+  .notification-content {
+    .notification-title {
+      margin: 0;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #030e24;
+    }
+
+    .notification-time {
+      margin: 4px 0 0 0;
+      font-size: 0.8rem;
+      color: #666;
+    }
+  }
+}
+
+.view-all {
+  color: #C49B63 !important;
+  font-weight: 600;
+  justify-content: center;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+
+  &:hover {
+    background: rgba(255, 215, 0, 0.15);
+  }
+
+  mat-icon {
+    color: #C49B63;
+  }
+}
+
+.user-menu-header {
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(13, 71, 161, 0.05) 0%, rgba(255, 215, 0, 0.05) 100%);
+  border-bottom: 2px solid #C49B63;
+
+  .user-avatar {
+    i {
+      font-size: 3rem;
+      color: #C49B63;
+      filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.3));
+    }
+  }
+
+  .user-info {
+    .user-name {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #030e24;
+    }
+
+    .user-role {
+      margin: 4px 0;
+      font-size: 0.85rem;
+      color: #C49B63;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .user-email {
+      margin: 4px 0 0 0;
+      font-size: 0.8rem;
+      color: #666;
+    }
+  }
+}
+
+::ng-deep .user-menu {
+  .mat-mdc-menu-item {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+
+    &:hover {
+      background: rgba(255, 215, 0, 0.1);
+      border-left-color: #C49B63;
+
+      mat-icon {
+        color: #C49B63 !important;
+      }
+    }
+
+    mat-icon {
+      color: #030e24;
+      transition: color 0.3s ease;
+    }
+  }
+}
+
+.logout-button {
+  color: #C62828 !important;
+  border-top: 1px solid rgba(198, 40, 40, 0.2);
+
+  &:hover {
+    background: rgba(198, 40, 40, 0.1) !important;
+  }
+
+  mat-icon {
+    color: #C62828 !important;
+  }
+}
+
+// ============================================
+// CONTENIDO
+// ============================================
+
+.sidenav-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; // CRÍTICO: Previene scroll en el contenedor
+}
+
+.page-content {
+  flex: 1;
+  padding: 24px;
+  background: #FAFAFA; // Fondo claro neutro
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative; // CRÍTICO: Contexto de posicionamiento
+
+  // Scroll personalizado
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #030e24 0%, #C49B63 100%);
+    border-radius: 4px;
+
+    &:hover {
+      background: #C49B63;
+    }
+  }
+}
+
+// ============================================
+// FOOTER
+// ============================================
+
+.footer {
+  background: white;
+  border-top: 3px solid #C49B63; // Borde dorado
+  padding: 16px 24px;
+  text-align: center;
+  box-shadow: 0 -2px 8px rgba(13, 71, 161, 0.1);
+  flex-shrink: 0; // CRÍTICO: Previene que el footer se comprima
+
+  .footer-content {
+    p {
+      margin: 4px 0;
+      font-size: 0.85rem;
+      color: #666;
+
+      &:first-child {
+        font-weight: 600;
+        color: #030e24;
+      }
+    }
+  }
+}
+
+// ============================================
+// ANIMACIONES
+// ============================================
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(196, 155, 99, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(196, 155, 99, 0);
+  }
+}
+
+.nav-item.active {
+  animation: pulse-gold 2s infinite;
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 768px) {
+  .sidenav {
+    width: 240px;
+  }
+
+  .page-title {
+    display: none;
+  }
+
+  .navbar {
+    .spacer {
+      flex: 0;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .sidenav {
+    width: 200px;
+  }
+
+  .page-content {
+    padding: 12px;
+  }
+}

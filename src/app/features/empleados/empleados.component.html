@@ -1,0 +1,295 @@
+<div class="empleados-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>
+          <mat-icon>badge</mat-icon>
+          Gestión de Empleados
+        </h1>
+        <p>Administra el personal de la clínica</p>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="btn-nuevo"
+        (click)="nuevoEmpleado()">
+        <mat-icon>person_add</mat-icon>
+        Nuevo Empleado
+      </button>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-cards" *ngIf="estadisticas">
+      <div class="stat-card total" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ estadisticas.totalEmpleados }}</h3>
+          <p>Total Empleados</p>
+        </div>
+      </div>
+
+      <div class="stat-card activos" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ estadisticas.empleadosActivos }}</h3>
+          <p>Activos</p>
+        </div>
+      </div>
+
+      <div class="stat-card odontologos" data-aos="fade-up" data-aos-delay="300">
+        <div class="stat-icon">
+          <mat-icon>medical_services</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ estadisticas.porRol.odontologos }}</h3>
+          <p>Odontólogos</p>
+        </div>
+      </div>
+
+      <div class="stat-card asistentes" data-aos="fade-up" data-aos-delay="400">
+        <div class="stat-icon">
+          <mat-icon>support_agent</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ estadisticas.porRol.asistentes + estadisticas.porRol.recepcionistas }}</h3>
+          <p>Personal de Apoyo</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros por Rol -->
+  <mat-card class="filtros-card" data-aos="fade-up">
+    <h3>
+      <mat-icon>filter_list</mat-icon>
+      Filtrar por Rol
+    </h3>
+    <div class="filtros-grid">
+      <button 
+        mat-raised-button 
+        [class.selected]="!rolFiltro"
+        (click)="filtrarPorRol()">
+        <mat-icon>grid_view</mat-icon>
+        Todos
+      </button>
+      
+      <button 
+        mat-raised-button 
+        class="filtro-administrador"
+        [class.selected]="rolFiltro === 'Administrador'"
+        (click)="filtrarPorRol('Administrador')">
+        <mat-icon>admin_panel_settings</mat-icon>
+        Administradores
+      </button>
+
+      <button 
+        mat-raised-button 
+        class="filtro-odontologo"
+        [class.selected]="rolFiltro === 'Odontólogo'"
+        (click)="filtrarPorRol('Odontólogo')">
+        <mat-icon>medical_services</mat-icon>
+        Odontólogos
+      </button>
+
+      <button 
+        mat-raised-button 
+        class="filtro-asistente"
+        [class.selected]="rolFiltro === 'Asistente'"
+        (click)="filtrarPorRol('Asistente')">
+        <mat-icon>support_agent</mat-icon>
+        Asistentes
+      </button>
+
+      <button 
+        mat-raised-button 
+        class="filtro-recepcionista"
+        [class.selected]="rolFiltro === 'Recepcionista'"
+        (click)="filtrarPorRol('Recepcionista')">
+        <mat-icon>person</mat-icon>
+        Recepcionistas
+      </button>
+    </div>
+  </mat-card>
+
+  <!-- Tabla de empleados -->
+  <div class="table-container" data-aos="fade-up">
+    <div class="table-header">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar empleado</mat-label>
+        <input 
+          matInput 
+          (keyup)="aplicarFiltro($event)" 
+          placeholder="Nombre, cédula, código..."
+          #input>
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="table-actions">
+        <button mat-icon-button matTooltip="Exportar">
+          <mat-icon>download</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Imprimir">
+          <mat-icon>print</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort class="empleados-table">
+        
+        <!-- Columna Código -->
+        <ng-container matColumnDef="codigo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+          <td mat-cell *matCellDef="let empleado">
+            <strong>{{ empleado.codigo }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Columna Nombre Completo -->
+        <ng-container matColumnDef="nombreCompleto">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre Completo</th>
+          <td mat-cell *matCellDef="let empleado">
+            <div class="nombre-cell">
+              <mat-icon>account_circle</mat-icon>
+              <strong>{{ getNombreCompleto(empleado) }}</strong>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Columna Cédula -->
+        <ng-container matColumnDef="cedula">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Cédula</th>
+          <td mat-cell *matCellDef="let empleado">{{ empleado.cedula }}</td>
+        </ng-container>
+
+        <!-- Columna Rol -->
+        <ng-container matColumnDef="rol">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rol</th>
+          <td mat-cell *matCellDef="let empleado">
+            <mat-chip-set>
+              <mat-chip [class]="getRolClass(empleado.rol)">
+                <mat-icon>{{ getRolIcon(empleado.rol) }}</mat-icon>
+                {{ empleado.rol }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Columna Especialidad -->
+        <ng-container matColumnDef="especialidad">
+          <th mat-header-cell *matHeaderCellDef>Especialidad</th>
+          <td mat-cell *matCellDef="let empleado">
+            {{ empleado.especialidad || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- Columna Teléfono -->
+        <ng-container matColumnDef="telefono">
+          <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+          <td mat-cell *matCellDef="let empleado">
+            <a [href]="'tel:' + empleado.telefono" class="link-telefono">
+              <mat-icon>phone</mat-icon>
+              {{ empleado.telefono }}
+            </a>
+          </td>
+        </ng-container>
+
+        <!-- Columna Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let empleado">
+            <a [href]="'mailto:' + empleado.email" class="link-email">
+              {{ empleado.email }}
+            </a>
+          </td>
+        </ng-container>
+
+        <!-- Columna Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let empleado">
+            <mat-chip-set>
+              <mat-chip 
+                [class.chip-activo]="empleado.activo"
+                [class.chip-inactivo]="!empleado.activo">
+                {{ empleado.activo ? 'Activo' : 'Inactivo' }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Columna Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let empleado">
+            <button 
+              mat-icon-button 
+              [matMenuTriggerFor]="menu"
+              matTooltip="Opciones">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="verDetalle(empleado)">
+                <mat-icon>visibility</mat-icon>
+                <span>Ver Detalle</span>
+              </button>
+              <button mat-menu-item (click)="editarEmpleado(empleado)">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button 
+                mat-menu-item 
+                *ngIf="empleado.activo"
+                (click)="eliminarEmpleado(empleado)">
+                <mat-icon color="warn">block</mat-icon>
+                <span>Desactivar</span>
+              </button>
+              <button 
+                mat-menu-item 
+                *ngIf="!empleado.activo"
+                (click)="activarEmpleado(empleado)">
+                <mat-icon color="primary">check_circle</mat-icon>
+                <span>Activar</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr 
+          mat-row 
+          *matRowDef="let row; columns: displayedColumns;"
+          class="table-row"
+          (click)="verDetalle(row)">
+        </tr>
+
+        <!-- Fila cuando no hay datos -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-data-message">
+              <mat-icon>search_off</mat-icon>
+              <p>No se encontraron empleados con el criterio "{{ input.value }}"</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Paginador -->
+    <mat-paginator 
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [pageSize]="10"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+</div>

@@ -1,0 +1,631 @@
+// ============================================
+// CITAS - AZUL REY & DORADO BRONCE
+// ============================================
+
+.citas-container {
+  padding: 0;
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.page-header {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  margin-bottom: 24px;
+  border-top: 4px solid #C49B63;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    .title-section {
+      h1 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 8px 0;
+        font-size: 1.8rem;
+        color: #030e24;
+        font-weight: 700;
+
+        mat-icon {
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+          color: #C49B63;
+          filter: drop-shadow(0 2px 4px rgba(196, 155, 99, 0.4));
+        }
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+      }
+    }
+
+    .btn-nueva {
+      height: 48px;
+      font-size: 1rem;
+      padding: 0 24px;
+      background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%) !important;
+      box-shadow: 0 4px 12px rgba(3, 14, 36, 0.3) !important;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(3, 14, 36, 0.4) !important;
+      }
+
+      mat-icon {
+        margin-right: 8px;
+        color: #C49B63;
+      }
+    }
+  }
+}
+
+// ============================================
+// ESTADÍSTICAS - 4 CARDS
+// ============================================
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 0;
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: white;
+      }
+    }
+
+    .stat-info {
+      flex: 1;
+
+      h3 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+      }
+
+      p {
+        margin: 4px 0 0 0;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.95);
+        font-weight: 500;
+      }
+    }
+
+    // Total - Azul oscuro
+    &.total {
+      background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%);
+
+      .stat-icon {
+        background: rgba(196, 155, 99, 0.3);
+      }
+    }
+
+    // Citas Hoy - Rosa/Magenta
+    &.hoy {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+
+      .stat-icon {
+        background: rgba(255, 255, 255, 0.25);
+      }
+    }
+
+    // Pendientes - Dorado oscuro
+    &.pendientes {
+      background: linear-gradient(135deg, #B8860B 0%, #DAA520 100%);
+
+      .stat-icon {
+        background: rgba(3, 14, 36, 0.2);
+      }
+
+      .stat-info h3,
+      .stat-info p {
+        color: #030e24;
+      }
+    }
+
+    // Confirmadas - Verde
+    &.confirmadas {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+
+      .stat-icon {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+
+// ============================================
+// TABS CONTAINER
+// ============================================
+
+.tabs-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  border-top: 4px solid #C49B63;
+  overflow: hidden;
+}
+
+.tab-content {
+  padding: 24px;
+  min-height: 600px;
+}
+
+// ============================================
+// CALENDARIO PERSONALIZADO
+// ============================================
+
+.calendario-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+}
+
+.calendario-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(196, 155, 99, 0.2);
+
+  button {
+    color: #C49B63;
+
+    &:hover {
+      background: rgba(196, 155, 99, 0.1);
+    }
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #030e24;
+    text-transform: capitalize;
+    min-width: 250px;
+    text-align: center;
+  }
+
+  .btn-hoy {
+    background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%);
+    color: #030e24;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 8px;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(196, 155, 99, 0.3);
+    }
+  }
+}
+
+.calendario {
+  width: 100%;
+}
+
+.calendario-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 12px 0;
+  border-bottom: 2px solid rgba(196, 155, 99, 0.2);
+
+  .dia-semana {
+    text-align: center;
+    font-weight: 700;
+    color: #030e24;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.calendario-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+
+  .dia-celda {
+    aspect-ratio: 1;
+    min-height: 100px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    &:hover {
+      border-color: #C49B63;
+      background: rgba(196, 155, 99, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(196, 155, 99, 0.2);
+    }
+
+    &.hoy {
+      background: linear-gradient(135deg, rgba(196, 155, 99, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border: 3px solid #C49B63;
+      box-shadow: 0 4px 12px rgba(196, 155, 99, 0.3);
+
+      .dia-numero {
+        background: #C49B63;
+        color: white;
+      }
+    }
+
+    &.otro-mes {
+      background: #f5f5f5;
+      opacity: 0.5;
+
+      .dia-numero {
+        color: #999;
+      }
+    }
+
+    &.tiene-citas {
+      border-color: #C49B63;
+      background: rgba(196, 155, 99, 0.02);
+    }
+
+    .dia-numero {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #030e24;
+      background: rgba(196, 155, 99, 0.1);
+      border-radius: 50%;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .citas-preview {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+
+      .cita-mini {
+        background: rgba(3, 14, 36, 0.05);
+        border-left: 3px solid #C49B63;
+        padding: 4px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(196, 155, 99, 0.15);
+          transform: translateX(2px);
+        }
+
+        .hora {
+          font-weight: 700;
+          color: #030e24;
+          font-size: 0.7rem;
+        }
+
+        .paciente {
+          color: #666;
+          font-size: 0.7rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        &.cita-pendiente {
+          border-left-color: #f57c00;
+        }
+
+        &.cita-confirmada {
+          border-left-color: #1976d2;
+        }
+
+        &.cita-completada {
+          border-left-color: #2e7d32;
+        }
+
+        &.cita-cancelada {
+          border-left-color: #c62828;
+          opacity: 0.6;
+        }
+      }
+
+      .mas-citas {
+        text-align: center;
+        color: #C49B63;
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 4px;
+        background: rgba(196, 155, 99, 0.1);
+        border-radius: 4px;
+      }
+    }
+  }
+}
+
+// ============================================
+// TABLA DE CITAS
+// ============================================
+
+.lista-card {
+  background: white;
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.citas-table {
+  width: 100%;
+
+  th {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%) !important;
+    font-weight: 600;
+    color: #030e24 !important;
+    padding: 16px;
+    border-bottom: 2px solid rgba(196, 155, 99, 0.3) !important;
+  }
+
+  td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  tr:hover {
+    background: rgba(196, 155, 99, 0.05) !important;
+  }
+}
+
+.fecha-cell,
+.paciente-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #030e24;
+
+  mat-icon {
+    color: #C49B63;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Chips de estado
+.estado-pendiente {
+  background: rgba(245, 124, 0, 0.2) !important;
+  color: #f57c00 !important;
+}
+
+.estado-confirmada {
+  background: rgba(25, 118, 210, 0.2) !important;
+  color: #1976d2 !important;
+}
+
+.estado-completada {
+  background: rgba(46, 125, 50, 0.2) !important;
+  color: #2e7d32 !important;
+}
+
+.estado-cancelada {
+  background: rgba(198, 40, 40, 0.2) !important;
+  color: #c62828 !important;
+}
+
+.no-data {
+  padding: 60px 20px;
+  text-align: center;
+  color: #666;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #C49B63;
+    opacity: 0.5;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+}
+
+// ============================================
+// MATERIAL OVERRIDES
+// ============================================
+
+::ng-deep {
+  // Tabs
+  .mat-mdc-tab-group {
+    background: white;
+  }
+
+  .mat-mdc-tab-labels {
+    background: rgba(3, 14, 36, 0.02);
+    border-bottom: 3px solid rgba(196, 155, 99, 0.2);
+  }
+
+  .mat-mdc-tab {
+    color: #666;
+    font-weight: 600;
+
+    &:hover {
+      background: rgba(196, 155, 99, 0.05);
+    }
+  }
+
+  .mat-mdc-tab.mat-mdc-tab-active {
+    .mdc-tab__text-label {
+      color: #C49B63;
+    }
+  }
+
+  .mat-mdc-tab-header {
+    border-bottom: none;
+  }
+
+  .mat-mdc-tab-body-wrapper {
+    background: white;
+  }
+
+  .mdc-tab-indicator__content--underline {
+    border-color: #C49B63 !important;
+    border-width: 3px;
+  }
+
+  // Table
+  .mat-mdc-table {
+    background: white !important;
+  }
+
+  .mat-mdc-header-row {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%) !important;
+  }
+
+  .mat-mdc-row:hover {
+    background: rgba(196, 155, 99, 0.05) !important;
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 1024px) {
+  .calendario-body .dia-celda {
+    min-height: 80px;
+
+    .citas-preview .cita-mini {
+      font-size: 0.65rem;
+
+      .hora,
+      .paciente {
+        font-size: 0.65rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header .header-content {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+
+    .btn-nueva {
+      width: 100%;
+    }
+  }
+
+  .stats-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+
+  .calendario-controls {
+    flex-wrap: wrap;
+    gap: 12px;
+
+    h2 {
+      width: 100%;
+      order: -1;
+      font-size: 1.2rem;
+    }
+
+    .btn-hoy {
+      flex: 1;
+    }
+  }
+
+  .calendario-header .dia-semana {
+    font-size: 0.75rem;
+  }
+
+  .calendario-body {
+    gap: 4px;
+
+    .dia-celda {
+      min-height: 70px;
+      padding: 6px;
+
+      .dia-numero {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
+      }
+
+      .citas-preview {
+        display: none; // Ocultar previews en celular
+      }
+
+      &.tiene-citas::after {
+        content: '•';
+        position: absolute;
+        bottom: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #C49B63;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+    }
+  }
+}

@@ -1,0 +1,229 @@
+<div class="form-container">
+  
+  <!-- Header -->
+  <div class="form-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="cancelar()" class="btn-back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-section">
+        <h1>
+          <mat-icon>event</mat-icon>
+          Agendar Nueva Cita
+        </h1>
+        <p>Complete el formulario para agendar una cita</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <form [formGroup]="citaForm" (ngSubmit)="onSubmit()">
+    <mat-card class="form-card">
+      
+      <!-- Sección 1: Paciente -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>person</mat-icon>
+          Información del Paciente
+        </h2>
+
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Buscar Paciente</mat-label>
+            <input 
+              matInput 
+              formControlName="pacienteBusqueda"
+              [matAutocomplete]="auto"
+              placeholder="Nombre, apellido o cédula">
+            <mat-icon matPrefix>search</mat-icon>
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="mostrarNombrePaciente">
+              <mat-option 
+                *ngFor="let paciente of pacientesFiltrados | async" 
+                [value]="paciente"
+                (onSelectionChange)="seleccionarPaciente(paciente)">
+                <div class="paciente-option">
+                  <mat-icon>account_circle</mat-icon>
+                  <div class="paciente-info">
+                    <strong>{{ paciente.nombre }} {{ paciente.apellido1 }} {{ paciente.apellido2 }}</strong>
+                    <span>{{ paciente.cedula }}</span>
+                  </div>
+                </div>
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error *ngIf="pacienteId?.hasError('required')">
+              Debe seleccionar un paciente
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sección 2: Tratamiento y Odontólogo -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>medical_services</mat-icon>
+          Detalles de la Cita
+        </h2>
+
+        <div class="form-grid">
+          <!-- Tratamiento -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Tratamiento</mat-label>
+            <mat-select formControlName="tratamientoId">
+              <mat-option *ngFor="let tratamiento of tratamientos" [value]="tratamiento.id">
+                <div class="tratamiento-option">
+                  <strong>{{ tratamiento.nombre }}</strong>
+                  <span class="tratamiento-info">
+                    {{ tratamiento.duracionEstimada }} min | ₡{{ tratamiento.costo | number }}
+                  </span>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>healing</mat-icon>
+            <mat-error *ngIf="tratamientoId?.hasError('required')">
+              El tratamiento es requerido
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Odontólogo -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Odontólogo</mat-label>
+            <mat-select formControlName="odontologoId">
+              <mat-option *ngFor="let odontologo of odontologos" [value]="odontologo.id">
+                <div class="odontologo-option">
+                  <mat-icon>person</mat-icon>
+                  <div>
+                    <strong>{{ odontologo.nombre }}</strong>
+                    <span class="especialidad">{{ odontologo.especialidad }}</span>
+                  </div>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>medical_services</mat-icon>
+            <mat-error *ngIf="odontologoId?.hasError('required')">
+              El odontólogo es requerido
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sección 3: Fecha y Hora -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>schedule</mat-icon>
+          Fecha y Hora
+        </h2>
+
+        <div class="form-grid">
+          <!-- Fecha -->
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de la Cita</mat-label>
+            <input 
+              matInput 
+              [matDatepicker]="picker" 
+              formControlName="fecha"
+              [min]="minDate">
+            <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="fecha?.hasError('required')">
+              La fecha es requerida
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Hora -->
+          <mat-form-field appearance="outline">
+            <mat-label>Hora</mat-label>
+            <mat-select formControlName="hora">
+              <mat-option *ngFor="let hora of horariosDisponibles" [value]="hora">
+                {{ hora }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>access_time</mat-icon>
+            <mat-error *ngIf="hora?.hasError('required')">
+              La hora es requerida
+            </mat-error>
+            <mat-hint *ngIf="horariosDisponibles.length === 0 && fecha?.value && odontologoId?.value">
+              No hay horarios disponibles para esta fecha
+            </mat-hint>
+          </mat-form-field>
+
+          <!-- Duración -->
+          <mat-form-field appearance="outline">
+            <mat-label>Duración (minutos)</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="duracion"
+              placeholder="30">
+            <mat-icon matPrefix>timer</mat-icon>
+            <mat-hint *ngIf="duracionEstimada > 0">
+              Duración estimada: {{ duracionEstimada }} minutos
+            </mat-hint>
+            <mat-error *ngIf="citaForm.get('duracion')?.hasError('required')">
+              La duración es requerida
+            </mat-error>
+            <mat-error *ngIf="citaForm.get('duracion')?.hasError('min')">
+              Mínimo 15 minutos
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sección 4: Información Adicional -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>note</mat-icon>
+          Información Adicional
+        </h2>
+
+        <div class="form-grid">
+          <!-- Motivo -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Motivo de la Cita (Opcional)</mat-label>
+            <input 
+              matInput 
+              formControlName="motivo"
+              placeholder="Ej: Dolor en muela del juicio">
+            <mat-icon matPrefix>info</mat-icon>
+          </mat-form-field>
+
+          <!-- Observaciones -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Observaciones (Opcional)</mat-label>
+            <textarea 
+              matInput 
+              formControlName="observaciones"
+              rows="3"
+              placeholder="Notas adicionales..."></textarea>
+            <mat-icon matPrefix>description</mat-icon>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="form-actions">
+        <button 
+          mat-button 
+          type="button"
+          (click)="cancelar()">
+          Cancelar
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          [disabled]="loading || citaForm.invalid">
+          <mat-icon>event</mat-icon>
+          {{ loading ? 'Agendando...' : 'Agendar Cita' }}
+        </button>
+      </div>
+
+    </mat-card>
+  </form>
+
+</div>

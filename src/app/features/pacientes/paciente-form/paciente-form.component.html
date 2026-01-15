@@ -1,0 +1,269 @@
+<div class="form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="cancelar()" class="btn-back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-section">
+        <h1>
+          <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+          {{ isEditMode ? 'Editar Paciente' : 'Nuevo Paciente' }}
+        </h1>
+        <p>{{ isEditMode ? 'Actualiza la información del paciente' : 'Completa el formulario para registrar un nuevo paciente' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <form [formGroup]="pacienteForm" (ngSubmit)="onSubmit()">
+    <mat-stepper linear #stepper>
+      
+      <!-- PASO 1: Datos Personales -->
+      <mat-step label="Datos Personales" [stepControl]="pacienteForm">
+        <mat-card class="step-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>person</mat-icon>
+              Información Personal
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="form-grid">
+              <!-- Nombre -->
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="nombre" placeholder="Ej: Juan">
+                <mat-icon matPrefix>badge</mat-icon>
+                <mat-error *ngIf="nombre?.hasError('required')">El nombre es requerido</mat-error>
+                <mat-error *ngIf="nombre?.hasError('minlength')">Mínimo 2 caracteres</mat-error>
+              </mat-form-field>
+
+              <!-- Primer Apellido -->
+              <mat-form-field appearance="outline">
+                <mat-label>Primer Apellido</mat-label>
+                <input matInput formControlName="apellido1" placeholder="Ej: Pérez">
+                <mat-error *ngIf="apellido1?.hasError('required')">El apellido es requerido</mat-error>
+                <mat-error *ngIf="apellido1?.hasError('minlength')">Mínimo 2 caracteres</mat-error>
+              </mat-form-field>
+
+              <!-- Segundo Apellido -->
+              <mat-form-field appearance="outline">
+                <mat-label>Segundo Apellido (Opcional)</mat-label>
+                <input matInput formControlName="apellido2" placeholder="Ej: González">
+              </mat-form-field>
+
+              <!-- Cédula -->
+              <mat-form-field appearance="outline">
+                <mat-label>Cédula</mat-label>
+                <input matInput formControlName="cedula" placeholder="1-1234-5678">
+                <mat-icon matPrefix>credit_card</mat-icon>
+                <mat-error *ngIf="cedula?.hasError('required')">La cédula es requerida</mat-error>
+                <mat-error *ngIf="cedula?.hasError('pattern')">Formato: 1-1234-5678</mat-error>
+              </mat-form-field>
+
+              <!-- Fecha de Nacimiento -->
+              <mat-form-field appearance="outline">
+                <mat-label>Fecha de Nacimiento</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" [max]="maxDate">
+                <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="fechaNacimiento?.hasError('required')">La fecha es requerida</mat-error>
+              </mat-form-field>
+
+              <!-- Género -->
+              <mat-form-field appearance="outline">
+                <mat-label>Género</mat-label>
+                <mat-select formControlName="genero">
+                  <mat-option *ngFor="let g of generos" [value]="g">{{ g }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix>wc</mat-icon>
+                <mat-error *ngIf="genero?.hasError('required')">El género es requerido</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious type="button" disabled>Anterior</button>
+              <button mat-raised-button color="primary" matStepperNext type="button">Siguiente</button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-step>
+
+      <!-- PASO 2: Contacto -->
+      <mat-step label="Contacto" [stepControl]="pacienteForm">
+        <mat-card class="step-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>contact_phone</mat-icon>
+              Información de Contacto
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="form-grid">
+              <!-- Teléfono -->
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono Principal</mat-label>
+                <input matInput formControlName="telefono" placeholder="8888-1234">
+                <mat-icon matPrefix>phone</mat-icon>
+                <mat-error *ngIf="telefono?.hasError('required')">El teléfono es requerido</mat-error>
+                <mat-error *ngIf="telefono?.hasError('pattern')">Formato: 8888-1234</mat-error>
+              </mat-form-field>
+
+              <!-- Teléfono Secundario -->
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono Secundario (Opcional)</mat-label>
+                <input matInput formControlName="telefonoSecundario" placeholder="8888-5678">
+                <mat-icon matPrefix>phone</mat-icon>
+                <mat-error *ngIf="pacienteForm.get('telefonoSecundario')?.hasError('pattern')">Formato: 8888-5678</mat-error>
+              </mat-form-field>
+
+              <!-- Email -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Correo Electrónico (Opcional)</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="ejemplo@email.com">
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-error *ngIf="email?.hasError('email')">Email inválido</mat-error>
+              </mat-form-field>
+
+              <!-- Dirección -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Dirección (Opcional)</mat-label>
+                <textarea matInput formControlName="direccion" rows="2" placeholder="San José, Costa Rica"></textarea>
+                <mat-icon matPrefix>home</mat-icon>
+              </mat-form-field>
+
+              <!-- Ocupación -->
+              <mat-form-field appearance="outline">
+                <mat-label>Ocupación (Opcional)</mat-label>
+                <input matInput formControlName="ocupacion" placeholder="Ej: Ingeniero">
+                <mat-icon matPrefix>work</mat-icon>
+              </mat-form-field>
+
+              <!-- Estado Civil -->
+              <mat-form-field appearance="outline">
+                <mat-label>Estado Civil (Opcional)</mat-label>
+                <mat-select formControlName="estadoCivil">
+                  <mat-option *ngFor="let ec of estadosCiviles" [value]="ec">{{ ec }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix>favorite</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <!-- Responsable -->
+            <mat-divider class="divider"></mat-divider>
+
+            <div class="checkbox-section">
+              <mat-checkbox formControlName="esmenor" color="primary">
+                <strong>Es menor de edad (requiere responsable)</strong>
+              </mat-checkbox>
+            </div>
+
+            <div *ngIf="esmenor?.value" class="responsable-section">
+              <h3>
+                <mat-icon>supervised_user_circle</mat-icon>
+                Información del Responsable
+              </h3>
+
+              <div class="form-grid">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nombre Completo del Responsable</mat-label>
+                  <input matInput formControlName="responsableNombre" placeholder="Ej: María González">
+                  <mat-icon matPrefix>person</mat-icon>
+                  <mat-error *ngIf="responsableNombre?.hasError('required')">El nombre es requerido</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Parentesco</mat-label>
+                  <input matInput formControlName="responsableParentesco" placeholder="Ej: Madre">
+                  <mat-icon matPrefix>family_restroom</mat-icon>
+                  <mat-error *ngIf="responsableParentesco?.hasError('required')">El parentesco es requerido</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Teléfono del Responsable</mat-label>
+                  <input matInput formControlName="responsableTelefono" placeholder="8888-1234">
+                  <mat-icon matPrefix>phone</mat-icon>
+                  <mat-error *ngIf="responsableTelefono?.hasError('required')">El teléfono es requerido</mat-error>
+                  <mat-error *ngIf="responsableTelefono?.hasError('pattern')">Formato: 8888-1234</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Cédula del Responsable (Opcional)</mat-label>
+                  <input matInput formControlName="responsableCedula" placeholder="1-1234-5678">
+                  <mat-icon matPrefix>credit_card</mat-icon>
+                  <mat-error *ngIf="pacienteForm.get('responsableCedula')?.hasError('pattern')">Formato: 1-1234-5678</mat-error>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious type="button">Anterior</button>
+              <button mat-raised-button color="primary" matStepperNext type="button">Siguiente</button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-step>
+
+      <!-- PASO 3: Información Médica -->
+      <mat-step label="Información Médica">
+        <mat-card class="step-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>medical_services</mat-icon>
+              Historia Médica
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="form-grid">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Alergias (Opcional)</mat-label>
+                <textarea matInput formControlName="alergias" rows="2" placeholder="Ej: Penicilina, Aspirina"></textarea>
+                <mat-icon matPrefix>warning</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Enfermedades Crónicas (Opcional)</mat-label>
+                <textarea matInput formControlName="enfermedades" rows="2" placeholder="Ej: Diabetes, Hipertensión"></textarea>
+                <mat-icon matPrefix>local_hospital</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Medicamentos Actuales (Opcional)</mat-label>
+                <textarea matInput formControlName="medicamentos" rows="2" placeholder="Ej: Metformina 500mg"></textarea>
+                <mat-icon matPrefix>medication</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Referencia (Opcional)</mat-label>
+                <input matInput formControlName="referencia" placeholder="¿Cómo conoció la clínica?">
+                <mat-icon matPrefix>info</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Observaciones Generales (Opcional)</mat-label>
+                <textarea matInput formControlName="observaciones" rows="3" placeholder="Notas adicionales..."></textarea>
+                <mat-icon matPrefix>note</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="step-actions">
+              <button mat-button matStepperPrevious type="button">Anterior</button>
+              <button 
+                mat-raised-button 
+                color="primary" 
+                type="submit"
+                [disabled]="loading || pacienteForm.invalid">
+                <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+                {{ loading ? 'Guardando...' : (isEditMode ? 'Actualizar Paciente' : 'Registrar Paciente') }}
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </mat-step>
+    </mat-stepper>
+  </form>
+</div>

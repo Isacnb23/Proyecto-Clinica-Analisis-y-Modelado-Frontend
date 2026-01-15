@@ -1,0 +1,317 @@
+<div class="form-container">
+  
+  <!-- Header -->
+  <div class="form-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="cancelar()" class="btn-back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-section">
+        <h1>
+          <mat-icon>inventory</mat-icon>
+          {{ isEditMode ? 'Editar Producto' : 'Nuevo Producto' }}
+        </h1>
+        <p>{{ isEditMode ? 'Modifica los datos del producto' : 'Complete el formulario para agregar un nuevo producto al inventario' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <form [formGroup]="productoForm" (ngSubmit)="onSubmit()">
+    <mat-card class="form-card">
+      
+      <!-- Sección 1: Información Básica -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>info</mat-icon>
+          Información del Producto
+        </h2>
+
+        <div class="form-grid">
+          <!-- Código -->
+          <mat-form-field appearance="outline">
+            <mat-label>Código</mat-label>
+            <input 
+              matInput 
+              formControlName="codigo"
+              placeholder="Ej: GUANT-001"
+              maxlength="20">
+            <mat-icon matPrefix>qr_code</mat-icon>
+            <mat-hint>Código único del producto</mat-hint>
+            <mat-error *ngIf="codigo?.hasError('required')">
+              El código es requerido
+            </mat-error>
+            <mat-error *ngIf="codigo?.hasError('minlength')">
+              Mínimo 3 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Nombre -->
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre del Producto</mat-label>
+            <input 
+              matInput 
+              formControlName="nombre"
+              placeholder="Ej: Guantes de Látex"
+              maxlength="100">
+            <mat-icon matPrefix>inventory_2</mat-icon>
+            <mat-error *ngIf="nombre?.hasError('required')">
+              El nombre es requerido
+            </mat-error>
+            <mat-error *ngIf="nombre?.hasError('minlength')">
+              Mínimo 3 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Descripción -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea 
+              matInput 
+              formControlName="descripcion"
+              rows="3"
+              placeholder="Descripción detallada del producto..."
+              maxlength="500"></textarea>
+            <mat-icon matPrefix>description</mat-icon>
+            <mat-hint align="end">{{ descripcion?.value?.length || 0 }}/500</mat-hint>
+            <mat-error *ngIf="descripcion?.hasError('required')">
+              La descripción es requerida
+            </mat-error>
+            <mat-error *ngIf="descripcion?.hasError('minlength')">
+              Mínimo 10 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Categoría -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="categoriaId">
+              <mat-option 
+                *ngFor="let categoria of categorias" 
+                [value]="categoria.id">
+                <div class="categoria-option">
+                  <mat-icon [style.color]="categoria.color">{{ categoria.icono }}</mat-icon>
+                  <div>
+                    <strong>{{ categoria.nombre }}</strong>
+                    <span class="categoria-desc">{{ categoria.descripcion }}</span>
+                  </div>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix [style.color]="getCategoriaColor()">category</mat-icon>
+            <mat-error *ngIf="categoriaId?.hasError('required')">
+              La categoría es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sección 2: Stock -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>inventory</mat-icon>
+          Control de Stock
+        </h2>
+
+        <div class="form-grid">
+          <!-- Stock Actual -->
+          <mat-form-field appearance="outline">
+            <mat-label>Stock Actual</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="stockActual"
+              placeholder="0"
+              min="0">
+            <mat-icon matPrefix>numbers</mat-icon>
+            <mat-hint>Cantidad actual en inventario</mat-hint>
+            <mat-error *ngIf="stockActual?.hasError('required')">
+              El stock actual es requerido
+            </mat-error>
+            <mat-error *ngIf="stockActual?.hasError('min')">
+              Debe ser mayor o igual a 0
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Stock Mínimo -->
+          <mat-form-field appearance="outline">
+            <mat-label>Stock Mínimo</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="stockMinimo"
+              placeholder="0"
+              min="0">
+            <mat-icon matPrefix>trending_down</mat-icon>
+            <mat-hint>Genera alerta cuando llegue a este nivel</mat-hint>
+            <mat-error *ngIf="stockMinimo?.hasError('required')">
+              El stock mínimo es requerido
+            </mat-error>
+            <mat-error *ngIf="stockMinimo?.hasError('min')">
+              Debe ser mayor o igual a 0
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Stock Máximo -->
+          <mat-form-field appearance="outline">
+            <mat-label>Stock Máximo</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="stockMaximo"
+              placeholder="0"
+              min="1">
+            <mat-icon matPrefix>trending_up</mat-icon>
+            <mat-hint>Capacidad máxima de almacenamiento</mat-hint>
+            <mat-error *ngIf="stockMaximo?.hasError('required')">
+              El stock máximo es requerido
+            </mat-error>
+            <mat-error *ngIf="stockMaximo?.hasError('min')">
+              Debe ser mayor a 0
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Unidad de Medida -->
+          <mat-form-field appearance="outline">
+            <mat-label>Unidad de Medida</mat-label>
+            <mat-select formControlName="unidadMedida">
+              <mat-option *ngFor="let unidad of unidadesMedida" [value]="unidad">
+                {{ unidad }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>straighten</mat-icon>
+            <mat-error *ngIf="unidadMedida?.hasError('required')">
+              La unidad de medida es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sección 3: Precios y Proveedor -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>payments</mat-icon>
+          Información Comercial
+        </h2>
+
+        <div class="form-grid">
+          <!-- Costo Unitario -->
+          <mat-form-field appearance="outline">
+            <mat-label>Costo Unitario (₡)</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="costoUnitario"
+              placeholder="0"
+              min="0"
+              step="100">
+            <mat-icon matPrefix>shopping_cart</mat-icon>
+            <span matTextPrefix>₡&nbsp;</span>
+            <mat-hint>Precio de compra por unidad</mat-hint>
+            <mat-error *ngIf="costoUnitario?.hasError('required')">
+              El costo unitario es requerido
+            </mat-error>
+            <mat-error *ngIf="costoUnitario?.hasError('min')">
+              Debe ser mayor o igual a 0
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Precio de Venta (Opcional) -->
+          <mat-form-field appearance="outline">
+            <mat-label>Precio de Venta (₡) - Opcional</mat-label>
+            <input 
+              matInput 
+              type="number" 
+              formControlName="precioVenta"
+              placeholder="0"
+              min="0"
+              step="100">
+            <mat-icon matPrefix>sell</mat-icon>
+            <span matTextPrefix>₡&nbsp;</span>
+            <mat-hint>Precio de venta por unidad</mat-hint>
+            <mat-error *ngIf="precioVenta?.hasError('min')">
+              Debe ser mayor o igual a 0
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Proveedor -->
+          <mat-form-field appearance="outline">
+            <mat-label>Proveedor (Opcional)</mat-label>
+            <mat-select formControlName="proveedorId">
+              <mat-option [value]="">Ninguno</mat-option>
+              <mat-option 
+                *ngFor="let proveedor of proveedores" 
+                [value]="proveedor.id">
+                <div class="proveedor-option">
+                  <strong>{{ proveedor.nombre }}</strong>
+                  <span *ngIf="proveedor.contacto">{{ proveedor.contacto }}</span>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>business</mat-icon>
+          </mat-form-field>
+
+          <!-- Ubicación -->
+          <mat-form-field appearance="outline">
+            <mat-label>Ubicación (Opcional)</mat-label>
+            <input 
+              matInput 
+              formControlName="ubicacion"
+              placeholder="Ej: Estante A-1"
+              maxlength="50">
+            <mat-icon matPrefix>place</mat-icon>
+            <mat-hint>Ubicación física en bodega</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Sección 4: Información Adicional -->
+      <div class="form-section">
+        <h2>
+          <mat-icon>note</mat-icon>
+          Información Adicional (Opcional)
+        </h2>
+
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Observaciones</mat-label>
+            <textarea 
+              matInput 
+              formControlName="observaciones"
+              rows="3"
+              placeholder="Notas adicionales, recomendaciones, contraindicaciones..."
+              maxlength="500"></textarea>
+            <mat-icon matPrefix>edit_note</mat-icon>
+            <mat-hint align="end">{{ productoForm.get('observaciones')?.value?.length || 0 }}/500</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="form-actions">
+        <button 
+          mat-button 
+          type="button"
+          (click)="cancelar()">
+          Cancelar
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit"
+          [disabled]="loading || productoForm.invalid">
+          <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+          {{ loading ? 'Guardando...' : (isEditMode ? 'Actualizar Producto' : 'Crear Producto') }}
+        </button>
+      </div>
+
+    </mat-card>
+  </form>
+
+</div>

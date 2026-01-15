@@ -1,0 +1,382 @@
+// ============================================
+// TRATAMIENTOS - AZUL REY & DORADO BRONCE
+// ============================================
+
+.tratamientos-container {
+  padding: 0;
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.page-header {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  margin-bottom: 24px;
+  border-top: 4px solid #C49B63;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title-section {
+      h1 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 8px 0;
+        font-size: 1.8rem;
+        color: #030e24;
+        font-weight: 700;
+
+        mat-icon {
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+          color: #C49B63;
+          filter: drop-shadow(0 2px 4px rgba(196, 155, 99, 0.4));
+        }
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+      }
+    }
+
+    .btn-nuevo {
+      height: 48px;
+      font-size: 1rem;
+      padding: 0 24px;
+      background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%) !important;
+      box-shadow: 0 4px 12px rgba(3, 14, 36, 0.3) !important;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(3, 14, 36, 0.4) !important;
+      }
+
+      mat-icon {
+        margin-right: 8px;
+        color: #C49B63;
+      }
+    }
+  }
+}
+
+// ============================================
+// ESTADÍSTICAS
+// ============================================
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: white;
+      }
+    }
+
+    .stat-info {
+      h3 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+      }
+
+      p {
+        margin: 4px 0 0 0;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.95);
+        font-weight: 500;
+      }
+    }
+
+    &.total {
+      background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%);
+
+      .stat-icon {
+        background: rgba(196, 155, 99, 0.3);
+      }
+    }
+
+    &.activos {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+
+      .stat-icon {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    &.mes {
+      background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%);
+
+      .stat-icon {
+        background: rgba(3, 14, 36, 0.2);
+      }
+
+      .stat-info h3,
+      .stat-info p {
+        color: #030e24;
+      }
+    }
+
+    &.ingresos {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+      .stat-icon {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+
+// ============================================
+// TABLA
+// ============================================
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  overflow: hidden;
+  border-top: 4px solid #C49B63;
+}
+
+.table-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(196, 155, 99, 0.2);
+  background: rgba(3, 14, 36, 0.02);
+
+  .search-field {
+    width: 400px;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.tratamientos-table {
+  width: 100%;
+  background: white !important;
+
+  th {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%) !important;
+    font-weight: 600;
+    color: #030e24 !important;
+    padding: 16px;
+    border-bottom: 2px solid rgba(196, 155, 99, 0.3) !important;
+  }
+
+  td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .table-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(196, 155, 99, 0.05) !important;
+    }
+  }
+}
+
+// ============================================
+// COLUMNAS PERSONALIZADAS
+// ============================================
+
+.tratamiento-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  mat-icon {
+    color: #C49B63;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .info {
+    strong {
+      display: block;
+      color: #030e24;
+      font-weight: 600;
+    }
+
+    span {
+      font-size: 0.85rem;
+      color: #666;
+    }
+  }
+}
+
+.paciente-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    color: #C49B63;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.precio-cell {
+  font-weight: 600;
+  color: #030e24;
+  font-size: 1.1rem;
+}
+
+// Chips de estado
+.estado-chip {
+  font-weight: 500;
+
+  &.planificado {
+    background: rgba(196, 155, 99, 0.2) !important;
+    color: #976A2F !important;
+  }
+
+  &.en-curso {
+    background: #fff3e0 !important;
+    color: #f57c00 !important;
+  }
+
+  &.completado {
+    background: #e8f5e9 !important;
+    color: #2e7d32 !important;
+  }
+
+  &.cancelado {
+    background: #ffebee !important;
+    color: #c62828 !important;
+  }
+
+  &.pausado {
+    background: #e3f2fd !important;
+    color: #1976d2 !important;
+  }
+}
+
+// Chips de categoría
+.categoria-chip {
+  font-weight: 500;
+
+  &.preventivo {
+    background: #e8f5e9 !important;
+    color: #2e7d32 !important;
+  }
+
+  &.restaurativo {
+    background: #e3f2fd !important;
+    color: #1976d2 !important;
+  }
+
+  &.endodoncia {
+    background: #f3e5f5 !important;
+    color: #7b1fa2 !important;
+  }
+
+  &.ortodoncia {
+    background: #fff3e0 !important;
+    color: #f57c00 !important;
+  }
+
+  &.cirugia {
+    background: #ffebee !important;
+    color: #c62828 !important;
+  }
+
+  &.estetica {
+    background: rgba(196, 155, 99, 0.2) !important;
+    color: #976A2F !important;
+  }
+}
+
+::ng-deep {
+  .mat-mdc-table {
+    background: white !important;
+  }
+
+  .mat-mdc-header-row {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%) !important;
+  }
+
+  .mat-mdc-row {
+    background: white !important;
+    
+    &:hover {
+      background: rgba(196, 155, 99, 0.05) !important;
+    }
+  }
+
+  .mat-mdc-paginator {
+    background: white !important;
+    border-top: 2px solid rgba(196, 155, 99, 0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header .header-content {
+    flex-direction: column;
+    gap: 16px;
+
+    .btn-nuevo {
+      width: 100%;
+    }
+  }
+
+  .stats-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .table-header {
+    flex-direction: column;
+    gap: 16px;
+
+    .search-field {
+      width: 100%;
+    }
+  }
+}

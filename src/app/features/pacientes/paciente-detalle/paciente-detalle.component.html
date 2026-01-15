@@ -1,0 +1,303 @@
+<div class="detalle-container" *ngIf="!loading && paciente">
+  <!-- Header -->
+  <div class="detalle-header">
+    <div class="header-content">
+      <button mat-icon-button (click)="volver()" class="btn-back">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      
+      <div class="paciente-info-header">
+        <div class="avatar-large">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <div class="info">
+          <h1>{{ getNombreCompleto() }}</h1>
+          <p class="expediente">{{ paciente.numeroExpediente }}</p>
+          <div class="chips">
+            <mat-chip-set>
+              <mat-chip [class.chip-activo]="paciente.activo" [class.chip-inactivo]="!paciente.activo">
+                {{ paciente.activo ? 'Activo' : 'Inactivo' }}
+              </mat-chip>
+              <mat-chip class="chip-edad">{{ paciente.edad }} años</mat-chip>
+              <mat-chip class="chip-genero">{{ paciente.genero }}</mat-chip>
+            </mat-chip-set>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="agendarCita()">
+          <mat-icon>event</mat-icon>
+          Agendar Cita
+        </button>
+        <button mat-raised-button (click)="editarPaciente()">
+          <mat-icon>edit</mat-icon>
+          Editar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido con Tabs -->
+  <mat-tab-group class="tabs-container">
+    
+    <!-- TAB 1: Información General -->
+    <mat-tab label="Información General">
+      <div class="tab-content">
+        <div class="cards-grid">
+          
+          <!-- Datos Personales -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>person</mat-icon>
+                Datos Personales
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-item">
+                <span class="label">Nombre Completo:</span>
+                <span class="value">{{ getNombreCompleto() }}</span>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="info-item">
+                <span class="label">Cédula:</span>
+                <span class="value">{{ paciente.cedula }}</span>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="info-item">
+                <span class="label">Fecha de Nacimiento:</span>
+                <span class="value">{{ paciente.fechaNacimiento | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="info-item">
+                <span class="label">Edad:</span>
+                <span class="value">{{ paciente.edad }} años</span>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="info-item">
+                <span class="label">Género:</span>
+                <span class="value">{{ paciente.genero }}</span>
+              </div>
+              <mat-divider *ngIf="paciente.ocupacion"></mat-divider>
+              <div class="info-item" *ngIf="paciente.ocupacion">
+                <span class="label">Ocupación:</span>
+                <span class="value">{{ paciente.ocupacion }}</span>
+              </div>
+              <mat-divider *ngIf="paciente.estadoCivil"></mat-divider>
+              <div class="info-item" *ngIf="paciente.estadoCivil">
+                <span class="label">Estado Civil:</span>
+                <span class="value">{{ paciente.estadoCivil }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Datos de Contacto -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>contact_phone</mat-icon>
+                Datos de Contacto
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-item">
+                <span class="label">Teléfono Principal:</span>
+                <span class="value">
+                  <a href="tel:{{ paciente.telefono }}" class="link">
+                    <mat-icon>phone</mat-icon>
+                    {{ paciente.telefono }}
+                  </a>
+                </span>
+              </div>
+              <mat-divider *ngIf="paciente.telefonoSecundario"></mat-divider>
+              <div class="info-item" *ngIf="paciente.telefonoSecundario">
+                <span class="label">Teléfono Secundario:</span>
+                <span class="value">
+                  <a href="tel:{{ paciente.telefonoSecundario }}" class="link">
+                    <mat-icon>phone</mat-icon>
+                    {{ paciente.telefonoSecundario }}
+                  </a>
+                </span>
+              </div>
+              <mat-divider *ngIf="paciente.email"></mat-divider>
+              <div class="info-item" *ngIf="paciente.email">
+                <span class="label">Email:</span>
+                <span class="value">
+                  <a href="mailto:{{ paciente.email }}" class="link">
+                    <mat-icon>email</mat-icon>
+                    {{ paciente.email }}
+                  </a>
+                </span>
+              </div>
+              <mat-divider *ngIf="paciente.direccion"></mat-divider>
+              <div class="info-item" *ngIf="paciente.direccion">
+                <span class="label">Dirección:</span>
+                <span class="value">{{ paciente.direccion }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Responsable (si existe) -->
+          <mat-card *ngIf="paciente.responsable">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>supervised_user_circle</mat-icon>
+                Responsable
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-item">
+                <span class="label">Nombre:</span>
+                <span class="value">{{ paciente.responsable.nombre }}</span>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="info-item">
+                <span class="label">Parentesco:</span>
+                <span class="value">{{ paciente.responsable.parentesco }}</span>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="info-item">
+                <span class="label">Teléfono:</span>
+                <span class="value">
+                  <a href="tel:{{ paciente.responsable.telefono }}" class="link">
+                    <mat-icon>phone</mat-icon>
+                    {{ paciente.responsable.telefono }}
+                  </a>
+                </span>
+              </div>
+              <mat-divider *ngIf="paciente.responsable.cedula"></mat-divider>
+              <div class="info-item" *ngIf="paciente.responsable.cedula">
+                <span class="label">Cédula:</span>
+                <span class="value">{{ paciente.responsable.cedula }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Información Adicional -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>info</mat-icon>
+                Información Adicional
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-item">
+                <span class="label">Fecha de Registro:</span>
+                <span class="value">{{ paciente.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <mat-divider *ngIf="paciente.ultimaVisita"></mat-divider>
+              <div class="info-item" *ngIf="paciente.ultimaVisita">
+                <span class="label">Última Visita:</span>
+                <span class="value">{{ paciente.ultimaVisita | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <mat-divider *ngIf="paciente.referencia"></mat-divider>
+              <div class="info-item" *ngIf="paciente.referencia">
+                <span class="label">Referencia:</span>
+                <span class="value">{{ paciente.referencia }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- TAB 2: Historia Médica -->
+    <mat-tab label="Historia Médica">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>medical_services</mat-icon>
+              Información Médica
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            
+            <div class="medical-section" *ngIf="paciente.alergias">
+              <div class="section-header warning">
+                <mat-icon>warning</mat-icon>
+                <h3>Alergias</h3>
+              </div>
+              <p>{{ paciente.alergias }}</p>
+            </div>
+
+            <mat-divider *ngIf="paciente.alergias && paciente.enfermedades"></mat-divider>
+
+            <div class="medical-section" *ngIf="paciente.enfermedades">
+              <div class="section-header">
+                <mat-icon>local_hospital</mat-icon>
+                <h3>Enfermedades Crónicas</h3>
+              </div>
+              <p>{{ paciente.enfermedades }}</p>
+            </div>
+
+            <mat-divider *ngIf="paciente.enfermedades && paciente.medicamentos"></mat-divider>
+
+            <div class="medical-section" *ngIf="paciente.medicamentos">
+              <div class="section-header">
+                <mat-icon>medication</mat-icon>
+                <h3>Medicamentos Actuales</h3>
+              </div>
+              <p>{{ paciente.medicamentos }}</p>
+            </div>
+
+            <mat-divider *ngIf="paciente.medicamentos && paciente.observaciones"></mat-divider>
+
+            <div class="medical-section" *ngIf="paciente.observaciones">
+              <div class="section-header">
+                <mat-icon>note</mat-icon>
+                <h3>Observaciones</h3>
+              </div>
+              <p>{{ paciente.observaciones }}</p>
+            </div>
+
+            <div class="no-medical-data" *ngIf="!paciente.alergias && !paciente.enfermedades && !paciente.medicamentos && !paciente.observaciones">
+              <mat-icon>info</mat-icon>
+              <p>No hay información médica registrada para este paciente.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- TAB 3: Historial de Citas -->
+    <mat-tab label="Historial de Citas">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <div class="no-data">
+              <mat-icon>event_busy</mat-icon>
+              <p>Aún no hay citas registradas para este paciente.</p>
+              <button mat-raised-button color="primary" (click)="agendarCita()">
+                <mat-icon>add</mat-icon>
+                Agendar Primera Cita
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- TAB 4: Tratamientos -->
+    <mat-tab label="Tratamientos">
+      <div class="tab-content">
+        <mat-card>
+          <mat-card-content>
+            <div class="no-data">
+              <mat-icon>medical_services</mat-icon>
+              <p>No hay tratamientos registrados.</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<!-- Loading -->
+<div class="loading-container" *ngIf="loading">
+  <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+  <p>Cargando información del paciente...</p>
+</div>

@@ -1,0 +1,263 @@
+<div class="citas-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>
+          <mat-icon>event</mat-icon>
+          Gestión de Citas
+        </h1>
+        <p>Administra las citas de la clínica</p>
+      </div>
+      
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="btn-nueva"
+        (click)="nuevaCita()">
+        <mat-icon>add</mat-icon>
+        Nueva Cita
+      </button>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-cards">
+      <div class="stat-card total" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-icon">
+          <mat-icon>event_note</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ totalCitas }}</h3>
+          <p>Total Citas</p>
+        </div>
+      </div>
+
+      <div class="stat-card hoy" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-icon">
+          <mat-icon>today</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ citasHoy }}</h3>
+          <p>Citas Hoy</p>
+        </div>
+      </div>
+
+      <div class="stat-card pendientes" data-aos="fade-up" data-aos-delay="300">
+        <div class="stat-icon">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ citasPendientes }}</h3>
+          <p>Pendientes</p>
+        </div>
+      </div>
+
+      <div class="stat-card confirmadas" data-aos="fade-up" data-aos-delay="400">
+        <div class="stat-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ citasConfirmadas }}</h3>
+          <p>Confirmadas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs: Calendario y Lista -->
+  <mat-tab-group class="tabs-container">
+    
+    <!-- TAB 1: CALENDARIO -->
+    <mat-tab label="Calendario">
+      <div class="tab-content">
+        <mat-card class="calendario-card">
+          
+          <!-- Controles del Calendario -->
+          <div class="calendario-controls">
+            <button mat-icon-button (click)="mesAnterior()" matTooltip="Mes anterior">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            
+            <h2>{{ nombreMes }}</h2>
+            
+            <button mat-icon-button (click)="mesSiguiente()" matTooltip="Mes siguiente">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            
+            <button mat-raised-button (click)="hoy()" class="btn-hoy">
+              Hoy
+            </button>
+          </div>
+
+          <!-- Calendario -->
+          <div class="calendario">
+            <!-- Días de la semana -->
+            <div class="calendario-header">
+              <div class="dia-semana">Lun</div>
+              <div class="dia-semana">Mar</div>
+              <div class="dia-semana">Mié</div>
+              <div class="dia-semana">Jue</div>
+              <div class="dia-semana">Vie</div>
+              <div class="dia-semana">Sáb</div>
+              <div class="dia-semana">Dom</div>
+            </div>
+
+            <!-- Días del mes -->
+            <div class="calendario-body">
+              <div 
+                *ngFor="let dia of mesActual"
+                class="dia-celda"
+                [class.hoy]="dia.esHoy"
+                [class.otro-mes]="!dia.esMesActual"
+                [class.tiene-citas]="dia.citas.length > 0"
+                (click)="seleccionarDia(dia)">
+                
+                <div class="dia-numero">{{ dia.dia }}</div>
+                
+                <div class="citas-preview" *ngIf="dia.citas.length > 0">
+                  <div 
+                    *ngFor="let cita of dia.citas.slice(0, 3)" 
+                    class="cita-mini"
+                    [class]="'cita-' + cita.estado">
+                    <span class="hora">{{ cita.hora }}</span>
+                    <span class="paciente">{{ cita.pacienteNombre }}</span>
+                  </div>
+                  
+                  <div *ngIf="dia.citas.length > 3" class="mas-citas">
+                    +{{ dia.citas.length - 3 }} más
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- TAB 2: LISTA -->
+    <mat-tab label="Lista de Citas">
+      <div class="tab-content">
+        <mat-card class="lista-card">
+          
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="dataSource" class="citas-table">
+              
+              <!-- Columna Fecha -->
+              <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                <td mat-cell *matCellDef="let cita">
+                  <div class="fecha-cell">
+                    <mat-icon>event</mat-icon>
+                    {{ formatFecha(cita.fecha) }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Columna Hora -->
+              <ng-container matColumnDef="hora">
+                <th mat-header-cell *matHeaderCellDef>Hora</th>
+                <td mat-cell *matCellDef="let cita">
+                  <strong>{{ cita.hora }}</strong>
+                </td>
+              </ng-container>
+
+              <!-- Columna Paciente -->
+              <ng-container matColumnDef="paciente">
+                <th mat-header-cell *matHeaderCellDef>Paciente</th>
+                <td mat-cell *matCellDef="let cita">
+                  <div class="paciente-cell">
+                    <mat-icon>account_circle</mat-icon>
+                    {{ cita.pacienteNombre }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Columna Odontólogo -->
+              <ng-container matColumnDef="odontologo">
+                <th mat-header-cell *matHeaderCellDef>Odontólogo</th>
+                <td mat-cell *matCellDef="let cita">
+                  {{ cita.odontologoNombre }}
+                </td>
+              </ng-container>
+
+              <!-- Columna Tratamiento -->
+              <ng-container matColumnDef="tratamiento">
+                <th mat-header-cell *matHeaderCellDef>Tratamiento</th>
+                <td mat-cell *matCellDef="let cita">
+                  {{ cita.tratamientoNombre }}
+                </td>
+              </ng-container>
+
+              <!-- Columna Estado -->
+              <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef>Estado</th>
+                <td mat-cell *matCellDef="let cita">
+                  <mat-chip-set>
+                    <mat-chip [class]="getEstadoClass(cita.estado)">
+                      {{ cita.estado | titlecase }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </td>
+              </ng-container>
+
+              <!-- Columna Acciones -->
+              <ng-container matColumnDef="acciones">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let cita">
+                  <button 
+                    mat-icon-button 
+                    [matMenuTriggerFor]="menu"
+                    matTooltip="Opciones">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  
+                  <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="verDetalle(cita)">
+                      <mat-icon>visibility</mat-icon>
+                      <span>Ver Detalle</span>
+                    </button>
+                    
+                    <button 
+                      mat-menu-item 
+                      *ngIf="cita.estado === 'pendiente'"
+                      (click)="confirmarCita(cita)">
+                      <mat-icon color="primary">check_circle</mat-icon>
+                      <span>Confirmar</span>
+                    </button>
+                    
+                    <button 
+                      mat-menu-item 
+                      *ngIf="cita.estado === 'confirmada'"
+                      (click)="completarCita(cita)">
+                      <mat-icon color="accent">done_all</mat-icon>
+                      <span>Completar</span>
+                    </button>
+                    
+                    <button 
+                      mat-menu-item 
+                      *ngIf="cita.estado !== 'cancelada' && cita.estado !== 'completada'"
+                      (click)="cancelarCita(cita)">
+                      <mat-icon color="warn">cancel</mat-icon>
+                      <span>Cancelar</span>
+                    </button>
+                  </mat-menu>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+
+          <div class="no-data" *ngIf="dataSource.data.length === 0">
+            <mat-icon>event_busy</mat-icon>
+            <p>No hay citas para este mes</p>
+          </div>
+
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+</div>

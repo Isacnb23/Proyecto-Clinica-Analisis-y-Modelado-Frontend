@@ -1,0 +1,187 @@
+<div class="main-layout">
+  <mat-sidenav-container class="sidenav-container">
+    <!-- SIDEBAR -->
+    <mat-sidenav 
+      #sidenav 
+      mode="side" 
+      [opened]="sidenavOpened"
+      class="sidenav">
+      
+      <!-- Logo y Nombre de la Clínica -->
+      <div class="sidenav-header">
+        <div class="logo-container">
+          <i class="fas fa-tooth"></i>
+          <div class="clinic-info" *ngIf="sidenavOpened">
+            <h3>Clínica Dental</h3>
+            <p>PCA</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menú de Navegación -->
+      <mat-nav-list class="nav-list">
+        <a 
+          mat-list-item 
+          *ngFor="let item of menuItems"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [matTooltip]="!sidenavOpened ? item.label : ''"
+          matTooltipPosition="right"
+          class="nav-item">
+          
+          <mat-icon matListItemIcon [matBadge]="item.badge" matBadgeColor="warn">
+            {{ item.icon }}
+          </mat-icon>
+          
+          <span matListItemTitle *ngIf="sidenavOpened">
+            {{ item.label }}
+          </span>
+          
+          <span matListItemLine *ngIf="sidenavOpened && item.badge" class="badge-text">
+            {{ item.badge }} pendientes
+          </span>
+        </a>
+      </mat-nav-list>
+
+      <!-- Footer del Sidebar -->
+      <div class="sidenav-footer" *ngIf="sidenavOpened">
+        <p class="version">Versión 1.0.0</p>
+        <p class="copyright">© 2024 PCA</p>
+      </div>
+    </mat-sidenav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <mat-sidenav-content class="sidenav-content">
+      
+      <!-- NAVBAR SUPERIOR -->
+      <mat-toolbar class="navbar" color="primary">
+        <!-- Botón toggle sidebar -->
+        <button 
+          mat-icon-button 
+          (click)="toggleSidenav()"
+          matTooltip="Menú">
+          <mat-icon>menu</mat-icon>
+        </button>
+
+        <!-- Título de la página actual -->
+        <span class="page-title">Sistema de Gestión Odontológica</span>
+
+        <!-- Spacer -->
+        <span class="spacer"></span>
+
+        <!-- Notificaciones -->
+        <button 
+          mat-icon-button 
+          [matMenuTriggerFor]="notificationsMenu"
+          matTooltip="Notificaciones">
+          <mat-icon [matBadge]="5" matBadgeColor="warn">notifications</mat-icon>
+        </button>
+
+        <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+          <div class="menu-header">
+            <h3>Notificaciones</h3>
+            <button mat-button color="primary">Marcar todas como leídas</button>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item class="notification-item">
+            <mat-icon color="primary">event</mat-icon>
+            <div class="notification-content">
+              <p class="notification-title">Nueva cita agendada</p>
+              <p class="notification-time">Hace 5 minutos</p>
+            </div>
+          </button>
+
+          <button mat-menu-item class="notification-item">
+            <mat-icon color="warn">inventory_2</mat-icon>
+            <div class="notification-content">
+              <p class="notification-title">Stock bajo en inventario</p>
+              <p class="notification-time">Hace 1 hora</p>
+            </div>
+          </button>
+
+          <button mat-menu-item class="notification-item">
+            <mat-icon color="accent">person_add</mat-icon>
+            <div class="notification-content">
+              <p class="notification-title">Nuevo paciente registrado</p>
+              <p class="notification-time">Hace 2 horas</p>
+            </div>
+          </button>
+
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item class="view-all">
+            <mat-icon>arrow_forward</mat-icon>
+            Ver todas las notificaciones
+          </button>
+        </mat-menu>
+
+        <!-- Búsqueda rápida -->
+        <button 
+          mat-icon-button 
+          matTooltip="Búsqueda rápida">
+          <mat-icon>search</mat-icon>
+        </button>
+
+        <!-- Perfil de usuario -->
+        <button 
+          mat-icon-button 
+          [matMenuTriggerFor]="userMenu"
+          class="user-button">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+
+        <mat-menu #userMenu="matMenu" class="user-menu">
+          <div class="user-menu-header">
+            <div class="user-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-info">
+              <p class="user-name">{{ currentUser?.nombre }}</p>
+              <p class="user-role">{{ currentUser?.rol?.nombre }}</p>
+              <p class="user-email">{{ currentUser?.email }}</p>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            <span>Mi Perfil</span>
+          </button>
+
+          <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            <span>Configuración</span>
+          </button>
+
+          <button mat-menu-item>
+            <mat-icon>help</mat-icon>
+            <span>Ayuda</span>
+          </button>
+
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item (click)="logout()" class="logout-button">
+            <mat-icon color="warn">logout</mat-icon>
+            <span>Cerrar Sesión</span>
+          </button>
+        </mat-menu>
+      </mat-toolbar>
+
+      <!-- CONTENIDO DE LA PÁGINA -->
+      <div class="page-content">
+        <router-outlet></router-outlet>
+      </div>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div class="footer-content">
+          <p>© 2025 Clínica Dental PCA - Sistema de Gestión Odontológica</p>
+          <!--<p>Desarrollado por Isaac Navarro, Mariano Corrales, Mariano Gamboa y Daniel Rivera</p>-->
+        </div>
+      </footer>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

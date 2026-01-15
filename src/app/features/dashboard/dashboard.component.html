@@ -1,0 +1,255 @@
+<div class="dashboard-container" *ngIf="!loading">
+  
+  <!-- Título Principal -->
+  <div class="dashboard-header">
+    <h1>
+      <mat-icon>dashboard</mat-icon>
+      Panel de Control
+    </h1>
+    <p>Resumen general de la clínica</p>
+  </div>
+
+  <!-- Tarjetas de Resumen -->
+  <div class="stats-overview">
+    <mat-card class="stat-card patients" data-aos="fade-up" data-aos-delay="100">
+      <div class="stat-icon">
+        <mat-icon>people</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ estadisticas?.totalPacientes }}</h3>
+        <p>Total Pacientes</p>
+        <span class="stat-detail">{{ estadisticas?.pacientesActivos }} activos</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card appointments" data-aos="fade-up" data-aos-delay="200">
+      <div class="stat-icon">
+        <mat-icon>event</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ estadisticas?.citasHoy }}</h3>
+        <p>Citas Hoy</p>
+        <span class="stat-detail">{{ estadisticas?.citasSemana }} esta semana</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card treatments" data-aos="fade-up" data-aos-delay="300">
+      <div class="stat-icon">
+        <mat-icon>medical_services</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ estadisticas?.tratamientosActivos }}</h3>
+        <p>Tratamientos Activos</p>
+        <span class="stat-detail">En proceso</span>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card revenue" data-aos="fade-up" data-aos-delay="400">
+      <div class="stat-icon">
+        <mat-icon>payments</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h3>{{ formatCurrency(estadisticas?.ingresosmes || 0) }}</h3>
+        <p>Ingresos del Mes</p>
+        <span class="stat-detail">Diciembre 2024</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Gráficas Principales -->
+  <div class="charts-grid">
+    
+    <!-- Gráfica de Citas por Mes -->
+    <mat-card class="chart-card" data-aos="fade-up">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>trending_up</mat-icon>
+          Citas por Mes
+        </mat-card-title>
+        <mat-card-subtitle>Últimos 6 meses</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-wrapper">
+          <canvas baseChart
+            [data]="citasChartData"
+            [options]="citasChartOptions"
+            [type]="citasChartType">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Gráfica de Tratamientos -->
+    <mat-card class="chart-card" data-aos="fade-up" data-aos-delay="100">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>pie_chart</mat-icon>
+          Tratamientos Más Realizados
+        </mat-card-title>
+        <mat-card-subtitle>Top 5 del mes</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-wrapper">
+          <canvas baseChart
+            [data]="tratamientosChartData"
+            [options]="tratamientosChartOptions"
+            [type]="tratamientosChartType">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Gráfica de Ingresos -->
+    <mat-card class="chart-card" data-aos="fade-up" data-aos-delay="200">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bar_chart</mat-icon>
+          Ingresos Mensuales
+        </mat-card-title>
+        <mat-card-subtitle>En miles de colones</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-wrapper">
+          <canvas baseChart
+            [data]="ingresosChartData"
+            [options]="ingresosChartOptions"
+            [type]="ingresosChartType">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Gráfica de Pacientes Nuevos vs Recurrentes -->
+    <mat-card class="chart-card" data-aos="fade-up" data-aos-delay="300">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>donut_large</mat-icon>
+          Pacientes Este Mes
+        </mat-card-title>
+        <mat-card-subtitle>Nuevos vs Recurrentes</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-wrapper">
+          <canvas baseChart
+            [data]="pacientesChartData"
+            [options]="pacientesChartOptions"
+            [type]="pacientesChartType">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Sección Inferior: Próximas Citas y Alertas -->
+  <div class="bottom-section">
+    
+    <!-- Próximas Citas -->
+    <mat-card class="citas-card" data-aos="fade-up">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>schedule</mat-icon>
+          Próximas Citas de Hoy
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="dataSource" class="citas-table">
+            
+            <ng-container matColumnDef="hora">
+              <th mat-header-cell *matHeaderCellDef>Hora</th>
+              <td mat-cell *matCellDef="let cita">
+                <strong>{{ cita.hora }}</strong>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="paciente">
+              <th mat-header-cell *matHeaderCellDef>Paciente</th>
+              <td mat-cell *matCellDef="let cita">
+                <div class="paciente-cell">
+                  <mat-icon>account_circle</mat-icon>
+                  {{ cita.paciente }}
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="tratamiento">
+              <th mat-header-cell *matHeaderCellDef>Tratamiento</th>
+              <td mat-cell *matCellDef="let cita">
+                {{ cita.tratamiento }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="odontologo">
+              <th mat-header-cell *matHeaderCellDef>Odontólogo</th>
+              <td mat-cell *matCellDef="let cita">
+                {{ cita.odontologo }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+
+        <div class="card-footer">
+          <button mat-button color="primary">
+            Ver todas las citas
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Alertas de Inventario -->
+    <mat-card class="alertas-card" data-aos="fade-up" data-aos-delay="100">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>warning</mat-icon>
+          Alertas de Inventario
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="alertas-list">
+          <div 
+            *ngFor="let alerta of estadisticas?.alertasInventario" 
+            class="alerta-item"
+            [ngClass]="getUrgenciaClass(alerta.urgencia)">
+            
+            <div class="alerta-icon">
+              <mat-icon *ngIf="alerta.urgencia === 'alta'">error</mat-icon>
+              <mat-icon *ngIf="alerta.urgencia === 'media'">warning</mat-icon>
+              <mat-icon *ngIf="alerta.urgencia === 'baja'">info</mat-icon>
+            </div>
+            
+            <div class="alerta-content">
+              <strong>{{ alerta.producto }}</strong>
+              <p>Stock actual: {{ alerta.stockActual }} | Mínimo: {{ alerta.stockMinimo }}</p>
+            </div>
+            
+            <div class="alerta-badge">
+              <mat-chip-set>
+                <mat-chip [class]="'chip-' + alerta.urgencia">
+                  {{ alerta.urgencia }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button mat-button color="primary">
+            Ver inventario completo
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>
+
+<!-- Loading -->
+<div class="loading-container" *ngIf="loading">
+  <mat-icon class="loading-icon">hourglass_empty</mat-icon>
+  <p>Cargando estadísticas...</p>
+</div>

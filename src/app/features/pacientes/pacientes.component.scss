@@ -1,0 +1,443 @@
+// ============================================
+// PACIENTES - AZUL REY & DORADO BRONCE
+// ============================================
+
+.pacientes-container {
+  padding: 0;
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.page-header {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  margin-bottom: 24px;
+  border-top: 4px solid #C49B63;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    .title-section {
+      h1 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 8px 0;
+        font-size: 1.8rem;
+        color: #030e24;
+        font-weight: 700;
+
+        mat-icon {
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+          color: #C49B63;
+          filter: drop-shadow(0 2px 4px rgba(196, 155, 99, 0.4));
+        }
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+      }
+    }
+
+    .btn-nuevo {
+      height: 48px;
+      font-size: 1rem;
+      padding: 0 24px;
+      background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%) !important;
+      box-shadow: 0 4px 12px rgba(3, 14, 36, 0.3) !important;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(3, 14, 36, 0.4) !important;
+      }
+
+      mat-icon {
+        margin-right: 8px;
+        color: #C49B63;
+      }
+    }
+  }
+}
+
+// ============================================
+// ESTADÍSTICAS
+// ============================================
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: white;
+      }
+    }
+
+    .stat-info {
+      h3 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+      }
+
+      p {
+        margin: 4px 0 0 0;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.95);
+        font-weight: 500;
+      }
+    }
+
+    &.total {
+      background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%);
+
+      .stat-icon {
+        background: rgba(196, 155, 99, 0.3);
+      }
+    }
+
+    &.activos {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+
+      .stat-icon {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    &.inactivos {
+      background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%);
+
+      .stat-icon {
+        background: rgba(3, 14, 36, 0.2);
+      }
+
+      .stat-info h3,
+      .stat-info p {
+        color: #030e24;
+      }
+    }
+  }
+}
+
+// ============================================
+// TABLA
+// ============================================
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  overflow: hidden;
+  border-top: 4px solid #C49B63;
+}
+
+.table-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(196, 155, 99, 0.2);
+  background: rgba(3, 14, 36, 0.02);
+
+  .search-field {
+    width: 400px;
+    margin: 0;
+  }
+
+  .table-actions {
+    display: flex;
+    gap: 8px;
+
+    button {
+      &:hover {
+        mat-icon {
+          color: #C49B63;
+        }
+      }
+    }
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  background: white !important;
+}
+
+.pacientes-table {
+  width: 100%;
+  background: white !important;
+
+  th {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%) !important;
+    font-weight: 600;
+    color: #030e24 !important;
+    font-size: 0.9rem;
+    padding: 16px;
+    border-bottom: 2px solid rgba(196, 155, 99, 0.3) !important;
+  }
+
+  td {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+    background: white !important;
+    color: #333 !important;
+  }
+
+  .table-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background: white !important;
+
+    &:hover {
+      background-color: rgba(196, 155, 99, 0.05) !important;
+    }
+  }
+
+  tr {
+    background: white !important;
+  }
+}
+
+// ============================================
+// COLUMNAS PERSONALIZADAS
+// ============================================
+
+.paciente-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .avatar {
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: #C49B63;
+    }
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+
+    strong {
+      font-size: 0.95rem;
+      color: #030e24;
+      font-weight: 600;
+    }
+
+    .genero {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 2px;
+    }
+  }
+}
+
+.icon-menor {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #ff9800;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.phone-link,
+.email-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #030e24;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #C49B63;
+    text-decoration: underline;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
+}
+
+// ============================================
+// CHIPS DE ESTADO
+// ============================================
+
+mat-chip-set {
+  margin: 0;
+}
+
+.chip-activo {
+  background: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  font-weight: 500;
+}
+
+.chip-inactivo {
+  background: #ffebee !important;
+  color: #c62828 !important;
+  font-weight: 500;
+}
+
+// ============================================
+// NO DATA
+// ============================================
+
+.no-data-cell {
+  text-align: center;
+  padding: 40px !important;
+}
+
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #999;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #C49B63;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+// ============================================
+// ACCIONES DE TABLA
+// ============================================
+
+.action-button {
+  &:hover {
+    mat-icon {
+      color: #C49B63 !important;
+    }
+  }
+}
+
+// ============================================
+// FORZAR ESTILOS DE MATERIAL TABLE
+// ============================================
+
+::ng-deep {
+  .mat-mdc-table {
+    background: white !important;
+  }
+
+  .mat-mdc-header-row {
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%) !important;
+  }
+
+  .mat-mdc-row {
+    background: white !important;
+    
+    &:hover {
+      background: rgba(196, 155, 99, 0.05) !important;
+    }
+  }
+
+  .mat-mdc-cell,
+  .mat-mdc-header-cell {
+    color: #333 !important;
+  }
+
+  // Paginador
+  .mat-mdc-paginator {
+    background: white !important;
+    color: #333 !important;
+    border-top: 2px solid rgba(196, 155, 99, 0.3);
+  }
+
+  .mat-mdc-paginator-page-size-select {
+    color: #030e24;
+  }
+
+  .mat-mdc-select-arrow {
+    color: #C49B63;
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 1024px) {
+  .table-header {
+    flex-direction: column;
+    gap: 16px;
+
+    .search-field {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    .header-content {
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+
+      .btn-nuevo {
+        width: 100%;
+      }
+    }
+  }
+
+  .stats-cards {
+    grid-template-columns: 1fr;
+  }
+}

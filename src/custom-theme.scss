@@ -1,0 +1,373 @@
+/* ==========================================================================
+   TEMA PERSONALIZADO - AZUL REY & DORADO
+   Sistema de Gestión Odontológica PCA
+   ========================================================================== */
+
+/* ==========================================================================
+   VARIABLES DE COLORES
+   ========================================================================== */
+:root {
+  /* Colores Principales */
+  --primary-blue: #0D47A1;
+  --primary-gold: #FFD700;
+  --accent-blue: #1565C0;
+  --accent-gold: #F9A825;
+  --light-blue: #42A5F5;
+  --light-gold: #FFE57F;
+  
+  /* Colores de Estado */
+  --success: #2E7D32;
+  --warning: #F57C00;
+  --error: #C62828;
+  --info: #0277BD;
+}
+
+/* ==========================================================================
+   MATERIAL COMPONENTS - AZUL & DORADO
+   ========================================================================== */
+
+/* Botones */
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button {
+  &.mat-primary {
+    --mdc-protected-button-container-color: #0D47A1 !important;
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%) !important;
+    box-shadow: 0 4px 8px rgba(13, 71, 161, 0.3) !important;
+    
+    &:hover {
+      box-shadow: 0 6px 12px rgba(13, 71, 161, 0.4) !important;
+      transform: translateY(-2px);
+    }
+  }
+  
+  &.mat-accent {
+    --mdc-protected-button-container-color: #FFD700 !important;
+    background: linear-gradient(135deg, #F9A825 0%, #FFD700 100%) !important;
+    color: #0D47A1 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3) !important;
+    
+    &:hover {
+      box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4) !important;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.mat-mdc-outlined-button {
+  &.mat-primary {
+    --mdc-outlined-button-outline-color: #0D47A1 !important;
+    color: #0D47A1 !important;
+    
+    &:hover {
+      background-color: rgba(13, 71, 161, 0.1) !important;
+    }
+  }
+  
+  &.mat-accent {
+    --mdc-outlined-button-outline-color: #F9A825 !important;
+    color: #F9A825 !important;
+    
+    &:hover {
+      background-color: rgba(249, 168, 37, 0.1) !important;
+    }
+  }
+}
+
+/* Toolbar */
+.mat-toolbar {
+  &.mat-primary {
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%) !important;
+    color: white !important;
+    border-bottom: 3px solid #FFD700;
+  }
+}
+
+/* Cards */
+.mat-mdc-card {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 8px rgba(13, 71, 161, 0.1) !important;
+  transition: all 0.3s ease !important;
+  
+  &:hover {
+    box-shadow: 0 8px 16px rgba(13, 71, 161, 0.2) !important;
+    transform: translateY(-4px);
+  }
+}
+
+/* Tabs */
+.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #FFD700 !important;
+  font-weight: 600 !important;
+}
+
+.mat-mdc-tab-header {
+  --mat-tab-header-active-label-text-color: #FFD700 !important;
+  --mat-tab-header-active-ripple-color: #FFD700 !important;
+}
+
+.mat-mdc-tab-header-pagination-chevron {
+  border-color: #0D47A1 !important;
+}
+
+.mdc-tab-indicator__content--underline {
+  border-color: #FFD700 !important;
+  border-top-width: 3px !important;
+}
+
+/* Forms */
+.mat-mdc-form-field {
+  &.mat-focused {
+    --mat-form-field-focus-select-arrow-color: #0D47A1 !important;
+    
+    .mat-mdc-floating-label {
+      color: #0D47A1 !important;
+    }
+  }
+  
+  .mdc-line-ripple--active {
+    border-bottom-color: #FFD700 !important;
+  }
+}
+
+.mat-mdc-input-element:focus {
+  caret-color: #FFD700 !important;
+}
+
+/* Checkbox */
+.mat-mdc-checkbox {
+  &.mat-primary {
+    --mdc-checkbox-selected-checkmark-color: white !important;
+    --mdc-checkbox-selected-icon-color: #0D47A1 !important;
+    --mdc-checkbox-selected-hover-icon-color: #0D47A1 !important;
+    --mdc-checkbox-selected-focus-icon-color: #0D47A1 !important;
+    --mdc-checkbox-selected-pressed-icon-color: #0D47A1 !important;
+  }
+  
+  &.mat-accent {
+    --mdc-checkbox-selected-checkmark-color: #0D47A1 !important;
+    --mdc-checkbox-selected-icon-color: #FFD700 !important;
+    --mdc-checkbox-selected-hover-icon-color: #FFD700 !important;
+  }
+}
+
+/* Radio buttons */
+.mat-mdc-radio-button {
+  &.mat-primary {
+    --mdc-radio-selected-icon-color: #0D47A1 !important;
+    --mdc-radio-selected-hover-icon-color: #0D47A1 !important;
+  }
+  
+  &.mat-accent {
+    --mdc-radio-selected-icon-color: #FFD700 !important;
+    --mdc-radio-selected-hover-icon-color: #F9A825 !important;
+  }
+}
+
+/* Progress bar */
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-active-indicator-color: #FFD700 !important;
+  --mdc-linear-progress-track-color: rgba(255, 215, 0, 0.2) !important;
+}
+
+/* Progress spinner */
+.mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: #FFD700 !important;
+}
+
+/* Slider */
+.mat-mdc-slider {
+  &.mat-primary {
+    --mdc-slider-active-track-color: #0D47A1 !important;
+    --mdc-slider-handle-color: #0D47A1 !important;
+    --mdc-slider-with-tick-marks-active-container-color: #FFD700 !important;
+  }
+  
+  &.mat-accent {
+    --mdc-slider-active-track-color: #FFD700 !important;
+    --mdc-slider-handle-color: #FFD700 !important;
+  }
+}
+
+/* Chips */
+.mat-mdc-chip {
+  &.mat-mdc-standard-chip {
+    &.mat-primary {
+      --mdc-chip-elevated-container-color: #0D47A1 !important;
+      --mdc-chip-label-text-color: white !important;
+    }
+    
+    &.mat-accent {
+      --mdc-chip-elevated-container-color: #FFD700 !important;
+      --mdc-chip-label-text-color: #0D47A1 !important;
+      font-weight: 600;
+    }
+  }
+}
+
+/* Badge */
+.mat-badge-accent .mat-badge-content {
+  background: #FFD700 !important;
+  color: #0D47A1 !important;
+  font-weight: 600;
+}
+
+/* Datepicker */
+.mat-calendar-body-selected {
+  background-color: #0D47A1 !important;
+  color: white !important;
+}
+
+.mat-calendar-body-today:not(.mat-calendar-body-selected) {
+  border-color: #FFD700 !important;
+  border-width: 2px !important;
+}
+
+.mat-datepicker-content .mat-calendar-body-cell:hover {
+  background-color: rgba(255, 215, 0, 0.2) !important;
+}
+
+/* Paginator */
+.mat-mdc-paginator {
+  background: white;
+  border-top: 2px solid #FFD700;
+}
+
+.mat-mdc-paginator-page-size-select {
+  color: #0D47A1;
+}
+
+/* Sort header */
+.mat-sort-header-arrow {
+  color: #FFD700 !important;
+}
+
+/* Stepper */
+.mat-step-header {
+  &.cdk-keyboard-focused,
+  &.cdk-program-focused,
+  &:hover {
+    background-color: rgba(255, 215, 0, 0.1) !important;
+  }
+  
+  .mat-step-icon-selected {
+    background-color: #0D47A1 !important;
+  }
+  
+  .mat-step-icon-state-edit {
+    background-color: #FFD700 !important;
+    color: #0D47A1 !important;
+  }
+}
+
+/* Menu */
+.mat-mdc-menu-item:hover {
+  background-color: rgba(255, 215, 0, 0.1) !important;
+}
+
+/* Dialog */
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: 12px !important;
+}
+
+.mat-mdc-dialog-surface {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(13, 71, 161, 0.3) !important;
+}
+
+/* Snackbar */
+.mat-mdc-snack-bar-container {
+  &.success-snackbar {
+    --mdc-snackbar-container-color: #2E7D32 !important;
+    --mdc-snackbar-supporting-text-color: white !important;
+  }
+  
+  &.error-snackbar {
+    --mdc-snackbar-container-color: #C62828 !important;
+    --mdc-snackbar-supporting-text-color: white !important;
+  }
+  
+  &.warning-snackbar {
+    --mdc-snackbar-container-color: #F57C00 !important;
+    --mdc-snackbar-supporting-text-color: white !important;
+  }
+  
+  &.info-snackbar {
+    --mdc-snackbar-container-color: #0277BD !important;
+    --mdc-snackbar-supporting-text-color: white !important;
+  }
+}
+
+/* Table */
+.mat-mdc-table {
+  .mat-mdc-header-row {
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+    
+    .mat-mdc-header-cell {
+      color: white !important;
+      font-weight: 600;
+    }
+  }
+  
+  .mat-mdc-row:hover {
+    background-color: rgba(255, 215, 0, 0.1) !important;
+  }
+}
+
+/* Select */
+.mat-mdc-select-panel {
+  border-radius: 8px !important;
+}
+
+.mat-mdc-option {
+  &.mat-mdc-option-active,
+  &:hover {
+    background-color: rgba(255, 215, 0, 0.1) !important;
+  }
+  
+  &.mat-selected {
+    &:not(.mat-mdc-option-disabled) {
+      color: #0D47A1 !important;
+      font-weight: 600;
+    }
+  }
+}
+
+/* ==========================================================================
+   UTILIDADES DE TEMA
+   ========================================================================== */
+
+.theme-primary-bg {
+  background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+  color: white;
+}
+
+.theme-accent-bg {
+  background: linear-gradient(135deg, #F9A825 0%, #FFD700 100%);
+  color: #0D47A1;
+}
+
+.theme-gradient-bg {
+  background: linear-gradient(135deg, #0D47A1 0%, #FFD700 100%);
+  color: white;
+}
+
+.theme-border {
+  border: 2px solid #FFD700;
+}
+
+.theme-border-top {
+  border-top: 3px solid #FFD700;
+}
+
+.theme-shadow {
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.theme-text-primary {
+  color: #0D47A1;
+}
+
+.theme-text-gold {
+  color: #FFD700;
+}

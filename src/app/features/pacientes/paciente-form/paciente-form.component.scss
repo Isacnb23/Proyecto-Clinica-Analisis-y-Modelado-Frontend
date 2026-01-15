@@ -1,0 +1,465 @@
+// ============================================
+// PACIENTE FORM - AZUL REY & DORADO BRONCE
+// ============================================
+
+.form-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #FAFAFA;
+  padding: 24px;
+  border-radius: 12px;
+}
+
+// ============================================
+// HEADER
+// ============================================
+
+.form-header {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1);
+  margin-bottom: 24px;
+  border-top: 4px solid #C49B63;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .btn-back {
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateX(-4px);
+
+        mat-icon {
+          color: #C49B63;
+        }
+      }
+
+      mat-icon {
+        color: #030e24;
+      }
+    }
+
+    .title-section {
+      h1 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 8px 0;
+        font-size: 1.8rem;
+        color: #030e24;
+        font-weight: 700;
+
+        mat-icon {
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+          color: #C49B63;
+          filter: drop-shadow(0 2px 4px rgba(196, 155, 99, 0.4));
+        }
+      }
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+      }
+    }
+  }
+}
+
+// ============================================
+// STEPPER - AZUL REY & DORADO
+// ============================================
+
+::ng-deep {
+  .mat-stepper-horizontal {
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(3, 14, 36, 0.1) !important;
+    padding: 24px !important;
+    border-top: 4px solid #C49B63;
+  }
+
+  .mat-horizontal-stepper-header-container {
+    background: white !important;
+    padding-bottom: 24px !important;
+    border-bottom: 2px solid rgba(196, 155, 99, 0.2);
+  }
+
+  .mat-horizontal-content-container {
+    background: white !important;
+    padding: 24px !important;
+  }
+
+  .mat-step-header {
+    .mat-step-icon {
+      background-color: #030e24 !important;
+      color: #C49B63 !important;
+      font-weight: 600;
+    }
+
+    .mat-step-icon-selected {
+      background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%) !important;
+      color: #030e24 !important;
+      font-weight: 700;
+      box-shadow: 0 4px 8px rgba(196, 155, 99, 0.4);
+    }
+
+    .mat-step-icon-state-edit {
+      background-color: #43e97b !important;
+      color: white !important;
+    }
+
+    .mat-step-label {
+      color: #333 !important;
+    }
+
+    .mat-step-label-selected {
+      color: #030e24 !important;
+      font-weight: 600;
+    }
+
+    &.cdk-keyboard-focused,
+    &.cdk-program-focused,
+    &:hover {
+      background-color: rgba(196, 155, 99, 0.05) !important;
+    }
+  }
+
+  // Línea de conexión entre steps
+  .mat-stepper-horizontal-line {
+    border-top-color: rgba(196, 155, 99, 0.3) !important;
+  }
+
+  // FORMULARIOS - ESTILO MODERNO
+  .mat-mdc-form-field {
+    width: 100%;
+
+    .mat-mdc-text-field-wrapper {
+      background: white !important;
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      background: white !important;
+    }
+
+    input,
+    textarea {
+      color: #333 !important;
+    }
+
+    .mat-mdc-input-element {
+      color: #333 !important;
+    }
+
+    label {
+      color: #666 !important;
+    }
+
+    .mat-mdc-select {
+      color: #333 !important;
+    }
+
+    // Focus state - dorado
+    &.mat-focused {
+      .mat-mdc-floating-label {
+        color: #030e24 !important;
+      }
+
+      .mdc-line-ripple--active {
+        border-bottom-color: #C49B63 !important;
+      }
+    }
+  }
+
+  // Datepicker
+  .mat-datepicker-toggle {
+    color: #C49B63 !important;
+
+    &:hover {
+      color: #030e24 !important;
+    }
+  }
+
+  // Checkbox
+  .mat-mdc-checkbox {
+    label {
+      color: #333 !important;
+    }
+
+    &.mat-primary {
+      --mdc-checkbox-selected-icon-color: #030e24 !important;
+      --mdc-checkbox-selected-hover-icon-color: #C49B63 !important;
+    }
+  }
+
+  // Radio buttons
+  .mat-mdc-radio-button {
+    &.mat-primary {
+      --mdc-radio-selected-icon-color: #C49B63 !important;
+    }
+  }
+
+  // Select dropdown
+  .mat-mdc-select-arrow {
+    color: #C49B63 !important;
+  }
+}
+
+.step-card {
+  margin-top: 0 !important;
+  box-shadow: none !important;
+  background: white !important;
+  border: 1px solid rgba(196, 155, 99, 0.2);
+  border-radius: 8px;
+  padding: 24px;
+
+  mat-card-header {
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, rgba(3, 14, 36, 0.05) 0%, rgba(196, 155, 99, 0.05) 100%);
+    padding: 20px;
+    border-radius: 8px;
+    margin: -24px -24px 24px -24px;
+    border-bottom: 2px solid #C49B63;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.3rem;
+      color: #030e24 !important;
+      font-weight: 600;
+
+      mat-icon {
+        color: #C49B63;
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+  }
+
+  mat-card-content {
+    background: white !important;
+  }
+}
+
+// ============================================
+// FORMULARIO
+// ============================================
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+  background: white !important;
+}
+
+// ============================================
+// SECCIONES DEL FORMULARIO
+// ============================================
+
+.info-section {
+  background: rgba(196, 155, 99, 0.05);
+  border-left: 4px solid #C49B63;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #030e24;
+
+    mat-icon {
+      color: #C49B63;
+      font-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  .info-text {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+// ============================================
+// BOTONES
+// ============================================
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 2px solid rgba(196, 155, 99, 0.2);
+
+  .btn-group {
+    display: flex;
+    gap: 12px;
+  }
+
+  button {
+    min-width: 120px;
+    font-weight: 600;
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%) !important;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(3, 14, 36, 0.4) !important;
+      }
+
+      mat-icon {
+        color: #C49B63;
+      }
+    }
+
+    &.btn-secondary {
+      border: 2px solid #030e24 !important;
+      color: #030e24 !important;
+
+      &:hover {
+        background: rgba(3, 14, 36, 0.05) !important;
+      }
+    }
+  }
+}
+
+// ============================================
+// CHIPS Y ETIQUETAS
+// ============================================
+
+.required-field {
+  color: #c62828;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.field-hint {
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #C49B63;
+  }
+}
+
+// ============================================
+// ESTADOS DE VALIDACIÓN
+// ============================================
+
+::ng-deep {
+  .mat-mdc-form-field.mat-form-field-invalid {
+    .mat-mdc-floating-label {
+      color: #c62828 !important;
+    }
+
+    .mdc-line-ripple {
+      border-bottom-color: #c62828 !important;
+    }
+  }
+
+  .mat-error {
+    color: #c62828 !important;
+    font-size: 0.85rem;
+  }
+}
+
+// ============================================
+// RESPONSIVE
+// ============================================
+
+@media (max-width: 768px) {
+  .form-container {
+    padding: 16px;
+  }
+
+  .form-header {
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    .btn-group {
+      flex-direction: column;
+      width: 100%;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// ============================================
+// LOADING STATE
+// ============================================
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(3, 14, 36, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  .loading-content {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-top: 4px solid #C49B63;
+
+    mat-spinner {
+      margin: 0 auto 20px;
+    }
+
+    p {
+      margin: 0;
+      color: #030e24;
+      font-weight: 600;
+    }
+  }
+}

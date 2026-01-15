@@ -1,0 +1,83 @@
+<div class="login-container">
+  <div class="login-card-wrapper" data-aos="zoom-in" data-aos-duration="800">
+    <mat-card class="login-card">
+      <!-- Logo y Título -->
+      <div class="login-header">
+        <div class="logo">
+          <i class="fas fa-tooth fa-3x"></i>
+        </div>
+        <h1>Clínica Dental PCA</h1>
+        <p>Sistema de Gestión Odontológica</p>
+      </div>
+
+      <!-- Formulario -->
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <!-- Email -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Correo Electrónico</mat-label>
+            <input 
+              matInput 
+              type="email" 
+              formControlName="email"
+              placeholder="usuario@clinica.com">
+            <mat-icon matPrefix>email</mat-icon>
+            <mat-error *ngIf="email?.hasError('required')">
+              El correo es requerido
+            </mat-error>
+            <mat-error *ngIf="email?.hasError('email')">
+              Ingrese un correo válido
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Password -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña</mat-label>
+            <input 
+              matInput 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Ingrese su contraseña">
+            <mat-icon matPrefix>lock</mat-icon>
+            <button 
+              mat-icon-button 
+              matSuffix 
+              type="button"
+              (click)="hidePassword = !hidePassword"
+              [attr.aria-label]="'Ocultar contraseña'"
+              [attr.aria-pressed]="hidePassword">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="password?.hasError('required')">
+              La contraseña es requerida
+            </mat-error>
+            <mat-error *ngIf="password?.hasError('minlength')">
+              Mínimo 6 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Botón de Login -->
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            class="login-button full-width"
+            [disabled]="loading">
+            <span *ngIf="!loading">
+              <mat-icon>login</mat-icon>
+              Iniciar Sesión
+            </span>
+            <mat-spinner diameter="24" *ngIf="loading"></mat-spinner>
+          </button>
+
+          <!-- Credenciales de prueba -->
+          <div class="demo-credentials">
+            <p><strong>Credenciales de prueba:</strong></p>
+            <p>Email: admin@clinica.com</p>
+            <p>Password: admin123</p>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
