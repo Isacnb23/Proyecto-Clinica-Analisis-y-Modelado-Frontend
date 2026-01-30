@@ -43,7 +43,7 @@ interface MenuItem {
     styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent implements OnInit {
-    currentUser: User | null = null;
+    currentUser!: User | null;
     sidenavOpened = true;
 
     menuItems: MenuItem[] = [
@@ -108,9 +108,7 @@ export class MainLayoutComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.authService.currentUser.subscribe(user => {
-            this.currentUser = user;
-        });
+      this.currentUser =JSON.parse(localStorage.getItem('currentUser') || 'null');
     }
 
     toggleSidenav(): void {

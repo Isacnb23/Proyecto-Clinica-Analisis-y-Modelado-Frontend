@@ -22,10 +22,10 @@ import { ToastrService } from 'ngx-toastr';
     MatButtonModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -36,11 +36,11 @@ export class LoginComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ) {
     this.loginForm = this.fb.group({
       email: ['admin@clinica.com', [Validators.required, Validators.email]],
-      password: ['admin123', [Validators.required, Validators.minLength(6)]]
+      password: ['Admin123*', [Validators.required, Validators.minLength(6)]],
     });
   }
 
@@ -54,16 +54,30 @@ export class LoginComponent {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
-        this.toastr.success(`Bienvenido ${response.user.nombre}`, '¡Éxito!');
+        // Validación por si el backend devuelve success=false o user vacío
+        if (!response?.success || !response?.user) {
+          this.toastr.error(response?.message ?? 'Login inválido', 'Error de Autenticación');
+          this.loading = false;
+          return;
+        }
+
+        this.toastr.success(`Bienvenido ${response.user.email} (${response.user.rol})`, '¡Éxito!');
+
         this.router.navigate(['/dashboard']);
       },
-      error: (error) => {
+      error: (err) => {
         this.loading = false;
-        this.toastr.error('Credenciales incorrectas', 'Error de Autenticación');
+
+        console.log('LOGIN ERROR FULL:', err); // <-- para ver TODO en consola
+
+        const msg =
+          err?.error?.message || err?.error?.Message || err?.message || 'Credenciales incorrectas';
+
+        this.toastr.error(msg, 'Error de Autenticación');
       },
       complete: () => {
         this.loading = false;
-      }
+      },
     });
   }
 

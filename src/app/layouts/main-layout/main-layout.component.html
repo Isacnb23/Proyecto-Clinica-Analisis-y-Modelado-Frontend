@@ -1,12 +1,12 @@
 <div class="main-layout">
   <mat-sidenav-container class="sidenav-container">
     <!-- SIDEBAR -->
-    <mat-sidenav 
-      #sidenav 
-      mode="side" 
+    <mat-sidenav
+      #sidenav
+      mode="side"
       [opened]="sidenavOpened"
       class="sidenav">
-      
+
       <!-- Logo y Nombre de la Clínica -->
       <div class="sidenav-header">
         <div class="logo-container">
@@ -20,23 +20,23 @@
 
       <!-- Menú de Navegación -->
       <mat-nav-list class="nav-list">
-        <a 
-          mat-list-item 
+        <a
+          mat-list-item
           *ngFor="let item of menuItems"
           [routerLink]="item.route"
           routerLinkActive="active"
           [matTooltip]="!sidenavOpened ? item.label : ''"
           matTooltipPosition="right"
           class="nav-item">
-          
+
           <mat-icon matListItemIcon [matBadge]="item.badge" matBadgeColor="warn">
             {{ item.icon }}
           </mat-icon>
-          
+
           <span matListItemTitle *ngIf="sidenavOpened">
             {{ item.label }}
           </span>
-          
+
           <span matListItemLine *ngIf="sidenavOpened && item.badge" class="badge-text">
             {{ item.badge }} pendientes
           </span>
@@ -52,12 +52,12 @@
 
     <!-- CONTENIDO PRINCIPAL -->
     <mat-sidenav-content class="sidenav-content">
-      
+
       <!-- NAVBAR SUPERIOR -->
       <mat-toolbar class="navbar" color="primary">
         <!-- Botón toggle sidebar -->
-        <button 
-          mat-icon-button 
+        <button
+          mat-icon-button
           (click)="toggleSidenav()"
           matTooltip="Menú">
           <mat-icon>menu</mat-icon>
@@ -70,8 +70,8 @@
         <span class="spacer"></span>
 
         <!-- Notificaciones -->
-        <button 
-          mat-icon-button 
+        <button
+          mat-icon-button
           [matMenuTriggerFor]="notificationsMenu"
           matTooltip="Notificaciones">
           <mat-icon [matBadge]="5" matBadgeColor="warn">notifications</mat-icon>
@@ -82,9 +82,9 @@
             <h3>Notificaciones</h3>
             <button mat-button color="primary">Marcar todas como leídas</button>
           </div>
-          
+
           <mat-divider></mat-divider>
-          
+
           <button mat-menu-item class="notification-item">
             <mat-icon color="primary">event</mat-icon>
             <div class="notification-content">
@@ -118,15 +118,15 @@
         </mat-menu>
 
         <!-- Búsqueda rápida -->
-        <button 
-          mat-icon-button 
+        <button
+          mat-icon-button
           matTooltip="Búsqueda rápida">
           <mat-icon>search</mat-icon>
         </button>
 
         <!-- Perfil de usuario -->
-        <button 
-          mat-icon-button 
+        <button
+          mat-icon-button
           [matMenuTriggerFor]="userMenu"
           class="user-button">
           <mat-icon>account_circle</mat-icon>
@@ -138,8 +138,8 @@
               <i class="fas fa-user-circle"></i>
             </div>
             <div class="user-info">
-              <p class="user-name">{{ currentUser?.nombre }}</p>
-              <p class="user-role">{{ currentUser?.rol?.nombre }}</p>
+              <p class="user-name">{{ currentUser?.email }}</p>
+              <p class="user-role">{{ currentUser?.rol }}</p>
               <p class="user-email">{{ currentUser?.email }}</p>
             </div>
           </div>
