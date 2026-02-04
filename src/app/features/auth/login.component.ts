@@ -54,30 +54,39 @@ export class LoginComponent {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
-        // Validación por si el backend devuelve success=false o user vacío
-        if (!response?.success || !response?.user) {
-          this.toastr.error(response?.message ?? 'Login inválido', 'Error de Autenticación');
-          this.loading = false;
-          return;
+        console.log('Response recibida:', response);
+
+        // Validar respuesta
+        if (response.success && response.user) {
+          this.toastr.success(
+            `Bienvenido ${response.user.email} (${response.user.rol})`, 
+            '¡Éxito!'
+          );
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.toastr.error(response.message || 'Error en el login', 'Error');
         }
 
-        this.toastr.success(`Bienvenido ${response.user.email} (${response.user.rol})`, '¡Éxito!');
-
-        this.router.navigate(['/dashboard']);
+        this.loading = false;
       },
       error: (err) => {
+        console.error('Error completo:', err);
+        
         this.loading = false;
 
-        console.log('LOGIN ERROR FULL:', err); // <-- para ver TODO en consola
+        // Extraer mensaje de error
+        let errorMessage = 'Credenciales incorrectas';
+        
+        if (err.error?.message) {
+          errorMessage = err.error.message;
+        } else if (err.error?.Message) {
+          errorMessage = err.error.Message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
 
-        const msg =
-          err?.error?.message || err?.error?.Message || err?.message || 'Credenciales incorrectas';
-
-        this.toastr.error(msg, 'Error de Autenticación');
-      },
-      complete: () => {
-        this.loading = false;
-      },
+        this.toastr.error(errorMessage, 'Error de Autenticación');
+      }
     });
   }
 
