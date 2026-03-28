@@ -11,13 +11,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { CitaService } from '../../../core/services/cita.service';
+import { MatDividerModule } from '@angular/material/divider';
+import { CitaService, Cita, Odontologo, Tratamiento } from '../../../core/services/cita.service';
 import { PacienteService } from '../../../core/services/paciente.service';
-import { Odontologo, Tratamiento } from '../../../core/models/cita.model';
 import { Paciente } from '../../../core/models/paciente.model';
 import { ToastrService } from 'ngx-toastr';
 import { Observable, startWith, map } from 'rxjs';
-import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-cita-form',
@@ -105,8 +104,8 @@ export class CitaFormComponent implements OnInit {
   cargarDatos(): void {
     // Cargar pacientes
     this.pacienteService.getPacientes().subscribe({
-      next: (pacientes) => {
-        this.pacientes = pacientes.filter(p => p.activo);
+      next: (pacientes: any) => {
+        this.pacientes = Array.isArray(pacientes) ? pacientes.filter((p: any) => p.activo) : [];
       },
       error: (error) => {
         this.toastr.error('Error al cargar pacientes', 'Error');
@@ -190,6 +189,21 @@ export class CitaFormComponent implements OnInit {
     }
   }
 
+  private formatearFecha(fecha: Date): string {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private calcularHoraFin(horaInicio: string, duracion: number): string {
+    const [horas, minutos] = horaInicio.split(':').map(Number);
+    const totalMinutos = horas * 60 + minutos + duracion;
+    const nuevasHoras = Math.floor(totalMinutos / 60);
+    const nuevosMinutos = totalMinutos % 60;
+    return `${String(nuevasHoras).padStart(2, '0')}:${String(nuevosMinutos).padStart(2, '0')}:00`;
+  }
+
   onSubmit(): void {
     if (this.citaForm.invalid) {
       this.citaForm.markAllAsTouched();
@@ -199,36 +213,35 @@ export class CitaFormComponent implements OnInit {
 
     this.loading = true;
 
-    const formData = {
+    // ✅ ESTRUCTURA CORRECTA PARA EL BACKEND
+    const formData: Cita = {
       pacienteId: this.citaForm.value.pacienteId,
-      odontologoId: this.citaForm.value.odontologoId,
-      tratamientoId: this.citaForm.value.tratamientoId,
-      fecha: this.citaForm.value.fecha,
-      hora: this.citaForm.value.hora,
-      duracion: this.citaForm.value.duracion,
+      empleadoId: this.citaForm.value.odontologoId,  // ✅ Usa empleadoId
+      fecha: this.formatearFecha(this.citaForm.value.fecha),
+      horaInicio: this.citaForm.value.hora + ':00',  // ✅ Formato HH:mm:ss
+      horaFin: this.calcularHoraFin(this.citaForm.value.hora, this.citaForm.value.duracion),  // ✅
       motivo: this.citaForm.value.motivo,
       observaciones: this.citaForm.value.observaciones
     };
 
+    console.log('Enviando cita:', formData);
+
     this.citaService.crearCita(formData).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Cita creada:', response);
         this.toastr.success('Cita agendada correctamente', '¡Éxito!');
-        this.router.navigate(['/citas']).then(() => {
-          window.location.reload();
-        });
+        this.router.navigate(['/citas']);
       },
       error: (error) => {
-        this.toastr.error('Error al agendar la cita', 'Error');
-        console.error(error);
+        console.error('Error al crear cita:', error);
+        this.toastr.error(error.error?.message || 'Error al agendar la cita', 'Error');
         this.loading = false;
       }
     });
   }
 
   cancelar(): void {
-    this.router.navigate(['/citas']).then(() => {
-      window.location.reload();
-    });
+    this.router.navigate(['/citas']);
   }
 
   // Getters

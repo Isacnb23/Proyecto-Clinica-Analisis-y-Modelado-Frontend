@@ -10,8 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
-import { CitaService } from '../../core/services/cita.service';
-import { Cita } from '../../core/models/cita.model';
+import { CitaService, Cita } from '../../core/services/cita.service';
 import { ToastrService } from 'ngx-toastr';
 
 interface DiaCalendario {
@@ -54,7 +53,7 @@ export class CitasComponent implements OnInit {
   citasConfirmadas = 0;
 
   // Tabla
-  displayedColumns: string[] = ['fecha', 'hora', 'paciente', 'odontologo', 'tratamiento', 'estado', 'acciones'];
+  displayedColumns: string[] = ['fecha', 'hora', 'paciente', 'odontologo', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Cita>([]);
 
   // Datos
@@ -98,8 +97,8 @@ export class CitasComponent implements OnInit {
       return fechaCita.getTime() === hoy.getTime();
     }).length;
 
-    this.citasPendientes = this.todasLasCitas.filter(c => c.estado === 'pendiente').length;
-    this.citasConfirmadas = this.todasLasCitas.filter(c => c.estado === 'confirmada').length;
+    this.citasPendientes = this.todasLasCitas.filter(c => c.estado === 'Pendiente').length;
+    this.citasConfirmadas = this.todasLasCitas.filter(c => c.estado === 'Confirmada').length;
   }
 
   generarCalendario(): void {
@@ -144,7 +143,7 @@ export class CitasComponent implements OnInit {
     }
 
     // Días del mes siguiente para completar la última semana
-    const diasRestantes = 42 - dias.length; // 6 semanas x 7 días = 42
+    const diasRestantes = 42 - dias.length;
     for (let i = 1; i <= diasRestantes; i++) {
       const fecha = new Date(ultimoDia);
       fecha.setDate(fecha.getDate() + i);
@@ -201,7 +200,6 @@ export class CitasComponent implements OnInit {
     if (dia.citas.length > 0) {
       this.dataSource.data = dia.citas;
     } else {
-      // Navegar a crear cita con fecha preseleccionada
       this.nuevaCita(dia.fecha);
     }
   }
@@ -216,6 +214,8 @@ export class CitasComponent implements OnInit {
   }
 
   confirmarCita(cita: Cita): void {
+    if (!cita.id) return;
+    
     this.citaService.confirmarCita(cita.id).subscribe({
       next: () => {
         this.toastr.success('Cita confirmada correctamente', 'Éxito');
@@ -229,6 +229,8 @@ export class CitasComponent implements OnInit {
   }
 
   completarCita(cita: Cita): void {
+    if (!cita.id) return;
+    
     this.citaService.completarCita(cita.id).subscribe({
       next: () => {
         this.toastr.success('Cita completada correctamente', 'Éxito');
@@ -242,7 +244,10 @@ export class CitasComponent implements OnInit {
   }
 
   cancelarCita(cita: Cita): void {
-    if (confirm(`¿Está seguro de cancelar la cita de ${cita.pacienteNombre}?`)) {
+    if (!cita.id) return;
+    
+    const nombrePaciente = cita.pacienteNombre || 'este paciente';
+    if (confirm(`¿Está seguro de cancelar la cita de ${nombrePaciente}?`)) {
       this.citaService.cancelarCita(cita.id).subscribe({
         next: () => {
           this.toastr.success('Cita cancelada correctamente', 'Éxito');
@@ -256,15 +261,25 @@ export class CitasComponent implements OnInit {
     }
   }
 
-  getEstadoClass(estado: string): string {
-    return `estado-${estado}`;
+  getEstadoClass(estado?: string): string {
+    return `estado-${estado?.toLowerCase() || 'pendiente'}`;
   }
 
-  formatFecha(fecha: Date): string {
+  formatFecha(fecha: string): string {
     return new Date(fecha).toLocaleDateString('es-ES', { 
       weekday: 'short', 
       day: 'numeric', 
       month: 'short' 
     });
+  }
+
+  // Helper para mostrar hora en el HTML
+  getHora(cita: Cita): string {
+    return cita.horaInicio ? cita.horaInicio.substring(0, 5) : '-';
+  }
+
+  // Helper para nombre del empleado
+  getEmpleadoNombre(cita: Cita): string {
+    return cita.empleadoNombre || 'No asignado';
   }
 }

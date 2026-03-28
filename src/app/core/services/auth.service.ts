@@ -4,6 +4,8 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { LoginRequest, AuthResponse, User } from '../models/user.model';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +15,7 @@ export class AuthService {
   public currentUser: Observable<User | null>;
 
   // URL del API
-  private apiUrl = 'http://localhost:5022/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

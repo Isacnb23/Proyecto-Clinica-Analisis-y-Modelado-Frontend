@@ -119,8 +119,8 @@
                   <div 
                     *ngFor="let cita of dia.citas.slice(0, 3)" 
                     class="cita-mini"
-                    [class]="'cita-' + cita.estado">
-                    <span class="hora">{{ cita.hora }}</span>
+                    [class]="'cita-' + (cita.estado?.toLowerCase() || 'pendiente')">
+                    <span class="hora">{{ getHora(cita) }}</span>
                     <span class="paciente">{{ cita.pacienteNombre }}</span>
                   </div>
                   
@@ -158,7 +158,7 @@
               <ng-container matColumnDef="hora">
                 <th mat-header-cell *matHeaderCellDef>Hora</th>
                 <td mat-cell *matCellDef="let cita">
-                  <strong>{{ cita.hora }}</strong>
+                  <strong>{{ getHora(cita) }}</strong>
                 </td>
               </ng-container>
 
@@ -168,24 +168,16 @@
                 <td mat-cell *matCellDef="let cita">
                   <div class="paciente-cell">
                     <mat-icon>account_circle</mat-icon>
-                    {{ cita.pacienteNombre }}
+                    {{ cita.pacienteNombre || 'Sin nombre' }}
                   </div>
                 </td>
               </ng-container>
 
-              <!-- Columna Odontólogo -->
+              <!-- Columna Odontólogo (Empleado) -->
               <ng-container matColumnDef="odontologo">
                 <th mat-header-cell *matHeaderCellDef>Odontólogo</th>
                 <td mat-cell *matCellDef="let cita">
-                  {{ cita.odontologoNombre }}
-                </td>
-              </ng-container>
-
-              <!-- Columna Tratamiento -->
-              <ng-container matColumnDef="tratamiento">
-                <th mat-header-cell *matHeaderCellDef>Tratamiento</th>
-                <td mat-cell *matCellDef="let cita">
-                  {{ cita.tratamientoNombre }}
+                  {{ getEmpleadoNombre(cita) }}
                 </td>
               </ng-container>
 
@@ -195,7 +187,7 @@
                 <td mat-cell *matCellDef="let cita">
                   <mat-chip-set>
                     <mat-chip [class]="getEstadoClass(cita.estado)">
-                      {{ cita.estado | titlecase }}
+                      {{ cita.estado || 'Pendiente' | titlecase }}
                     </mat-chip>
                   </mat-chip-set>
                 </td>
@@ -220,7 +212,7 @@
                     
                     <button 
                       mat-menu-item 
-                      *ngIf="cita.estado === 'pendiente'"
+                      *ngIf="cita.estado === 'Pendiente'"
                       (click)="confirmarCita(cita)">
                       <mat-icon color="primary">check_circle</mat-icon>
                       <span>Confirmar</span>
@@ -228,7 +220,7 @@
                     
                     <button 
                       mat-menu-item 
-                      *ngIf="cita.estado === 'confirmada'"
+                      *ngIf="cita.estado === 'Confirmada'"
                       (click)="completarCita(cita)">
                       <mat-icon color="accent">done_all</mat-icon>
                       <span>Completar</span>
@@ -236,7 +228,7 @@
                     
                     <button 
                       mat-menu-item 
-                      *ngIf="cita.estado !== 'cancelada' && cita.estado !== 'completada'"
+                      *ngIf="cita.estado !== 'Cancelada' && cita.estado !== 'Completada'"
                       (click)="cancelarCita(cita)">
                       <mat-icon color="warn">cancel</mat-icon>
                       <span>Cancelar</span>
