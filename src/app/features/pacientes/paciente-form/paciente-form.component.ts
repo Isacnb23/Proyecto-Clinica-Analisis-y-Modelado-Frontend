@@ -127,29 +127,39 @@ export class PacienteFormComponent implements OnInit {
     this.pacienteService.getPacienteById(id).subscribe({
       next: (paciente) => {
         if (paciente) {
+          // Separar apellidos
+          const apellidos = paciente.apellidos?.split(' ') || [];
+          const apellido1 = apellidos[0] || '';
+          const apellido2 = apellidos.slice(1).join(' ') || '';
+
+          // Mapeo de genero_id a texto
+          const generoMap: { [key: number]: string } = {
+            1: 'Masculino',
+            2: 'Femenino',
+            3: 'Otro'
+          };
+
           this.pacienteForm.patchValue({
             nombre: paciente.nombre,
-            apellido1: paciente.apellido1,
-            apellido2: paciente.apellido2,
+            apellido1: apellido1,
+            apellido2: apellido2,
             cedula: paciente.cedula,
-            fechaNacimiento: paciente.fechaNacimiento,
-            genero: paciente.genero,
+            fechaNacimiento: new Date(paciente.fecha_nacimiento),
+            genero: generoMap[paciente.genero_id] || 'Otro',
             telefono: paciente.telefono,
-            telefonoSecundario: paciente.telefonoSecundario,
-            email: paciente.email,
-            direccion: paciente.direccion,
-            ocupacion: paciente.ocupacion,
-            estadoCivil: paciente.estadoCivil,
-            esmenor: !!paciente.responsable,
-            responsableNombre: paciente.responsable?.nombre,
-            responsableParentesco: paciente.responsable?.parentesco,
-            responsableTelefono: paciente.responsable?.telefono,
-            responsableCedula: paciente.responsable?.cedula,
-            alergias: paciente.alergias,
-            enfermedades: paciente.enfermedades,
-            medicamentos: paciente.medicamentos,
-            observaciones: paciente.observaciones,
-            referencia: paciente.referencia
+            email: paciente.email || '',
+            direccion: paciente.direccion || '',
+            ocupacion: paciente.ocupacion || '',
+            estadoCivil: paciente.estadoCivil || '',
+            esmenor: !!paciente.nombre_emergencia,
+            responsableNombre: paciente.nombre_emergencia || '',
+            responsableParentesco: paciente.relacion_emergencia || '',
+            responsableTelefono: paciente.telefono_emergencia || '',
+            alergias: paciente.alergias || '',
+            enfermedades: paciente.enfermedades_cronicas || '',
+            medicamentos: paciente.medicamentos || '',
+            referencia: paciente.referencia || '',
+            observaciones: paciente.observaciones || ''
           });
         }
         this.loading = false;
@@ -172,12 +182,43 @@ export class PacienteFormComponent implements OnInit {
     this.loading = true;
     const formData = this.pacienteForm.value;
 
-    const pacienteEnviar: any = {
-      nombre: formData.nombre,
-      cedula: formData.cedula,
-      email: formData.email,
-      telefono: formData.telefono
+    // Mapeo de géneros a IDs
+    const generoMap: { [key: string]: number } = {
+      'Masculino': 1,
+      'Femenino': 2,
+      'Otro': 3
     };
+
+    // Combinar apellidos
+    const apellidos = formData.apellido1 + (formData.apellido2 ? ' ' + formData.apellido2 : '');
+
+    // Formato de fecha (YYYY-MM-DD)
+    const fecha = new Date(formData.fechaNacimiento);
+    const fechaNacimiento = fecha.toISOString().split('T')[0];
+
+    const pacienteEnviar: any = {
+      nombre: formData.nombre || '',
+      apellidos: apellidos || '',
+      cedula: formData.cedula || '',
+      fecha_nacimiento: fechaNacimiento || '',
+      genero_id: generoMap[formData.genero] || 3,
+      telefono: formData.telefono || '',
+      email: formData.email || '',
+      direccion: formData.direccion || '',
+      ocupacion: formData.ocupacion || '',
+      estadoCivil: formData.estadoCivil || '',
+      alergias: formData.alergias || '',
+      enfermedades_cronicas: formData.enfermedades || '',
+      medicamentos: formData.medicamentos || '',
+      observaciones: formData.observaciones || '',
+      referencia: formData.referencia || '',
+      tipo_sangre: '',
+      nombre_emergencia: formData.responsableNombre || '',
+      telefono_emergencia: formData.responsableTelefono || '',
+      relacion_emergencia: formData.responsableParentesco || ''
+    };
+
+    console.log('Datos a enviar:', pacienteEnviar);
 
     if (this.isEditMode && this.pacienteId) {
       this.pacienteService.actualizarPaciente({
@@ -186,7 +227,10 @@ export class PacienteFormComponent implements OnInit {
       } as any).subscribe({
         next: () => {
           this.toastr.success('Paciente actualizado correctamente', '¡Éxito!');
-          this.router.navigate(['/pacientes']);
+          this.loading = false;
+          this.router.navigate(['/pacientes']).then(() => {
+            window.location.reload();
+          });
         },
         error: (error) => {
           this.toastr.error('Error al actualizar el paciente', 'Error');
@@ -198,7 +242,10 @@ export class PacienteFormComponent implements OnInit {
       this.pacienteService.crearPaciente(pacienteEnviar as any).subscribe({
         next: () => {
           this.toastr.success('Paciente registrado correctamente', '¡Éxito!');
-          this.router.navigate(['/pacientes']);
+          this.loading = false;
+          this.router.navigate(['/pacientes']).then(() => {
+            window.location.reload();
+          });
         },
         error: (error) => {
           this.toastr.error('Error al registrar el paciente', 'Error');

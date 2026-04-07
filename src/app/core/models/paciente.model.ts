@@ -1,29 +1,27 @@
 export interface Paciente {
   id: number;
-  numeroExpediente: string;
   nombre: string;
-  apellido1: string;
-  apellido2?: string;
+  apellidos: string;
   cedula: string;
-  fechaNacimiento: Date;
-  edad?: number;
-  genero: 'Masculino' | 'Femenino' | 'Otro';
+  fecha_nacimiento: string;
+  genero_id: number;
   telefono: string;
-  telefonoSecundario?: string;
   email?: string;
   direccion?: string;
   ocupacion?: string;
-  estadoCivil?: 'Soltero' | 'Casado' | 'Divorciado' | 'Viudo' | 'Unión Libre';
-  responsable?: Responsable;
-  referencia?: string;
+  estadoCivil?: string;
   alergias?: string;
-  enfermedades?: string;
+  enfermedades_cronicas?: string;
   medicamentos?: string;
   observaciones?: string;
-  foto?: string;
+  referencia?: string;
+  tipo_sangre?: string;
+  nombre_emergencia?: string;
+  telefono_emergencia?: string;
+  relacion_emergencia?: string;
   activo: boolean;
-  fechaRegistro: Date;
-  ultimaVisita?: Date;
+  fecha_registro: Date;
+  ultima_modifcacion?: Date;
 }
 
 export interface Responsable {
@@ -47,14 +45,14 @@ export interface PacienteFormData {
   direccion?: string;
   ocupacion?: string;
   estadoCivil?: string;
-  
+
   // Responsable (si es menor)
   esmenor?: boolean;
   responsableNombre?: string;
   responsableParentesco?: string;
   responsableTelefono?: string;
   responsableCedula?: string;
-  
+
   // Datos médicos
   alergias?: string;
   enfermedades?: string;

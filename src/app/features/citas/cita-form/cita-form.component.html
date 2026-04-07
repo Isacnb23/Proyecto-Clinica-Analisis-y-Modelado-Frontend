@@ -1,5 +1,5 @@
 <div class="form-container">
-  
+
   <!-- Header -->
   <div class="form-header">
     <div class="header-content">
@@ -19,7 +19,7 @@
   <!-- Formulario -->
   <form [formGroup]="citaForm" (ngSubmit)="onSubmit()">
     <mat-card class="form-card">
-      
+
       <!-- Sección 1: Paciente -->
       <div class="form-section">
         <h2>
@@ -30,21 +30,21 @@
         <div class="form-grid">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Buscar Paciente</mat-label>
-            <input 
-              matInput 
+            <input
+              matInput
               formControlName="pacienteBusqueda"
               [matAutocomplete]="auto"
               placeholder="Nombre, apellido o cédula">
             <mat-icon matPrefix>search</mat-icon>
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="mostrarNombrePaciente">
-              <mat-option 
-                *ngFor="let paciente of pacientesFiltrados | async" 
+              <mat-option
+                *ngFor="let paciente of pacientesFiltrados | async"
                 [value]="paciente"
                 (onSelectionChange)="seleccionarPaciente(paciente)">
                 <div class="paciente-option">
                   <mat-icon>account_circle</mat-icon>
                   <div class="paciente-info">
-                    <strong>{{ paciente.nombre }} {{ paciente.apellido1 }} {{ paciente.apellido2 }}</strong>
+                    <strong>{{ paciente.nombre }} {{ paciente.apellidos }}</strong>
                     <span>{{ paciente.cedula }}</span>
                   </div>
                 </div>
@@ -121,9 +121,9 @@
           <!-- Fecha -->
           <mat-form-field appearance="outline">
             <mat-label>Fecha de la Cita</mat-label>
-            <input 
-              matInput 
-              [matDatepicker]="picker" 
+            <input
+              matInput
+              [matDatepicker]="picker"
               formControlName="fecha"
               [min]="minDate">
             <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
@@ -153,9 +153,9 @@
           <!-- Duración -->
           <mat-form-field appearance="outline">
             <mat-label>Duración (minutos)</mat-label>
-            <input 
-              matInput 
-              type="number" 
+            <input
+              matInput
+              type="number"
               formControlName="duracion"
               placeholder="30">
             <mat-icon matPrefix>timer</mat-icon>
@@ -185,8 +185,8 @@
           <!-- Motivo -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Motivo de la Cita (Opcional)</mat-label>
-            <input 
-              matInput 
+            <input
+              matInput
               formControlName="motivo"
               placeholder="Ej: Dolor en muela del juicio">
             <mat-icon matPrefix>info</mat-icon>
@@ -195,8 +195,8 @@
           <!-- Observaciones -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Observaciones (Opcional)</mat-label>
-            <textarea 
-              matInput 
+            <textarea
+              matInput
               formControlName="observaciones"
               rows="3"
               placeholder="Notas adicionales..."></textarea>
@@ -207,15 +207,15 @@
 
       <!-- Acciones -->
       <div class="form-actions">
-        <button 
-          mat-button 
+        <button
+          mat-button
           type="button"
           (click)="cancelar()">
           Cancelar
         </button>
-        <button 
-          mat-raised-button 
-          color="primary" 
+        <button
+          mat-raised-button
+          color="primary"
           type="submit"
           [disabled]="loading || citaForm.invalid">
           <mat-icon>event</mat-icon>
