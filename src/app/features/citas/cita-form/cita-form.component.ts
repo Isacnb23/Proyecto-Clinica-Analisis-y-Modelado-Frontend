@@ -41,14 +41,14 @@ import { Observable, startWith, map } from 'rxjs';
 export class CitaFormComponent implements OnInit {
   citaForm!: FormGroup;
   loading = false;
-  
+
   // Datos
   pacientes: Paciente[] = [];
   pacientesFiltrados!: Observable<Paciente[]>;
   odontologos: Odontologo[] = [];
   tratamientos: Tratamiento[] = [];
   horariosDisponibles: string[] = [];
-  
+
   // Configuración
   minDate = new Date();
   duracionEstimada = 0;
@@ -146,9 +146,9 @@ export class CitaFormComponent implements OnInit {
 
   private _filtrarPacientes(value: string): Paciente[] {
     const filterValue = value.toLowerCase();
-    return this.pacientes.filter(p => 
+    return this.pacientes.filter(p =>
       p.nombre.toLowerCase().includes(filterValue) ||
-      p.apellido1.toLowerCase().includes(filterValue) ||
+      p.apellidos.toLowerCase().includes(filterValue) ||
       p.cedula.includes(filterValue)
     );
   }
@@ -156,12 +156,12 @@ export class CitaFormComponent implements OnInit {
   seleccionarPaciente(paciente: Paciente): void {
     this.citaForm.patchValue({
       pacienteId: paciente.id,
-      pacienteBusqueda: `${paciente.nombre} ${paciente.apellido1} ${paciente.apellido2 || ''}`
+      pacienteBusqueda: `${paciente.nombre} ${paciente.apellidos}`
     });
   }
 
   mostrarNombrePaciente(paciente: Paciente): string {
-    return paciente ? `${paciente.nombre} ${paciente.apellido1} ${paciente.apellido2 || ''}` : '';
+    return paciente ? `${paciente.nombre} ${paciente.apellidos}` : '';
   }
 
   cargarHorariosDisponibles(): void {

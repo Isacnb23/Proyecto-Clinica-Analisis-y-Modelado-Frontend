@@ -24,7 +24,7 @@ export class PacienteService {
 
   // Buscar pacientes
   buscarPacientes(termino: string): Observable<Paciente[]> {
-    return this.http.get<Paciente[]>(`${this.apiUrl}/buscar?termino=${termino}`);
+    return this.http.get<Paciente[]>(`${this.apiUrl}/buscar?nombre=${termino}`);
   }
 
   // Crear paciente
@@ -32,9 +32,9 @@ export class PacienteService {
     return this.http.post<Paciente>(this.apiUrl, data);
   }
 
-  // Actualizar paciente
-  actualizarPaciente(id: number, data: PacienteFormData): Observable<Paciente> {
-    return this.http.put<Paciente>(`${this.apiUrl}/${id}`, data);
+  // ✅ ACTUALIZAR (CORREGIDO PARA TU BACKEND)
+  actualizarPaciente(data: any): Observable<Paciente> {
+    return this.http.put<Paciente>(this.apiUrl, data);
   }
 
   // Eliminar (desactivar) paciente

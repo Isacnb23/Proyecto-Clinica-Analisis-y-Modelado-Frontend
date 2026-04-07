@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -18,6 +18,7 @@ import { PacienteService } from '../../core/services/paciente.service';
 import { Paciente } from '../../core/models/paciente.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription, filter } from 'rxjs';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-pacientes',
@@ -36,28 +37,29 @@ import { Subscription, filter } from 'rxjs';
     MatChipsModule,
     MatMenuModule,
     MatDialogModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSelectModule,
   ],
   templateUrl: './pacientes.component.html',
   styleUrl: './pacientes.component.scss'
 })
 export class PacientesComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = [
-    'numeroExpediente',
-    'nombreCompleto',
+    'nombre',
+    'apellidos',
     'cedula',
-    'edad',
     'telefono',
     'email',
-    'ultimaVisita',
     'estado',
     'acciones'
   ];
 
   dataSource: MatTableDataSource<Paciente>;
+  allPacientes: Paciente[] = [];
   totalPacientes = 0;
   pacientesActivos = 0;
   pacientesInactivos = 0;
+  filtroEstado: 'todos' | 'activos' | 'inactivos' = 'todos';
 
   private routerSubscription?: Subscription;
 
@@ -68,14 +70,15 @@ export class PacientesComponent implements OnInit, OnDestroy {
     private pacienteService: PacienteService,
     private router: Router,
     private toastr: ToastrService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {
     this.dataSource = new MatTableDataSource<Paciente>([]);
   }
 
   ngOnInit(): void {
     this.cargarPacientes();
-    
+
     // Suscribirse a eventos de navegación
     this.routerSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -95,28 +98,37 @@ export class PacientesComponent implements OnInit, OnDestroy {
   cargarPacientes(): void {
     this.pacienteService.getPacientes().subscribe({
       next: (pacientes) => {
+        // Guardar todos los pacientes
+        this.allPacientes = pacientes;
         this.dataSource.data = pacientes;
-        
+
+        // Forzar detección de cambios
+        this.cdr.detectChanges();
+
         // Esperar a que el paginador esté disponible
         setTimeout(() => {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         });
-        
+
         // Configurar filtro personalizado
         this.dataSource.filterPredicate = (data: Paciente, filter: string) => {
           const searchStr = filter.toLowerCase();
           return data.nombre.toLowerCase().includes(searchStr) ||
-                 data.apellido1.toLowerCase().includes(searchStr) ||
-                 (data.apellido2?.toLowerCase().includes(searchStr) || false) ||
-                 data.cedula.includes(searchStr) ||
-                 data.numeroExpediente.toLowerCase().includes(searchStr);
+                 data.apellidos.toLowerCase().includes(searchStr) ||
+                 data.cedula.includes(searchStr);
         };
 
         // Calcular estadísticas
         this.totalPacientes = pacientes.length;
         this.pacientesActivos = pacientes.filter(p => p.activo).length;
         this.pacientesInactivos = pacientes.filter(p => !p.activo).length;
+
+        // Aplicar el filtro de estado actual
+        this.aplicarFiltroEstado();
+
+        // Forzar detección de cambios nuevamente
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.toastr.error('Error al cargar pacientes', 'Error');
@@ -133,9 +145,26 @@ export class PacientesComponent implements OnInit, OnDestroy {
       this.dataSource.paginator.firstPage();
     }
   }
+  filtrarPorEstado(): void {
+    this.aplicarFiltroEstado();
+  }
+
+  private aplicarFiltroEstado(): void {
+    if (this.filtroEstado === 'todos') {
+      this.dataSource.data = this.allPacientes;
+      return;
+    }
+
+    const filtrados = this.allPacientes.filter(p =>
+      this.filtroEstado === 'activos' ? p.activo : !p.activo
+    );
+
+    this.dataSource.data = filtrados;
+    this.cdr.detectChanges();
+  }
 
   getNombreCompleto(paciente: Paciente): string {
-    return `${paciente.nombre} ${paciente.apellido1} ${paciente.apellido2 || ''}`.trim();
+    return `${paciente.nombre} ${paciente.apellidos || ''}`.trim();
   }
 
   verDetalle(paciente: Paciente): void {
@@ -162,16 +191,18 @@ export class PacientesComponent implements OnInit, OnDestroy {
   }
 
   activarPaciente(paciente: Paciente): void {
-    this.pacienteService.activarPaciente(paciente.id).subscribe({
-      next: () => {
-        this.toastr.success('Paciente activado correctamente', 'Éxito');
-        this.cargarPacientes();
-      },
-      error: (error) => {
-        this.toastr.error('Error al activar paciente', 'Error');
-        console.error(error);
-      }
-    });
+    if (confirm(`¿Está seguro de activar al paciente ${this.getNombreCompleto(paciente)}?`)) {
+      this.pacienteService.activarPaciente(paciente.id).subscribe({
+        next: () => {
+          this.toastr.success('Paciente activado correctamente', 'Éxito');
+          this.cargarPacientes();
+        },
+        error: (error) => {
+          this.toastr.error('Error al activar paciente', 'Error');
+          console.error(error);
+        }
+      });
+    }
   }
 
   nuevoPaciente(): void {

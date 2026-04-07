@@ -61,7 +61,7 @@ export class PacienteDetalleComponent implements OnInit {
 
     getNombreCompleto(): string {
         if (!this.paciente) return '';
-        return `${this.paciente.nombre} ${this.paciente.apellido1} ${this.paciente.apellido2 || ''}`.trim();
+        return `${this.paciente.nombre} ${this.paciente.apellidos || ''}`.trim();
     }
 
     editarPaciente(): void {

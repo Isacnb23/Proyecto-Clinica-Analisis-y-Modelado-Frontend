@@ -18,9 +18,9 @@
   <!-- Formulario -->
   <form [formGroup]="pacienteForm" (ngSubmit)="onSubmit()">
     <mat-stepper linear #stepper>
-      
+
       <!-- PASO 1: Datos Personales -->
-      <mat-step label="Datos Personales" [stepControl]="pacienteForm">
+      <mat-step label="Datos Personales">
         <mat-card class="step-card">
           <mat-card-header>
             <mat-card-title>
@@ -92,7 +92,7 @@
       </mat-step>
 
       <!-- PASO 2: Contacto -->
-      <mat-step label="Contacto" [stepControl]="pacienteForm">
+      <mat-step label="Contacto">
         <mat-card class="step-card">
           <mat-card-header>
             <mat-card-title>
@@ -252,9 +252,9 @@
 
             <div class="step-actions">
               <button mat-button matStepperPrevious type="button">Anterior</button>
-              <button 
-                mat-raised-button 
-                color="primary" 
+              <button
+                mat-raised-button
+                color="primary"
                 type="submit"
                 [disabled]="loading || pacienteForm.invalid">
                 <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
