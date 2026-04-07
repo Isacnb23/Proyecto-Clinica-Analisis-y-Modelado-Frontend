@@ -18,6 +18,7 @@ import { PacienteService } from '../../core/services/paciente.service';
 import { Paciente } from '../../core/models/paciente.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription, filter } from 'rxjs';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-pacientes',
@@ -36,7 +37,8 @@ import { Subscription, filter } from 'rxjs';
     MatChipsModule,
     MatMenuModule,
     MatDialogModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSelectModule,
   ],
   templateUrl: './pacientes.component.html',
   styleUrl: './pacientes.component.scss'
@@ -58,6 +60,7 @@ export class PacientesComponent implements OnInit, OnDestroy {
   totalPacientes = 0;
   pacientesActivos = 0;
   pacientesInactivos = 0;
+  filtroEstado: 'todos' | 'activos' | 'inactivos' = 'todos';
 
   private routerSubscription?: Subscription;
 
@@ -75,7 +78,7 @@ export class PacientesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarPacientes();
-    
+
     // Suscribirse a eventos de navegación
     this.routerSubscription = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -96,13 +99,13 @@ export class PacientesComponent implements OnInit, OnDestroy {
     this.pacienteService.getPacientes().subscribe({
       next: (pacientes) => {
         this.dataSource.data = pacientes;
-        
+
         // Esperar a que el paginador esté disponible
         setTimeout(() => {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         });
-        
+
         // Configurar filtro personalizado
         this.dataSource.filterPredicate = (data: Paciente, filter: string) => {
           const searchStr = filter.toLowerCase();
@@ -133,6 +136,18 @@ export class PacientesComponent implements OnInit, OnDestroy {
       this.dataSource.paginator.firstPage();
     }
   }
+  filtrarPorEstado(): void {
+  if (this.filtroEstado === 'todos') {
+    this.cargarPacientes();
+    return;
+  }
+
+  const filtrados = this.dataSource.data.filter(p =>
+    this.filtroEstado === 'activos' ? p.activo : !p.activo
+  );
+
+  this.dataSource.data = filtrados;
+}
 
   getNombreCompleto(paciente: Paciente): string {
     return `${paciente.nombre} ${paciente.apellido1} ${paciente.apellido2 || ''}`.trim();
@@ -161,18 +176,18 @@ export class PacientesComponent implements OnInit, OnDestroy {
     }
   }
 
-  activarPaciente(paciente: Paciente): void {
-    this.pacienteService.activarPaciente(paciente.id).subscribe({
-      next: () => {
-        this.toastr.success('Paciente activado correctamente', 'Éxito');
-        this.cargarPacientes();
-      },
-      error: (error) => {
-        this.toastr.error('Error al activar paciente', 'Error');
-        console.error(error);
-      }
-    });
-  }
+  // activarPaciente(paciente: Paciente): void {
+  //   this.pacienteService.activarPaciente(paciente.id).subscribe({
+  //     next: () => {
+  //       this.toastr.success('Paciente activado correctamente', 'Éxito');
+  //       this.cargarPacientes();
+  //     },
+  //     error: (error) => {
+  //       this.toastr.error('Error al activar paciente', 'Error');
+  //       console.error(error);
+  //     }
+  //   });
+  // }
 
   nuevoPaciente(): void {
     this.router.navigate(['/pacientes', 'nuevo']);

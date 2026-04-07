@@ -172,9 +172,18 @@ export class PacienteFormComponent implements OnInit {
     this.loading = true;
     const formData = this.pacienteForm.value;
 
+    const pacienteEnviar: any = {
+      nombre: formData.nombre,
+      cedula: formData.cedula,
+      email: formData.email,
+      telefono: formData.telefono
+    };
+
     if (this.isEditMode && this.pacienteId) {
-      // Actualizar
-      this.pacienteService.actualizarPaciente(this.pacienteId, formData).subscribe({
+      this.pacienteService.actualizarPaciente({
+        id: this.pacienteId,
+        ...pacienteEnviar
+      } as any).subscribe({
         next: () => {
           this.toastr.success('Paciente actualizado correctamente', '¡Éxito!');
           this.router.navigate(['/pacientes']);
@@ -186,8 +195,7 @@ export class PacienteFormComponent implements OnInit {
         }
       });
     } else {
-      // Crear
-      this.pacienteService.crearPaciente(formData).subscribe({
+      this.pacienteService.crearPaciente(pacienteEnviar as any).subscribe({
         next: () => {
           this.toastr.success('Paciente registrado correctamente', '¡Éxito!');
           this.router.navigate(['/pacientes']);
@@ -202,11 +210,11 @@ export class PacienteFormComponent implements OnInit {
   }
 
   cancelar(): void {
-  this.router.navigate(['/pacientes']).then(() => {
-    // Forzar recarga de la página
-    window.location.reload();
-  });
-}
+    this.router.navigate(['/pacientes']).then(() => {
+      // Forzar recarga de la página
+      window.location.reload();
+    });
+  }
 
   // Getters para validación
   get nombre() { return this.pacienteForm.get('nombre'); }

@@ -1,3 +1,4 @@
+
 <div class="pacientes-container">
   <!-- Header con estadísticas -->
   <div class="page-header">
@@ -9,10 +10,10 @@
         </h1>
         <p>Administra la información de todos los pacientes de la clínica</p>
       </div>
-      
-      <button 
-        mat-raised-button 
-        color="primary" 
+
+      <button
+        mat-raised-button
+        color="primary"
         class="btn-nuevo"
         (click)="nuevoPaciente()">
         <mat-icon>add</mat-icon>
@@ -57,11 +58,19 @@
   <!-- Tabla de pacientes -->
   <div class="table-container" data-aos="fade-up">
     <div class="table-header">
+      <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="filtroEstado" (selectionChange)="filtrarPorEstado()">
+            <mat-option value="todos">Todos</mat-option>
+            <mat-option value="activos">Activos</mat-option>
+            <mat-option value="inactivos">Inactivos</mat-option>
+          </mat-select>
+        </mat-form-field>
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>Buscar paciente</mat-label>
-        <input 
-          matInput 
-          (keyup)="aplicarFiltro($event)" 
+        <input
+          matInput
+          (keyup)="aplicarFiltro($event)"
           placeholder="Nombre, cédula, expediente..."
           #input>
         <mat-icon matPrefix>search</mat-icon>
@@ -82,7 +91,7 @@
 
     <div class="table-wrapper">
       <table mat-table [dataSource]="dataSource" matSort class="pacientes-table">
-        
+
         <!-- Columna Expediente -->
         <ng-container matColumnDef="numeroExpediente">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Expediente</th>
@@ -118,8 +127,8 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Edad</th>
           <td mat-cell *matCellDef="let paciente">
             {{ paciente.edad }} años
-            <mat-icon 
-              *ngIf="paciente.responsable" 
+            <mat-icon
+              *ngIf="paciente.responsable"
               class="icon-menor"
               matTooltip="Menor de edad">
               child_care
@@ -142,9 +151,9 @@
         <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef>Email</th>
           <td mat-cell *matCellDef="let paciente">
-            <a 
-              *ngIf="paciente.email" 
-              href="mailto:{{ paciente.email }}" 
+            <a
+              *ngIf="paciente.email"
+              href="mailto:{{ paciente.email }}"
               class="email-link">
               {{ paciente.email }}
             </a>
@@ -168,7 +177,7 @@
           <th mat-header-cell *matHeaderCellDef>Estado</th>
           <td mat-cell *matCellDef="let paciente">
             <mat-chip-set>
-              <mat-chip 
+              <mat-chip
                 [class.chip-activo]="paciente.activo"
                 [class.chip-inactivo]="!paciente.activo">
                 {{ paciente.activo ? 'Activo' : 'Inactivo' }}
@@ -181,13 +190,13 @@
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let paciente">
-            <button 
-              mat-icon-button 
+            <button
+              mat-icon-button
               [matMenuTriggerFor]="menu"
               matTooltip="Opciones">
               <mat-icon>more_vert</mat-icon>
             </button>
-            
+
             <mat-menu #menu="matMenu">
               <button mat-menu-item (click)="verDetalle(paciente)">
                 <mat-icon>visibility</mat-icon>
@@ -197,20 +206,20 @@
                 <mat-icon>edit</mat-icon>
                 <span>Editar</span>
               </button>
-              <button 
-                mat-menu-item 
+              <button
+                mat-menu-item
                 *ngIf="paciente.activo"
                 (click)="eliminarPaciente(paciente)">
                 <mat-icon color="warn">block</mat-icon>
                 <span>Desactivar</span>
               </button>
-              <button 
-                mat-menu-item 
+              <!-- <button
+                mat-menu-item
                 *ngIf="!paciente.activo"
                 (click)="activarPaciente(paciente)">
                 <mat-icon color="primary">check_circle</mat-icon>
                 <span>Activar</span>
-              </button>
+              </button> -->
               <mat-divider></mat-divider>
               <button mat-menu-item>
                 <mat-icon>event</mat-icon>
@@ -226,10 +235,10 @@
 
         <!-- Fila de encabezado -->
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        
+
         <!-- Fila de datos -->
-        <tr 
-          mat-row 
+        <tr
+          mat-row
           *matRowDef="let row; columns: displayedColumns;"
           class="table-row"
           (click)="verDetalle(row)">
@@ -248,7 +257,7 @@
     </div>
 
     <!-- Paginador -->
-    <mat-paginator 
+    <mat-paginator
       [pageSizeOptions]="[5, 10, 25, 50]"
       [pageSize]="10"
       showFirstLastButtons>
