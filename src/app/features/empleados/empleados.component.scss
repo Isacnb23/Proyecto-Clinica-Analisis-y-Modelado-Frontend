@@ -383,4 +383,15 @@
       width: 100%;
     }
   }
+  .acciones-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: #666;
+}
 }

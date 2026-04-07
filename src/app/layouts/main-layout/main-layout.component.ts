@@ -12,6 +12,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 import { User } from '../../core/models/user.model';
 import { MatDividerModule } from '@angular/material/divider';
+import { NotificationBellComponent } from '../../shared/notification-bell/notification-bell.component';
+
 
 interface MenuItem {
     icon: string;
@@ -37,7 +39,8 @@ interface MenuItem {
         MatMenuModule,
         MatBadgeModule,
         MatTooltipModule,
-        MatDividerModule
+        MatDividerModule,
+        NotificationBellComponent
     ],
     templateUrl: './main-layout.component.html',
     styleUrl: './main-layout.component.scss'
