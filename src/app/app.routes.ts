@@ -2,20 +2,15 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  // Ruta por defecto
   {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full'
   },
-
-  // Rutas públicas (sin layout)
   {
     path: 'login',
     loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent)
   },
-
-  // Rutas protegidas (con layout)
   {
     path: '',
     canActivate: [authGuard],
@@ -44,19 +39,12 @@ export const routes: Routes = [
       {
         path: 'citas',
         loadComponent: () => import('./features/citas/citas.component').then(m => m.CitasComponent)
-      }, {
-        path: 'citas',
-        loadComponent: () => import('./features/citas/citas.component').then(m => m.CitasComponent)
       },
       {
         path: 'citas/nueva',
         loadComponent: () => import('./features/citas/cita-form/cita-form.component').then(m => m.CitaFormComponent)
       },
-      // taratamientos
       {
-        path: 'tratamientos',
-        loadComponent: () => import('./features/tratamientos/tratamientos.component').then(m => m.TratamientosComponent)
-      }, {
         path: 'tratamientos',
         loadComponent: () => import('./features/tratamientos/tratamientos.component').then(m => m.TratamientosComponent)
       },
@@ -68,11 +56,7 @@ export const routes: Routes = [
         path: 'tratamientos/editar/:id',
         loadComponent: () => import('./features/tratamientos/tratamiento-form/tratamiento-form.component').then(m => m.TratamientoFormComponent)
       },
-      // empleados
       {
-        path: 'empleados',
-        loadComponent: () => import('./features/empleados/empleados.component').then(m => m.EmpleadosComponent)
-      }, {
         path: 'empleados',
         loadComponent: () => import('./features/empleados/empleados.component').then(m => m.EmpleadosComponent)
       },
@@ -83,11 +67,6 @@ export const routes: Routes = [
       {
         path: 'empleados/editar/:id',
         loadComponent: () => import('./features/empleados/empleado-form/empleado-form.component').then(m => m.EmpleadoFormComponent)
-      },
-      // Inventario
-      {
-        path: 'inventario',
-        loadComponent: () => import('./features/inventario/inventario.component').then(m => m.InventarioComponent)
       },
       {
         path: 'inventario',
@@ -101,39 +80,12 @@ export const routes: Routes = [
         path: 'inventario/editar/:id',
         loadComponent: () => import('./features/inventario/inventario-form/inventario-form.component').then(m => m.InventarioFormComponent)
       },
-      // Rutas futuras
-      {
-        path: 'empleados',
-        loadComponent: () => import('./features/pacientes/pacientes.component').then(m => m.PacientesComponent)
-      },
-      {
-        path: 'horarios',
-        loadComponent: () => import('./features/pacientes/pacientes.component').then(m => m.PacientesComponent)
-      },
-      {
-        path: 'tratamientos',
-        loadComponent: () => import('./features/pacientes/pacientes.component').then(m => m.PacientesComponent)
-      },
-      {
-        path: 'inventario',
-        loadComponent: () => import('./features/pacientes/pacientes.component').then(m => m.PacientesComponent)
-      },
-      {
-        path: 'facturacion',
-        loadComponent: () => import('./features/pacientes/pacientes.component').then(m => m.PacientesComponent)
-      },
       {
         path: 'roles',
-        loadComponent: () => import('./features/pacientes/pacientes.component').then(m => m.PacientesComponent)
-      },
-      {
-        path: 'reportes',
-        loadComponent: () => import('./features/pacientes/pacientes.component').then(m => m.PacientesComponent)
+        loadComponent: () => import('./features/roles/roles.component').then(m => m.RolesComponent)
       }
     ]
   },
-
-  // Ruta 404
   {
     path: '**',
     redirectTo: '/login'

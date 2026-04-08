@@ -1,0 +1,155 @@
+<div class="page-shell">
+  <mat-card class="page-card">
+    <div class="toolbar-row">
+      <div>
+        <h1 class="page-title">Roles y permisos</h1>
+        <p class="page-subtitle">
+          Gestión de roles, asignación a usuarios y permisos de demostración para el frontend.
+        </p>
+      </div>
+    </div>
+
+    <div class="roles-grid">
+      <!-- Lista de roles -->
+      <section class="section-card">
+        <h2>Gestión de roles</h2>
+
+        <table class="app-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let rol of roles">
+              <td>{{ rol.id }}</td>
+              <td>{{ rol.nombre }}</td>
+              <td>
+                <span class="status-badge" [class.active]="rol.activo" [class.inactive]="!rol.activo">
+                  {{ rol.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button
+                  mat-stroked-button
+                  [color]="rol.activo ? 'warn' : 'primary'"
+                  (click)="cambiarEstadoRol(rol)"
+                  [matTooltip]="rol.activo ? 'Desactivar rol' : 'Activar rol'">
+                  {{ rol.activo ? 'Desactivar' : 'Activar' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Asignación de rol -->
+      <section class="section-card">
+        <h2>Asignar rol a usuario</h2>
+
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Usuario</mat-label>
+            <mat-select [(ngModel)]="selectedUsuarioId" aria-label="Seleccionar usuario">
+              <mat-option *ngFor="let usuario of usuarios" [value]="usuario.id">
+                {{ usuario.email }} - Rol actual: {{ usuario.rol }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nuevo rol</mat-label>
+            <mat-select [(ngModel)]="selectedRolId" aria-label="Seleccionar nuevo rol">
+              <mat-option *ngFor="let rol of roles" [value]="rol.id">
+                {{ rol.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="asignarRol()"
+            aria-label="Asignar rol al usuario">
+            <mat-icon>admin_panel_settings</mat-icon>
+            Asignar rol
+          </button>
+        </div>
+
+        <h3 class="subsection-title">Usuarios registrados</h3>
+
+        <table class="app-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Rol actual</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let usuario of usuarios">
+              <td>{{ usuario.id }}</td>
+              <td>{{ usuario.email }}</td>
+              <td>{{ usuario.rol }}</td>
+              <td>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</td>
+              <td>
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  (click)="revocarRol(usuario.id)"
+                  aria-label="Revocar rol del usuario">
+                  Revocar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Permisos -->
+      <section class="section-card permissions-card">
+        <h2>Permisos disponibles</h2>
+        <p class="info-text">
+          Esta parte es visual para demo, porque el backend actual no trae persistencia real de permisos por rol.
+        </p>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Rol para editar permisos</mat-label>
+          <mat-select [(ngModel)]="selectedRoleNameForPermissions" aria-label="Seleccionar rol para permisos">
+            <mat-option *ngFor="let rol of roles" [value]="rol.nombre">
+              {{ rol.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="permissions-grid">
+          <mat-checkbox
+            *ngFor="let permission of availablePermissions"
+            [checked]="hasPermission(permission)"
+            (change)="togglePermission(permission, $event.checked)">
+            {{ permission }}
+          </mat-checkbox>
+        </div>
+
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="guardarPermisosDemo()"
+            aria-label="Guardar permisos de demostración">
+            Guardar permisos demo
+          </button>
+        </div>
+      </section>
+    </div>
+  </mat-card>
+</div>
