@@ -135,7 +135,7 @@
 
   // Rosa/Magenta para citas
   &.appointments {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, #7b1f2c 0%, #a33040 100%);
 
     .stat-icon {
       background: rgba(255, 255, 255, 0.2);
@@ -148,7 +148,7 @@
 
   // Cyan para tratamientos
   &.treatments {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background: linear-gradient(135deg, #0f3460 0%, #16537e 100%);
 
     .stat-icon {
       background: rgba(255, 255, 255, 0.2);
@@ -466,4 +466,208 @@
   .charts-grid {
     grid-template-columns: 1fr;
   }
+}
+/* ── Ajustes nuevos ──────────────────────────────────────────────── */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.fecha-hoy {
+  background: rgba(201,162,39,.15);
+  color: #c9a227;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-weight: 600;
+  font-size: .88rem;
+  align-self: flex-start;
+  margin-top: 6px;
+}
+
+/* ── Gráfica de barras CSS ───────────────────────────────────────── */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 160px;
+  padding: 1rem 0 0;
+}
+
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.bar-value {
+  font-size: .78rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.bar-wrap {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height .4s ease;
+}
+
+.bar-blue { background: linear-gradient(180deg, #3b82f6, #1e3a5f); }
+.bar-gold { background: linear-gradient(180deg, #d4af37, #c9a227); }
+
+.bar-label {
+  font-size: .72rem;
+  color: #9ca3af;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.chart-empty {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d1d5db;
+  font-size: .9rem;
+}
+
+/* ── Top tratamientos ────────────────────────────────────────────── */
+.tratamientos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: .5rem;
+}
+
+.trat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.trat-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.trat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.trat-nombre {
+  font-size: .82rem;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.trat-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.trat-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .4s ease;
+  min-width: 4px;
+}
+
+.trat-count {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #374151;
+  min-width: 24px;
+  text-align: right;
+}
+
+/* ── Donut alternativo ───────────────────────────────────────────── */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 2rem 0;
+  gap: 1rem;
+}
+
+.donut-div { height: 60px; }
+
+.donut-stat { text-align: center; }
+
+.donut-num {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 6px;
+  &.new { color: #059669; }
+  &.rec { color: #1e3a5f; }
+  &.tot { color: #c9a227; }
+}
+
+.donut-label {
+  font-size: .78rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* ── Citas table ─────────────────────────────────────────────────── */
+.hora-badge {
+  background: #eff6ff;
+  color: #1e40af;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: .85rem;
+}
+
+/* ── Loading ─────────────────────────────────────────────────────── */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem;
+  gap: 1.5rem;
+  color: #9ca3af;
+}
+
+.loading-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #c9a227;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.citas-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #d1d5db;
+  mat-icon { font-size: 2.5rem; width: 2.5rem; height: 2.5rem; display: block; margin: 0 auto .75rem; }
+  p { margin: 0; font-size: .9rem; }
 }

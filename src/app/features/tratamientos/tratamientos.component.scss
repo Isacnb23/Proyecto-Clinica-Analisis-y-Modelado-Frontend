@@ -133,7 +133,7 @@
     }
 
     &.activos {
-      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      background: linear-gradient(135deg, #1a5c38 0%, #2d8653 100%);
 
       .stat-icon {
         background: rgba(255, 255, 255, 0.2);
@@ -154,7 +154,7 @@
     }
 
     &.ingresos {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      background: linear-gradient(135deg, #0f3460 0%, #16537e 100%);
 
       .stat-icon {
         background: rgba(255, 255, 255, 0.2);
@@ -379,4 +379,47 @@
       width: 100%;
     }
   }
+}
+/* ── Stats cards faltantes ──────────────────── */
+.stat-card.inactivos {
+  background: linear-gradient(135deg, #7b1f2c 0%, #a33040 100%);
+  .stat-icon { background: rgba(255,255,255,0.2); }
+}
+
+.stat-card.promedio {
+  background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%);
+  .stat-icon { background: rgba(3,14,36,0.2); }
+  .stat-info h3, .stat-info p { color: #030e24; }
+}
+
+/* ── Nombre cell: descripcion en nueva línea ── */
+.nombre-cell {
+  display: flex;
+  flex-direction: column;
+
+  strong { color: #111827; }
+
+  .descripcion {
+    display: block;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+  }
+}
+
+/* ── Estado chips ───────────────────────────── */
+.chip-activo {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+  font-weight: 600 !important;
+}
+
+.chip-inactivo {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  font-weight: 600 !important;
 }

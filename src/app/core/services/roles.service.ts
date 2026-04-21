@@ -16,31 +16,34 @@ export class RolesService {
   private defaultPermissions: Record<string, string[]> = {
     admin: [
       'dashboard.ver',
-      'empleados.ver',
-      'empleados.crear',
-      'empleados.editar',
-      'roles.ver',
-      'roles.asignar',
-      'inventario.ver',
-      'inventario.editar',
+      'pacientes.ver', 'pacientes.crear', 'pacientes.editar',
+      'citas.ver', 'citas.crear', 'citas.cancelar',
+      'tratamientos.ver', 'tratamientos.crear',
+      'empleados.ver', 'empleados.crear', 'empleados.editar',
+      'inventario.ver', 'inventario.editar',
+      'facturacion.ver', 'facturacion.pagar',
+      'roles.ver', 'roles.asignar',
       'reportes.ver'
     ],
     odontologo: [
       'dashboard.ver',
       'pacientes.ver',
-      'citas.ver',
-      'tratamientos.ver'
+      'citas.ver', 'citas.crear',
+      'tratamientos.ver', 'tratamientos.crear',
+      'horarios.ver'
     ],
     asistente: [
       'dashboard.ver',
       'pacientes.ver',
       'citas.ver',
-      'inventario.ver'
+      'inventario.ver',
+      'tratamientos.ver'
     ],
     recepcionista: [
       'dashboard.ver',
-      'pacientes.ver',
-      'citas.ver'
+      'pacientes.ver', 'pacientes.crear',
+      'citas.ver', 'citas.crear',
+      'facturacion.ver'
     ]
   };
 
@@ -83,7 +86,9 @@ export class RolesService {
       'roles.asignar',
       'inventario.ver',
       'inventario.editar',
-      'reportes.ver'
+      'reportes.ver',
+      'facturacion.ver',
+      'facturacion.pagar'
     ];
   }
 

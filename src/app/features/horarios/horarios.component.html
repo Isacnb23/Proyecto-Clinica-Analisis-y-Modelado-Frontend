@@ -1,0 +1,220 @@
+<div class="horarios-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="title-section">
+      <h1><mat-icon>schedule</mat-icon> Gestión de Horarios</h1>
+      <p>Configure la disponibilidad semanal de cada odontólogo o empleado</p>
+    </div>
+  </div>
+
+  <!-- SELECTOR EMPLEADO -->
+  <div class="section-card selector-card">
+    <mat-form-field appearance="outline" class="selector-field">
+      <mat-label>Seleccionar empleado</mat-label>
+      <mat-select [(ngModel)]="empleadoSeleccionado" (selectionChange)="onEmpleadoChange()">
+        <mat-option [value]="null">— Seleccione —</mat-option>
+        <mat-option *ngFor="let e of empleados" [value]="e">
+          {{ e.nombre }} {{ e.apellidos }}
+          <span *ngIf="e.especialidad || e.rol"> · {{ e.especialidad || e.rol }}</span>
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>person</mat-icon>
+    </mat-form-field>
+
+    <!-- Sin empleados -->
+    <div class="no-empleados-hint" *ngIf="empleados.length === 0">
+      <mat-icon>info</mat-icon>
+      No se encontraron empleados. Crea un empleado primero en el módulo de Empleados.
+    </div>
+  </div>
+
+  <!-- Placeholder cuando no hay selección -->
+  <div class="empty-state" *ngIf="!empleadoSeleccionado">
+    <mat-icon>event_available</mat-icon>
+    <p>Selecciona un empleado para ver y editar su horario</p>
+  </div>
+
+  <!-- PANEL PRINCIPAL -->
+  <div class="main-grid" *ngIf="empleadoSeleccionado">
+
+    <!-- ── BLOQUES DE DISPONIBILIDAD ─────────────────────── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="sh-left">
+          <mat-icon>calendar_today</mat-icon>
+          <h2>Horario Semanal</h2>
+        </div>
+        <button mat-raised-button color="primary" class="btn-add" (click)="abrirFormBloque()">
+          <mat-icon>add</mat-icon> Agregar bloque
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+
+      <div *ngIf="cargandoBloques" class="loading">
+        <mat-icon>hourglass_empty</mat-icon> Cargando horarios...
+      </div>
+
+      <div *ngIf="!cargandoBloques">
+        <div *ngFor="let dia of diasSemana" class="dia-section">
+          <div class="dia-header">
+            <span class="dia-label">{{ dia.nombre }}</span>
+            <span class="bloque-count"
+              [class.has-bloques]="getBloquesDelDia(dia.valor).length > 0">
+              {{ getBloquesDelDia(dia.valor).length }} bloque(s)
+            </span>
+          </div>
+
+          <div *ngIf="getBloquesDelDia(dia.valor).length === 0" class="sin-bloques">
+            Sin disponibilidad
+          </div>
+
+          <div class="bloques-lista" *ngIf="getBloquesDelDia(dia.valor).length > 0">
+            <div *ngFor="let b of getBloquesDelDia(dia.valor)" class="bloque-chip">
+              <mat-icon>access_time</mat-icon>
+              <span>{{ formatHora(b.horaInicio) }} – {{ formatHora(b.horaFin) }}</span>
+              <button mat-icon-button class="btn-del" (click)="eliminarBloque(b.id)"
+                matTooltip="Eliminar bloque">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EXCEPCIONES ───────────────────────────────────── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="sh-left">
+          <mat-icon>event_busy</mat-icon>
+          <h2>Excepciones / Bloqueos</h2>
+        </div>
+        <button mat-raised-button color="warn" class="btn-add" (click)="abrirFormExcep()">
+          <mat-icon>block</mat-icon> Agregar excepción
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+
+      <div *ngIf="cargandoExcep" class="loading">
+        <mat-icon>hourglass_empty</mat-icon> Cargando excepciones...
+      </div>
+
+      <div *ngIf="!cargandoExcep && excepciones.length === 0" class="sin-bloques" style="margin-top:1rem">
+        Sin bloqueos registrados
+      </div>
+
+      <div *ngIf="!cargandoExcep && excepciones.length > 0">
+        <div *ngFor="let ex of excepciones" class="excep-row">
+          <div class="excep-info">
+            <mat-icon class="excep-icon">event_busy</mat-icon>
+            <div>
+              <strong>{{ ex.tipo }}</strong>
+              <span class="excep-fechas">
+                {{ ex.fechaInicio | date:'dd/MM/yyyy' }} →
+                {{ ex.fechaFin   | date:'dd/MM/yyyy' }}
+              </span>
+              <span *ngIf="ex.motivo" class="excep-motivo">{{ ex.motivo }}</span>
+            </div>
+          </div>
+          <button mat-icon-button color="warn" (click)="eliminarExcepcion(ex.id)"
+            matTooltip="Eliminar excepción">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-grid -->
+
+</div>
+
+<!-- ── MODAL NUEVO BLOQUE ──────────────────────────────────── -->
+<div class="modal-overlay" *ngIf="mostrarFormBloque" (click)="mostrarFormBloque=false">
+  <mat-card class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><mat-icon>add_circle</mat-icon> Nuevo Bloque de Disponibilidad</h2>
+      <button mat-icon-button (click)="mostrarFormBloque=false"><mat-icon>close</mat-icon></button>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="modal-body">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Día de la semana</mat-label>
+        <mat-select [(ngModel)]="formBloque.diaSemana">
+          <mat-option *ngFor="let d of diasSemana" [value]="d.valor">{{ d.nombre }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>today</mat-icon>
+      </mat-form-field>
+
+      <div class="hora-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Hora de inicio</mat-label>
+          <input matInput type="time" [(ngModel)]="formBloque.horaInicio" step="1800">
+          <mat-icon matPrefix>access_time</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Hora de fin</mat-label>
+          <input matInput type="time" [(ngModel)]="formBloque.horaFin" step="1800">
+          <mat-icon matPrefix>access_time</mat-icon>
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="modal-actions">
+      <button mat-button (click)="mostrarFormBloque=false">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="guardarBloque()" [disabled]="guardandoBloque">
+        <mat-icon>save</mat-icon> {{ guardandoBloque ? 'Guardando...' : 'Guardar Bloque' }}
+      </button>
+    </div>
+  </mat-card>
+</div>
+
+<!-- ── MODAL NUEVA EXCEPCIÓN ──────────────────────────────── -->
+<div class="modal-overlay" *ngIf="mostrarFormExcep" (click)="mostrarFormExcep=false">
+  <mat-card class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><mat-icon>event_busy</mat-icon> Nueva Excepción / Bloqueo</h2>
+      <button mat-icon-button (click)="mostrarFormExcep=false"><mat-icon>close</mat-icon></button>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="modal-body">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tipo</mat-label>
+        <mat-select [(ngModel)]="formExcep.tipo">
+          <mat-option *ngFor="let t of tiposExcep" [value]="t">{{ t }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>category</mat-icon>
+      </mat-form-field>
+
+      <div class="hora-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha inicio</mat-label>
+          <input matInput type="date" [(ngModel)]="formExcep.fechaInicio">
+          <mat-icon matPrefix>event</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha fin</mat-label>
+          <input matInput type="date" [(ngModel)]="formExcep.fechaFin">
+          <mat-icon matPrefix>event</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Motivo (opcional)</mat-label>
+        <input matInput [(ngModel)]="formExcep.motivo" placeholder="Describa el motivo">
+        <mat-icon matPrefix>notes</mat-icon>
+      </mat-form-field>
+
+    </div>
+    <div class="modal-actions">
+      <button mat-button (click)="mostrarFormExcep=false">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="guardarExcepcion()" [disabled]="guardandoExcep">
+        <mat-icon>save</mat-icon> {{ guardandoExcep ? 'Guardando...' : 'Guardar Excepción' }}
+      </button>
+    </div>
+  </mat-card>
+</div>

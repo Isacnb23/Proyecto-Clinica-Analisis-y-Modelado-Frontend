@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -43,7 +43,7 @@ import { MatSelectModule } from '@angular/material/select';
   templateUrl: './pacientes.component.html',
   styleUrl: './pacientes.component.scss'
 })
-export class PacientesComponent implements OnInit, OnDestroy {
+export class PacientesComponent implements OnInit, AfterViewInit, OnDestroy {
   displayedColumns: string[] = [
     'nombre',
     'apellidos',
@@ -76,6 +76,16 @@ export class PacientesComponent implements OnInit, OnDestroy {
     this.dataSource = new MatTableDataSource<Paciente>([]);
   }
 
+  ngAfterViewInit(): void {
+    // Asignar paginator después de que la vista esté lista
+    if (this.dataSource && this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    if (this.dataSource && this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+  }
+
   ngOnInit(): void {
     this.cargarPacientes();
 
@@ -106,10 +116,8 @@ export class PacientesComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
 
         // Esperar a que el paginador esté disponible
-        setTimeout(() => {
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        });
+        if (this.paginator) this.dataSource.paginator = this.paginator;
+        if (this.sort) this.dataSource.sort = this.sort;;
 
         // Configurar filtro personalizado
         this.dataSource.filterPredicate = (data: Paciente, filter: string) => {
@@ -204,6 +212,8 @@ export class PacientesComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  imprimirLista(): void { window.print(); }
 
   nuevoPaciente(): void {
     this.router.navigate(['/pacientes', 'nuevo']);

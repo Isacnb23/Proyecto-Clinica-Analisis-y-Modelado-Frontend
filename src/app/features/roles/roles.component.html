@@ -1,155 +1,225 @@
-<div class="page-shell">
-  <mat-card class="page-card">
-    <div class="toolbar-row">
-      <div>
-        <h1 class="page-title">Roles y permisos</h1>
-        <p class="page-subtitle">
-          Gestión de roles, asignación a usuarios y permisos de demostración para el frontend.
-        </p>
+<div class="roles-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1><mat-icon>admin_panel_settings</mat-icon> Roles y Permisos</h1>
+        <p>Gestión de roles, permisos por módulo y usuarios del sistema</p>
       </div>
+      <button mat-raised-button class="btn-nuevo" (click)="abrirModalUsuario()">
+        <mat-icon>person_add</mat-icon> Nuevo Usuario
+      </button>
     </div>
+  </div>
 
-    <div class="roles-grid">
-      <!-- Lista de roles -->
-      <section class="section-card">
-        <h2>Gestión de roles</h2>
+  <div class="two-col">
 
-        <table class="app-table">
+    <!-- COL IZQUIERDA ─────────────────────────────────── -->
+    <div class="col-left">
+
+      <!-- Gestión de Roles -->
+      <div class="section-card">
+        <div class="section-header">
+          <mat-icon>shield</mat-icon>
+          <h2>Gestión de Roles</h2>
+        </div>
+        <mat-divider></mat-divider>
+
+        <table class="roles-table">
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
+            <tr><th>ID</th><th>Rol</th><th>Permisos</th><th>Estado</th><th>Acción</th></tr>
           </thead>
-
           <tbody>
             <tr *ngFor="let rol of roles">
-              <td>{{ rol.id }}</td>
-              <td>{{ rol.nombre }}</td>
+              <td class="td-id">{{ rol.id }}</td>
               <td>
-                <span class="status-badge" [class.active]="rol.activo" [class.inactive]="!rol.activo">
-                  {{ rol.activo ? 'Activo' : 'Inactivo' }}
-                </span>
+                <div class="rol-name">
+                  <mat-icon class="rol-icon">manage_accounts</mat-icon>
+                  {{ rol.nombre }}
+                </div>
               </td>
               <td>
-                <button
-                  mat-stroked-button
-                  [color]="rol.activo ? 'warn' : 'primary'"
-                  (click)="cambiarEstadoRol(rol)"
-                  [matTooltip]="rol.activo ? 'Desactivar rol' : 'Activar rol'">
+                <span class="perm-count">{{ countPermisos(rol.nombre) }} permisos</span>
+              </td>
+              <td>
+                <mat-chip-set>
+                  <mat-chip [class]="rol.activo ? 'chip-activo' : 'chip-inactivo'">
+                    {{ rol.activo ? 'Activo' : 'Inactivo' }}
+                  </mat-chip>
+                </mat-chip-set>
+              </td>
+              <td>
+                <button mat-stroked-button [color]="rol.activo ? 'warn' : 'primary'"
+                  (click)="cambiarEstadoRol(rol)" class="btn-estado">
                   {{ rol.activo ? 'Desactivar' : 'Activar' }}
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-      </section>
+      </div>
 
-      <!-- Asignación de rol -->
-      <section class="section-card">
-        <h2>Asignar rol a usuario</h2>
-
-        <div class="form-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Usuario</mat-label>
-            <mat-select [(ngModel)]="selectedUsuarioId" aria-label="Seleccionar usuario">
-              <mat-option *ngFor="let usuario of usuarios" [value]="usuario.id">
-                {{ usuario.email }} - Rol actual: {{ usuario.rol }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Nuevo rol</mat-label>
-            <mat-select [(ngModel)]="selectedRolId" aria-label="Seleccionar nuevo rol">
-              <mat-option *ngFor="let rol of roles" [value]="rol.id">
-                {{ rol.nombre }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+      <!-- Asignar Rol a Usuario -->
+      <div class="section-card">
+        <div class="section-header">
+          <mat-icon>person_pin</mat-icon>
+          <h2>Asignar Rol a Usuario</h2>
         </div>
+        <mat-divider></mat-divider>
 
-        <div class="form-actions">
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="asignarRol()"
-            aria-label="Asignar rol al usuario">
-            <mat-icon>admin_panel_settings</mat-icon>
-            Asignar rol
+        <div class="assign-row">
+          <mat-form-field appearance="outline" class="assign-field">
+            <mat-label>Usuario</mat-label>
+            <mat-select [(ngModel)]="selectedUsuarioId">
+              <mat-option *ngFor="let u of usuarios" [value]="u.id">
+                {{ u.email }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="assign-field">
+            <mat-label>Nuevo rol</mat-label>
+            <mat-select [(ngModel)]="selectedRolId">
+              <mat-option *ngFor="let r of roles" [value]="r.id">{{ r.nombre }}</mat-option>
+            </mat-select>
+            <mat-icon matPrefix>shield</mat-icon>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" (click)="asignarRol()">
+            <mat-icon>assignment_ind</mat-icon> Asignar rol
           </button>
         </div>
+      </div>
 
-        <h3 class="subsection-title">Usuarios registrados</h3>
+      <!-- Usuarios Registrados -->
+      <div class="section-card">
+        <div class="section-header">
+          <mat-icon>group</mat-icon>
+          <h2>Usuarios Registrados</h2>
+        </div>
+        <mat-divider></mat-divider>
 
-        <table class="app-table">
+        <table class="roles-table">
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Rol actual</th>
-              <th>Estado</th>
-              <th>Acción</th>
-            </tr>
+            <tr><th>ID</th><th>Email</th><th>Rol actual</th><th>Estado</th><th>Acción</th></tr>
           </thead>
-
           <tbody>
-            <tr *ngFor="let usuario of usuarios">
-              <td>{{ usuario.id }}</td>
-              <td>{{ usuario.email }}</td>
-              <td>{{ usuario.rol }}</td>
-              <td>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</td>
+            <tr *ngFor="let u of usuarios">
+              <td class="td-id">{{ u.id }}</td>
+              <td>{{ u.email }}</td>
               <td>
-                <button
-                  mat-stroked-button
-                  color="warn"
-                  (click)="revocarRol(usuario.id)"
-                  aria-label="Revocar rol del usuario">
+                <mat-chip-set>
+                  <mat-chip class="chip-rol">{{ u.rol }}</mat-chip>
+                </mat-chip-set>
+              </td>
+              <td>
+                <mat-chip-set>
+                  <mat-chip [class]="u.activo ? 'chip-activo' : 'chip-inactivo'">
+                    {{ u.activo ? 'Activo' : 'Inactivo' }}
+                  </mat-chip>
+                </mat-chip-set>
+              </td>
+              <td>
+                <button mat-stroked-button color="warn" (click)="revocarRol(u.id)" class="btn-estado">
                   Revocar
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
-      </section>
+      </div>
 
-      <!-- Permisos -->
-      <section class="section-card permissions-card">
-        <h2>Permisos disponibles</h2>
-        <p class="info-text">
-          Esta parte es visual para demo, porque el backend actual no trae persistencia real de permisos por rol.
-        </p>
+    </div><!-- /col-left -->
+
+    <!-- COL DERECHA ─────────────────────────────────── -->
+    <div class="col-right">
+      <div class="section-card permisos-card">
+        <div class="section-header">
+          <mat-icon>lock_open</mat-icon>
+          <h2>Permisos por Rol</h2>
+        </div>
+        <p class="permisos-hint">Los cambios se aplican en el navegador actual. Aquí defines qué puede ver cada rol.</p>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Rol para editar permisos</mat-label>
-          <mat-select [(ngModel)]="selectedRoleNameForPermissions" aria-label="Seleccionar rol para permisos">
-            <mat-option *ngFor="let rol of roles" [value]="rol.nombre">
-              {{ rol.nombre }}
-            </mat-option>
+          <mat-label>Rol a editar</mat-label>
+          <mat-select [(ngModel)]="selectedRoleNameForPermissions">
+            <mat-option *ngFor="let r of roles" [value]="r.nombre">{{ r.nombre }}</mat-option>
           </mat-select>
+          <mat-icon matPrefix>shield</mat-icon>
         </mat-form-field>
 
-        <div class="permissions-grid">
-          <mat-checkbox
-            *ngFor="let permission of availablePermissions"
-            [checked]="hasPermission(permission)"
-            (change)="togglePermission(permission, $event.checked)">
-            {{ permission }}
-          </mat-checkbox>
+        <div class="permisos-grupos">
+          <div *ngFor="let grupo of permisosGrupos" class="perm-grupo">
+            <div class="perm-grupo-header">
+              <mat-icon>{{ grupo.icon }}</mat-icon>
+              <span>{{ grupo.grupo }}</span>
+            </div>
+            <div class="perm-checks">
+              <mat-checkbox
+                *ngFor="let p of grupo.permisos"
+                [checked]="hasPermission(p)"
+                (change)="togglePermission(p, $event.checked)"
+                class="perm-check">
+                {{ formatPermiso(p) }}
+              </mat-checkbox>
+            </div>
+          </div>
         </div>
 
-        <div class="form-actions">
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="guardarPermisosDemo()"
-            aria-label="Guardar permisos de demostración">
-            Guardar permisos demo
-          </button>
-        </div>
-      </section>
+        <button mat-raised-button color="primary" class="btn-guardar" (click)="guardarPermisos()">
+          <mat-icon>save</mat-icon> Guardar permisos
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /two-col -->
+</div>
+
+<!-- MODAL NUEVO USUARIO -->
+<div class="modal-overlay" *ngIf="mostrarModalUsuario" (click)="cerrarModalUsuario()">
+  <mat-card class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2><mat-icon>person_add</mat-icon> Nuevo Usuario</h2>
+      <button mat-icon-button (click)="cerrarModalUsuario()"><mat-icon>close</mat-icon></button>
+    </div>
+    <mat-divider></mat-divider>
+
+    <div class="modal-body">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email *</mat-label>
+        <input matInput type="email" [(ngModel)]="nuevoUsuario.email" placeholder="usuario@clinica.com">
+        <mat-icon matPrefix>email</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña *</mat-label>
+        <input matInput type="password" [(ngModel)]="nuevoUsuario.password">
+        <mat-icon matPrefix>lock</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirmar contraseña *</mat-label>
+        <input matInput type="password" [(ngModel)]="nuevoUsuario.confirmPassword">
+        <mat-icon matPrefix>lock_reset</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Rol *</mat-label>
+        <mat-select [(ngModel)]="nuevoUsuario.rolId">
+          <mat-option [value]="0">— Seleccione —</mat-option>
+          <mat-option *ngFor="let r of roles" [value]="r.id">{{ r.nombre }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>shield</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <div class="modal-actions">
+      <button mat-button (click)="cerrarModalUsuario()">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="crearUsuario()" [disabled]="creandoUsuario">
+        <mat-icon>check</mat-icon> {{ creandoUsuario ? 'Creando...' : 'Crear Usuario' }}
+      </button>
     </div>
   </mat-card>
 </div>

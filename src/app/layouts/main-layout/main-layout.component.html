@@ -14,7 +14,8 @@
           <div class="clinic-info" *ngIf="sidenavOpened">
             <h3>Clínica Dental</h3>
             <p>PCA</p>
-          </div>
+          
+</div>
         </div>
       </div>
 
@@ -22,14 +23,14 @@
       <mat-nav-list class="nav-list">
         <a
           mat-list-item
-          *ngFor="let item of menuItems"
+          *ngFor="let item of visibleMenuItems"
           [routerLink]="item.route"
           routerLinkActive="active"
           [matTooltip]="!sidenavOpened ? item.label : ''"
           matTooltipPosition="right"
           class="nav-item">
 
-          <mat-icon matListItemIcon [matBadge]="item.badge" matBadgeColor="warn">
+          <mat-icon matListItemIcon [matBadge]="item.badge" [matBadgeHidden]="!item.badge" matBadgeColor="warn">
             {{ item.icon }}
           </mat-icon>
 
@@ -72,10 +73,24 @@
         <!-- Notificaciones -->
         <app-notification-bell></app-notification-bell>
 
-        <!-- Búsqueda rápida -->
-        <button
-          mat-icon-button
-          matTooltip="Búsqueda rápida">
+        <!-- Buscador expandible en el toolbar -->
+        <div class="search-bar-active" *ngIf="mostrarBuscador">
+          <mat-icon class="search-lupa-icon">search</mat-icon>
+          <input
+            id="search-inline-input"
+            type="text"
+            [(ngModel)]="terminoBusqueda"
+            placeholder="Buscar paciente, cita, módulo..."
+            (keyup.enter)="buscar()"
+            (keyup.escape)="cerrarBuscador()"
+            class="search-bar-input">
+          <button mat-icon-button class="btn-search-close" (click)="cerrarBuscador()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <button mat-icon-button matTooltip="Buscar"
+          *ngIf="!mostrarBuscador"
+          (click)="abrirBuscador()">
           <mat-icon>search</mat-icon>
         </button>
 
@@ -101,17 +116,17 @@
 
           <mat-divider></mat-divider>
 
-          <button mat-menu-item>
+          <button mat-menu-item (click)="irAPerfil()">
             <mat-icon>person</mat-icon>
             <span>Mi Perfil</span>
           </button>
 
-          <button mat-menu-item>
+          <button mat-menu-item (click)="irAConfiguracion()">
             <mat-icon>settings</mat-icon>
             <span>Configuración</span>
           </button>
 
-          <button mat-menu-item>
+          <button mat-menu-item (click)="irAAyuda()">
             <mat-icon>help</mat-icon>
             <span>Ayuda</span>
           </button>

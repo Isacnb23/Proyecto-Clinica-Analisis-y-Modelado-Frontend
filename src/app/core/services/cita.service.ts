@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
-// Interfaz principal de Cita (debe coincidir con el backend)
 export interface Cita {
   id?: number;
   pacienteId: number;
@@ -23,7 +22,6 @@ export interface Cita {
   empleadoEspecialidad?: string;
 }
 
-// Interfaces auxiliares (para el formulario)
 export interface Odontologo {
   id: number;
   nombre: string;
@@ -31,7 +29,8 @@ export interface Odontologo {
   activo: boolean;
 }
 
-export interface Tratamiento {
+// Tipos de atención para citas (solo para UX/duración, no se envían al backend)
+export interface TipoCita {
   id: number;
   nombre: string;
   descripcion: string;
@@ -40,16 +39,14 @@ export interface Tratamiento {
   activo: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class CitaService {
   private apiUrl = `${environment.apiUrl}/citas`;
+  private empleadosUrl = `${environment.apiUrl}/Empleados`;
 
   constructor(private http: HttpClient) {}
 
-  // ==================== ENDPOINTS REALES ====================
-  
+  // ──────────────── CITAS ────────────────────────────────────────
   getCitas(): Observable<Cita[]> {
     return this.http.get<Cita[]>(this.apiUrl);
   }
@@ -83,49 +80,56 @@ export class CitaService {
   }
 
   cancelarCita(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/cancelar`, {});
+    return this.http.patch(`${this.apiUrl}/${id}/cancelar`, { motivo: 'Cancelada por el sistema' });
   }
 
   completarCita(id: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/completar`, {});
   }
 
-  // ==================== MÉTODOS AUXILIARES (MOCK TEMPORAL) ====================
-  // TODO: Reemplazar con endpoints reales cuando estén disponibles
-  
+  // ──────────────── ODONTÓLOGOS (API REAL) ───────────────────────
+  // ✅ Usa el endpoint real de empleados
   getOdontologos(): Observable<Odontologo[]> {
-    // TEMPORAL: Datos mock hasta que el backend tenga endpoint /empleados
-    return of([
-      { id: 1, nombre: 'Dr. Juan Pérez', especialidad: 'Odontología General', activo: true },
-      { id: 2, nombre: 'Dra. Ana Mora', especialidad: 'Ortodoncia', activo: true },
-      { id: 3, nombre: 'Dr. Carlos Solís', especialidad: 'Endodoncia', activo: true },
-      { id: 4, nombre: 'Dra. María Jiménez', especialidad: 'Periodoncia', activo: true }
-    ]).pipe(delay(300));
+    return this.http.get<any[]>(this.empleadosUrl).pipe(
+      map(empleados =>
+        empleados
+          .filter((e: any) => e.activo !== false)
+          .map((e: any) => ({
+            id: e.id,
+            nombre: `${e.nombre || ''} ${e.apellidos || ''}`.trim(),
+            especialidad: e.especialidad || e.rol || 'Sin especialidad',
+            activo: e.activo ?? true
+          }))
+      ),
+      catchError(() => of([]))
+    );
   }
 
-  getTratamientos(): Observable<Tratamiento[]> {
-    // TEMPORAL: Datos mock hasta que el backend tenga endpoint /tratamientos
+  // ──────────────── TIPOS DE CITA (para duración UX) ─────────────
+  // No se envían al backend — son solo para que el form calcule la duración
+  getTratamientos(): Observable<TipoCita[]> {
     return of([
-      { id: 1, nombre: 'Limpieza Dental', descripcion: 'Profilaxis dental completa', duracionEstimada: 30, costo: 25000, activo: true },
-      { id: 2, nombre: 'Blanqueamiento', descripcion: 'Blanqueamiento dental profesional', duracionEstimada: 60, costo: 120000, activo: true },
-      { id: 3, nombre: 'Ortodoncia - Consulta', descripcion: 'Primera consulta de ortodoncia', duracionEstimada: 45, costo: 15000, activo: true },
-      { id: 4, nombre: 'Ortodoncia - Control', descripcion: 'Control mensual de ortodoncia', duracionEstimada: 30, costo: 35000, activo: true },
-      { id: 5, nombre: 'Endodoncia', descripcion: 'Tratamiento de conducto', duracionEstimada: 90, costo: 180000, activo: true },
-      { id: 6, nombre: 'Extracción Simple', descripcion: 'Extracción de pieza dental', duracionEstimada: 30, costo: 35000, activo: true },
-      { id: 7, nombre: 'Corona Dental', descripcion: 'Colocación de corona', duracionEstimada: 60, costo: 250000, activo: true },
-      { id: 8, nombre: 'Implante Dental', descripcion: 'Colocación de implante', duracionEstimada: 120, costo: 800000, activo: true }
-    ]).pipe(delay(300));
+      { id: 1,  nombre: 'Consulta General',      descripcion: 'Revisión general', duracionEstimada: 30,  costo: 15000,  activo: true },
+      { id: 2,  nombre: 'Limpieza Dental',        descripcion: 'Profilaxis dental', duracionEstimada: 45,  costo: 25000,  activo: true },
+      { id: 3,  nombre: 'Blanqueamiento',          descripcion: 'Blanqueamiento profesional', duracionEstimada: 60,  costo: 120000, activo: true },
+      { id: 4,  nombre: 'Ortodoncia - Consulta',  descripcion: 'Primera consulta', duracionEstimada: 45,  costo: 15000,  activo: true },
+      { id: 5,  nombre: 'Ortodoncia - Control',   descripcion: 'Control mensual', duracionEstimada: 30,  costo: 35000,  activo: true },
+      { id: 6,  nombre: 'Endodoncia',              descripcion: 'Tratamiento de conducto', duracionEstimada: 90,  costo: 180000, activo: true },
+      { id: 7,  nombre: 'Extracción Simple',       descripcion: 'Extracción de pieza', duracionEstimada: 30,  costo: 35000,  activo: true },
+      { id: 8,  nombre: 'Extracción Compleja',     descripcion: 'Extracción quirúrgica', duracionEstimada: 60,  costo: 80000,  activo: true },
+      { id: 9,  nombre: 'Corona Dental',           descripcion: 'Colocación de corona', duracionEstimada: 60,  costo: 250000, activo: true },
+      { id: 10, nombre: 'Implante Dental',         descripcion: 'Colocación de implante', duracionEstimada: 120, costo: 800000, activo: true },
+      { id: 11, nombre: 'Resina Compuesta',        descripcion: 'Restauración con resina', duracionEstimada: 45,  costo: 40000,  activo: true },
+      { id: 12, nombre: 'Urgencia Dental',         descripcion: 'Atención de urgencia', duracionEstimada: 30,  costo: 20000,  activo: true },
+    ]);
   }
 
-  getHorariosDisponibles(fecha: Date, empleadoId: number): Observable<string[]> {
-    // TEMPORAL: Horarios mock hasta que el backend tenga endpoint /horarios
-    const horariosBase = [
-      '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-      '01:00', '01:30', '02:00', '02:30', '03:00', '03:30', '04:00', '04:30', '05:00', '05:30'
-    ];
-    
-    // Por ahora devuelve todos los horarios
-    // TODO: Consultar disponibilidad real con el backend
-    return of(horariosBase).pipe(delay(300));
+  // Horarios disponibles (slots fijos — pendiente integración con horarios reales)
+  getHorariosDisponibles(_fecha: any, _empleadoId: number): Observable<string[]> {
+    return of([
+      '07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30',
+      '11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30',
+      '16:00','16:30','17:00'
+    ]);
   }
 }

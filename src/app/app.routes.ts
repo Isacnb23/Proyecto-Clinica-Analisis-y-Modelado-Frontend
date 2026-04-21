@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   {
@@ -18,10 +19,12 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
         path: 'pacientes',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/pacientes/pacientes.component').then(m => m.PacientesComponent)
       },
       {
@@ -38,6 +41,7 @@ export const routes: Routes = [
       },
       {
         path: 'citas',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/citas/citas.component').then(m => m.CitasComponent)
       },
       {
@@ -45,7 +49,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/citas/cita-form/cita-form.component').then(m => m.CitaFormComponent)
       },
       {
+        path: 'citas/:id',
+        canActivate: [roleGuard],
+        loadComponent: () => import('./features/citas/cita-detalle/cita-detalle.component').then(m => m.CitaDetalleComponent)
+      },
+      {
         path: 'tratamientos',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/tratamientos/tratamientos.component').then(m => m.TratamientosComponent)
       },
       {
@@ -58,6 +68,7 @@ export const routes: Routes = [
       },
       {
         path: 'empleados',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/empleados/empleados.component').then(m => m.EmpleadosComponent)
       },
       {
@@ -70,6 +81,7 @@ export const routes: Routes = [
       },
       {
         path: 'inventario',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/inventario/inventario.component').then(m => m.InventarioComponent)
       },
       {
@@ -82,8 +94,51 @@ export const routes: Routes = [
       },
       {
         path: 'roles',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/roles/roles.component').then(m => m.RolesComponent)
+      },
+      {
+        path: 'usuarios',
+        loadComponent: () => import('./features/usuarios/usuarios.component').then(m => m.UsuariosComponent),
+        canActivate: [authGuard]
+      },
+
+      {
+        path: 'horarios',
+        canActivate: [roleGuard],
+        loadComponent: () => import('./features/horarios/horarios.component').then(m => m.HorariosComponent)
+      },
+
+      {
+        path: 'facturacion',
+        canActivate: [roleGuard],
+        loadComponent: () => import('./features/facturacion/facturacion.component').then(m => m.FacturacionComponent)
+      },
+
+      {
+        path: 'reportes',
+        canActivate: [roleGuard],
+        loadComponent: () => import('./features/reportes/reportes.component').then(m => m.ReportesComponent)
+      },
+
+      {
+        path: 'perfil',
+        loadComponent: () => import('./features/perfil/perfil-config-ayuda.component').then(m => m.PerfilComponent)
+      },
+      {
+        path: 'configuracion',
+        loadComponent: () => import('./features/perfil/perfil-config-ayuda.component').then(m => m.ConfiguracionComponent)
+      },
+      {
+        path: 'ayuda',
+        loadComponent: () => import('./features/perfil/perfil-config-ayuda.component').then(m => m.AyudaComponent)
+      },
+      {
+        path: 'roles-permisos',
+        loadComponent: () => import('./features/roles-permisos/roles-permisos.component').then(m => m.RolesPermisosComponent),
+        canActivate: [authGuard]
       }
+
     ]
   },
   {

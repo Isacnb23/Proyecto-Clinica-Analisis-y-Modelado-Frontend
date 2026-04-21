@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -42,7 +43,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './tratamientos.component.html',
   styleUrl: './tratamientos.component.scss'
 })
-export class TratamientosComponent implements OnInit {
+export class TratamientosComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'codigo',
     'nombre',
@@ -75,6 +76,11 @@ export class TratamientosComponent implements OnInit {
     this.dataSource = new MatTableDataSource<Tratamiento>([]);
   }
 
+  ngAfterViewInit(): void {
+    if (this.paginator) this.dataSource.paginator = this.paginator;
+    if (this.sort)      this.dataSource.sort      = this.sort;
+  }
+
   ngOnInit(): void {
     this.cargarTratamientos();
     this.cargarCategorias();
@@ -91,9 +97,9 @@ export class TratamientosComponent implements OnInit {
         this.dataSource.filterPredicate = (data: Tratamiento, filter: string) => {
           const searchStr = filter.toLowerCase();
           return data.nombre.toLowerCase().includes(searchStr) ||
-                 data.codigo.toLowerCase().includes(searchStr) ||
-                 data.descripcion.toLowerCase().includes(searchStr) ||
-                 data.categoriaNombre.toLowerCase().includes(searchStr);
+                 (data.codigo || '').toLowerCase().includes(searchStr) ||
+                 (data.descripcion || '').toLowerCase().includes(searchStr) ||
+                 (data.categoriaNombre || '').toLowerCase().includes(searchStr);
         };
 
         // Calcular estadísticas
@@ -124,7 +130,7 @@ export class TratamientosComponent implements OnInit {
     this.tratamientosInactivos = tratamientos.filter(t => !t.activo).length;
 
     if (tratamientos.length > 0) {
-      const sumaPrecios = tratamientos.reduce((sum, t) => sum + t.costo, 0);
+      const sumaPrecios = tratamientos.reduce((sum, t) => sum + (t.costo ?? 0), 0);
       this.promedioPrecios = Math.round(sumaPrecios / tratamientos.length);
     }
   }
@@ -191,6 +197,8 @@ export class TratamientosComponent implements OnInit {
   nuevoTratamiento(): void {
     this.router.navigate(['/tratamientos', 'nuevo']);
   }
+
+  imprimirLista(): void { window.print(); }
 
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('es-CR', {

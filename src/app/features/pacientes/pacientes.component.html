@@ -1,4 +1,3 @@
-
 <div class="pacientes-container">
   <!-- Header con estadísticas -->
   <div class="page-header">
@@ -58,33 +57,34 @@
   <!-- Tabla de pacientes -->
   <div class="table-container" data-aos="fade-up">
     <div class="table-header">
-      <mat-form-field appearance="outline">
-          <mat-label>Estado</mat-label>
-          <mat-select [(ngModel)]="filtroEstado" (selectionChange)="filtrarPorEstado()">
-            <mat-option value="todos">Todos</mat-option>
-            <mat-option value="activos">Activos</mat-option>
-            <mat-option value="inactivos">Inactivos</mat-option>
-          </mat-select>
-        </mat-form-field>
+      <!-- Filtro Estado -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Estado</mat-label>
+        <mat-select [(ngModel)]="filtroEstado" (selectionChange)="filtrarPorEstado()">
+          <mat-option value="todos">Todos</mat-option>
+          <mat-option value="activos">Activos</mat-option>
+          <mat-option value="inactivos">Inactivos</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>filter_list</mat-icon>
+      </mat-form-field>
+
+      <!-- Buscador -->
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>Buscar paciente</mat-label>
         <input
           matInput
           (keyup)="aplicarFiltro($event)"
-          placeholder="Nombre, cédula, expediente..."
+          placeholder="Nombre, apellidos o cédula..."
           #input>
         <mat-icon matPrefix>search</mat-icon>
+        <mat-hint>Busca por nombre, apellidos o cédula</mat-hint>
       </mat-form-field>
 
+      <!-- Acciones -->
       <div class="table-actions">
-        <button mat-icon-button matTooltip="Filtros">
-          <mat-icon>filter_list</mat-icon>
-        </button>
-        <button mat-icon-button matTooltip="Exportar">
-          <mat-icon>download</mat-icon>
-        </button>
-        <button mat-icon-button matTooltip="Imprimir">
+        <button mat-stroked-button (click)="imprimirLista()" matTooltip="Imprimir lista">
           <mat-icon>print</mat-icon>
+          Imprimir
         </button>
       </div>
     </div>

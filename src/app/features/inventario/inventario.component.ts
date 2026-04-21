@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -44,7 +45,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.scss'
 })
-export class InventarioComponent implements OnInit {
+export class InventarioComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'codigo',
     'nombre',
@@ -72,6 +73,11 @@ export class InventarioComponent implements OnInit {
     private toastr: ToastrService
   ) {
     this.dataSource = new MatTableDataSource<ProductoInventario>([]);
+  }
+
+  ngAfterViewInit(): void {
+    if (this.paginator) this.dataSource.paginator = this.paginator;
+    if (this.sort)      this.dataSource.sort      = this.sort;
   }
 
   ngOnInit(): void {
@@ -202,6 +208,8 @@ export class InventarioComponent implements OnInit {
   nuevoProducto(): void {
     this.router.navigate(['/inventario', 'nuevo']);
   }
+
+  imprimirLista(): void { window.print(); }
 
   getCategoriaById(id: number): CategoriaInventario | undefined {
     return this.categorias.find(c => c.id === id);

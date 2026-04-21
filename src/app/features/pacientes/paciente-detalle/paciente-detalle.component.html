@@ -1,4 +1,5 @@
 <div class="detalle-container" *ngIf="!loading && paciente">
+
   <!-- Header -->
   <div class="detalle-header">
     <div class="header-content">
@@ -25,6 +26,7 @@
       </div>
 
       <div class="header-actions">
+        <!-- ✅ Navega a nueva cita con paciente preseleccionado -->
         <button mat-raised-button color="primary" (click)="agendarCita()">
           <mat-icon>event</mat-icon>
           Agendar Cita
@@ -37,8 +39,8 @@
     </div>
   </div>
 
-  <!-- Contenido con Tabs -->
-  <mat-tab-group class="tabs-container">
+  <!-- Tabs -->
+  <mat-tab-group class="tabs-container" [(selectedIndex)]="tabActivo">
 
     <!-- TAB 1: Información General -->
     <mat-tab label="Información General">
@@ -48,10 +50,7 @@
           <!-- Datos Personales -->
           <mat-card>
             <mat-card-header>
-              <mat-card-title>
-                <mat-icon>person</mat-icon>
-                Datos Personales
-              </mat-card-title>
+              <mat-card-title><mat-icon>person</mat-icon> Datos Personales</mat-card-title>
             </mat-card-header>
             <mat-card-content>
               <div class="info-item">
@@ -63,7 +62,7 @@
                 <span class="label">Cédula:</span>
                 <span class="value">{{ paciente.cedula }}</span>
               </div>
-              <mat-divider></mat-divider>
+              <mat-divider *ngIf="paciente.fecha_nacimiento"></mat-divider>
               <div class="info-item" *ngIf="paciente.fecha_nacimiento">
                 <span class="label">Fecha de Nacimiento:</span>
                 <span class="value">{{ paciente.fecha_nacimiento | date:'dd/MM/yyyy' }}</span>
@@ -79,18 +78,14 @@
           <!-- Datos de Contacto -->
           <mat-card>
             <mat-card-header>
-              <mat-card-title>
-                <mat-icon>contact_phone</mat-icon>
-                Datos de Contacto
-              </mat-card-title>
+              <mat-card-title><mat-icon>contact_phone</mat-icon> Datos de Contacto</mat-card-title>
             </mat-card-header>
             <mat-card-content>
               <div class="info-item">
-                <span class="label">Teléfono Principal:</span>
+                <span class="label">Teléfono:</span>
                 <span class="value">
                   <a href="tel:{{ paciente.telefono }}" class="link">
-                    <mat-icon>phone</mat-icon>
-                    {{ paciente.telefono }}
+                    <mat-icon>phone</mat-icon> {{ paciente.telefono }}
                   </a>
                 </span>
               </div>
@@ -99,8 +94,7 @@
                 <span class="label">Email:</span>
                 <span class="value">
                   <a href="mailto:{{ paciente.email }}" class="link">
-                    <mat-icon>email</mat-icon>
-                    {{ paciente.email }}
+                    <mat-icon>email</mat-icon> {{ paciente.email }}
                   </a>
                 </span>
               </div>
@@ -112,13 +106,10 @@
             </mat-card-content>
           </mat-card>
 
-          <!-- Responsable (si existe) -->
+          <!-- Responsable emergencia -->
           <mat-card *ngIf="paciente.nombre_emergencia">
             <mat-card-header>
-              <mat-card-title>
-                <mat-icon>supervised_user_circle</mat-icon>
-                Responsable/Emergencia
-              </mat-card-title>
+              <mat-card-title><mat-icon>supervised_user_circle</mat-icon> Responsable / Emergencia</mat-card-title>
             </mat-card-header>
             <mat-card-content>
               <div class="info-item">
@@ -128,36 +119,33 @@
               <mat-divider></mat-divider>
               <div class="info-item">
                 <span class="label">Relación:</span>
-                <span class="value">{{ paciente.relacion_emergencia }}</span>
+                <span class="value">{{ paciente.relacion_emergencia || '—' }}</span>
               </div>
               <mat-divider></mat-divider>
               <div class="info-item">
                 <span class="label">Teléfono:</span>
                 <span class="value">
                   <a href="tel:{{ paciente.telefono_emergencia }}" class="link">
-                    <mat-icon>phone</mat-icon>
-                    {{ paciente.telefono_emergencia }}
+                    <mat-icon>phone</mat-icon> {{ paciente.telefono_emergencia }}
                   </a>
                 </span>
               </div>
             </mat-card-content>
           </mat-card>
 
-          <!-- Información Adicional -->
+          <!-- Registro -->
           <mat-card>
             <mat-card-header>
-              <mat-card-title>
-                <mat-icon>info</mat-icon>
-                Información Adicional
-              </mat-card-title>
+              <mat-card-title><mat-icon>info</mat-icon> Información Adicional</mat-card-title>
             </mat-card-header>
             <mat-card-content>
               <div class="info-item">
                 <span class="label">Fecha de Registro:</span>
-                <span class="value">{{ paciente.fecha_registro | date:'dd/MM/yyyy HH:mm' }}</span>
+                <span class="value">{{ paciente.fecha_registro | date:'dd/MM/yyyy' }}</span>
               </div>
             </mat-card-content>
           </mat-card>
+
         </div>
       </div>
     </mat-tab>
@@ -167,13 +155,9 @@
       <div class="tab-content">
         <mat-card>
           <mat-card-header>
-            <mat-card-title>
-              <mat-icon>medical_services</mat-icon>
-              Información Médica
-            </mat-card-title>
+            <mat-card-title><mat-icon>medical_services</mat-icon> Información Médica</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-
             <div class="medical-section" *ngIf="paciente.alergias">
               <div class="section-header warning">
                 <mat-icon>warning</mat-icon>
@@ -181,9 +165,7 @@
               </div>
               <p>{{ paciente.alergias }}</p>
             </div>
-
             <mat-divider *ngIf="paciente.alergias && paciente.enfermedades_cronicas"></mat-divider>
-
             <div class="medical-section" *ngIf="paciente.enfermedades_cronicas">
               <div class="section-header">
                 <mat-icon>local_hospital</mat-icon>
@@ -191,9 +173,7 @@
               </div>
               <p>{{ paciente.enfermedades_cronicas }}</p>
             </div>
-
             <mat-divider *ngIf="paciente.enfermedades_cronicas && paciente.medicamentos"></mat-divider>
-
             <div class="medical-section" *ngIf="paciente.medicamentos">
               <div class="section-header">
                 <mat-icon>medication</mat-icon>
@@ -201,8 +181,8 @@
               </div>
               <p>{{ paciente.medicamentos }}</p>
             </div>
-
-            <div class="no-medical-data" *ngIf="!paciente.alergias && !paciente.enfermedades_cronicas && !paciente.medicamentos">
+            <div class="no-medical-data"
+              *ngIf="!paciente.alergias && !paciente.enfermedades_cronicas && !paciente.medicamentos">
               <mat-icon>info</mat-icon>
               <p>No hay información médica registrada para este paciente.</p>
             </div>
@@ -211,41 +191,136 @@
       </div>
     </mat-tab>
 
-    <!-- TAB 3: Historial de Citas -->
-    <mat-tab label="Historial de Citas">
+    <!-- TAB 3: Historial de Citas ✅ CONECTADO -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        Historial de Citas
+        <span class="tab-badge" *ngIf="citas.length > 0">{{ citas.length }}</span>
+      </ng-template>
       <div class="tab-content">
-        <mat-card>
+
+        <!-- Cargando -->
+        <div class="loading-tab" *ngIf="cargandoCitas">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Cargando citas...</p>
+        </div>
+
+        <!-- Tabla de citas reales -->
+        <mat-card *ngIf="!cargandoCitas && citas.length > 0">
+          <mat-card-content>
+            <table class="citas-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Profesional</th>
+                  <th>Motivo</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cita of citas">
+                  <td>{{ cita.fecha | date:'dd/MM/yyyy' }}</td>
+                  <td>{{ formatHora(cita.horaInicio) }}</td>
+                  <td>{{ cita.empleadoNombre || '—' }} {{ cita.empleadoApellidos || '' }}</td>
+                  <td>{{ cita.motivo || '—' }}</td>
+                  <td>
+                    <span class="cita-badge" [class]="getEstadoClass(cita.estado)">
+                      {{ cita.estado }}
+                    </span>
+                  </td>
+                  <td>
+                    <button mat-icon-button (click)="verDetalleCita(cita)" matTooltip="Ver detalle">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Sin citas -->
+        <mat-card *ngIf="!cargandoCitas && citas.length === 0">
           <mat-card-content>
             <div class="no-data">
               <mat-icon>event_busy</mat-icon>
-              <p>Aún no hay citas registradas para este paciente.</p>
+              <p>No hay citas registradas para este paciente.</p>
               <button mat-raised-button color="primary" (click)="agendarCita()">
-                <mat-icon>add</mat-icon>
-                Agendar Primera Cita
+                <mat-icon>add</mat-icon> Agendar Primera Cita
               </button>
             </div>
           </mat-card-content>
         </mat-card>
+
       </div>
     </mat-tab>
 
-    <!-- TAB 4: Tratamientos -->
-    <mat-tab label="Tratamientos">
+    <!-- TAB 4: Tratamientos ✅ CONECTADO -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        Tratamientos
+        <span class="tab-badge" *ngIf="tratamientos.length > 0">{{ tratamientos.length }}</span>
+      </ng-template>
       <div class="tab-content">
-        <mat-card>
+
+        <!-- Cargando -->
+        <div class="loading-tab" *ngIf="cargandoTratamientos">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Cargando tratamientos...</p>
+        </div>
+
+        <!-- Tabla de tratamientos -->
+        <mat-card *ngIf="!cargandoTratamientos && tratamientos.length > 0">
+          <mat-card-content>
+            <table class="citas-table">
+              <thead>
+                <tr>
+                  <th>Tratamiento</th>
+                  <th>Profesional</th>
+                  <th>Inicio</th>
+                  <th>Costo</th>
+                  <th>Saldo</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let t of tratamientos">
+                  <td><strong>{{ t.nombre }}</strong></td>
+                  <td>{{ t.empleadoNombre || '—' }}</td>
+                  <td>{{ t.fechaInicio | date:'dd/MM/yyyy' }}</td>
+                  <td>₡{{ t.costoTotal | number:'1.0-0' }}</td>
+                  <td [class]="getSaldoClass(t)">₡{{ t.saldo | number:'1.0-0' }}</td>
+                  <td>
+                    <span class="cita-badge"
+                      [class]="t.estadoId === 2 ? 'badge-comp' : t.estadoId === 3 ? 'badge-canc' : 'badge-pend'">
+                      {{ t.estadoId === 2 ? 'Completado' : t.estadoId === 3 ? 'Cancelado' : 'En proceso' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Sin tratamientos -->
+        <mat-card *ngIf="!cargandoTratamientos && tratamientos.length === 0">
           <mat-card-content>
             <div class="no-data">
               <mat-icon>medical_services</mat-icon>
-              <p>No hay tratamientos registrados.</p>
+              <p>No hay tratamientos registrados para este paciente.</p>
             </div>
           </mat-card-content>
         </mat-card>
+
       </div>
     </mat-tab>
+
   </mat-tab-group>
 </div>
 
-<!-- Loading -->
+<!-- Loading principal -->
 <div class="loading-container" *ngIf="loading">
   <mat-icon class="loading-icon">hourglass_empty</mat-icon>
   <p>Cargando información del paciente...</p>
