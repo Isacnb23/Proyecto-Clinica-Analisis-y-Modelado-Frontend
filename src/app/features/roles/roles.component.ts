@@ -111,7 +111,8 @@ export class RolesComponent implements OnInit {
   }
 
   guardarPermisos(): void {
-    this.toast.success('Permisos guardados. Aplican al recargar la sesión.');
+    window.dispatchEvent(new Event('storage'));
+    this.toast.success('Permisos guardados. Menú actualizado.');
   }
 
   countPermisos(roleName: string): number {

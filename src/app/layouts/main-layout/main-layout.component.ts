@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -11,7 +10,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
-import { RolesService } from '../../core/services/roles.service';
 import { User } from '../../core/models/user.model';
 import { MatDividerModule } from '@angular/material/divider';
 import { NotificationBellComponent } from '../../shared/notification-bell/notification-bell.component';
@@ -46,43 +44,76 @@ interface MenuItem {
         MatBadgeModule,
         MatTooltipModule,
         MatDividerModule,
-        NotificationBellComponent,
-        FormsModule
+        NotificationBellComponent
     ],
     templateUrl: './main-layout.component.html',
     styleUrl: './main-layout.component.scss'
 })
-export class MainLayoutComponent implements OnInit {
+export class MainLayoutComponent implements OnInit, OnDestroy {
+    private storageListener = () => this.ngOnInit();
     currentUser!: User | null;
     sidenavOpened = true;
 
     // ✅ BADGES INICIALIZADOS EN 0 (se actualizarán dinámicamente)
     menuItems: MenuItem[] = [
-        { icon: 'dashboard',            label: 'Dashboard',        route: '/dashboard',    permission: 'dashboard.ver'    },
-        { icon: 'people',               label: 'Pacientes',        route: '/pacientes',    permission: 'pacientes.ver',    badge: 0 },
-        { icon: 'badge',                label: 'Empleados',        route: '/empleados',    permission: 'empleados.ver'    },
-        { icon: 'event',                label: 'Citas',            route: '/citas',        permission: 'citas.ver',        badge: 0 },
-        { icon: 'schedule',             label: 'Horarios',         route: '/horarios',     permission: 'empleados.ver'    },
-        { icon: 'medical_services',     label: 'Tratamientos',     route: '/tratamientos', permission: 'tratamientos.ver' },
-        { icon: 'inventory_2',          label: 'Inventario',       route: '/inventario',   permission: 'inventario.ver',   badge: 0 },
-        { icon: 'receipt_long',         label: 'Facturación',      route: '/facturacion',  permission: 'facturacion.ver'  },
-        { icon: 'admin_panel_settings', label: 'Roles y Permisos', route: '/roles',        permission: 'roles.ver'        },
-        { icon: 'assessment',           label: 'Reportes',         route: '/reportes',     permission: 'reportes.ver'     },
+        {
+            icon: 'dashboard',
+            label: 'Dashboard',
+            route: '/dashboard'
+        },
+        {
+            icon: 'people',
+            label: 'Pacientes',
+            route: '/pacientes',
+            badge: 0  // ✅ Se actualiza dinámicamente
+        },
+        {
+            icon: 'badge',
+            label: 'Empleados',
+            route: '/empleados'
+        },
+        {
+            icon: 'event',
+            label: 'Citas',
+            route: '/citas',
+            badge: 0  // ✅ Se actualiza dinámicamente
+        },
+        {
+            icon: 'schedule',
+            label: 'Horarios',
+            route: '/horarios'
+        },
+        {
+            icon: 'medical_services',
+            label: 'Tratamientos',
+            route: '/tratamientos'
+        },
+        {
+            icon: 'inventory_2',
+            label: 'Inventario',
+            route: '/inventario',
+            badge: 0  // ✅ Se actualiza dinámicamente
+        },
+        {
+            icon: 'receipt_long',
+            label: 'Facturación',
+            route: '/facturacion'
+        },
+        {
+            icon: 'admin_panel_settings',
+            label: 'Roles y Permisos',
+            route: '/roles'
+        },
+        {
+            icon: 'assessment',
+            label: 'Reportes',
+            route: '/reportes'
+        }
     ];
-
-    // Sidebar filtrado por rol del usuario actual
-    get visibleMenuItems(): MenuItem[] {
-        if (!this.currentUser) return [];
-        const rol = (this.currentUser.rol || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
-        if (rol === 'admin') return this.menuItems;
-        const permisos = this.rolesService.getRolePermissions(this.currentUser.rol);
-        return this.menuItems.filter(item => !item.permission || permisos.includes(item.permission));
-    }
 
     constructor(
         private authService: AuthService,
         private router: Router,
-        private rolesService: RolesService,
         // ✅ NUEVOS SERVICIOS INYECTADOS
         private pacienteService: PacienteService,
         private citaService: CitaService,
@@ -91,6 +122,7 @@ export class MainLayoutComponent implements OnInit {
 
     ngOnInit(): void {
         this.currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        window.addEventListener('storage', this.storageListener);
         
         // ✅ CARGAR CONTADORES DINÁMICOS
         this.cargarContadores();
@@ -147,72 +179,19 @@ export class MainLayoutComponent implements OnInit {
         });
     }
 
+    ngOnDestroy(): void {
+        window.removeEventListener('storage', this.storageListener);
+    }
+
     toggleSidenav(): void {
         this.sidenavOpened = !this.sidenavOpened;
     }
 
-    logout(): void { this.authService.logout(); }
-
-    navigateTo(route: string): void { this.router.navigate([route]); }
-
-    // ── Buscador global ──────────────────────────────────────────────────
-    mostrarBuscador = false;
-    terminoBusqueda = '';
-
-    sugerencias = [
-        { icon: 'people',           label: 'Pacientes',    ruta: '/pacientes'    },
-        { icon: 'event',            label: 'Citas',        ruta: '/citas'        },
-        { icon: 'medical_services', label: 'Tratamientos', ruta: '/tratamientos' },
-        { icon: 'inventory_2',      label: 'Inventario',   ruta: '/inventario'   },
-        { icon: 'payments',         label: 'Facturación',  ruta: '/facturacion'  },
-        { icon: 'assessment',       label: 'Reportes',     ruta: '/reportes'     },
-    ];
-
-    toggleBuscador(): void {
-        if (this.mostrarBuscador) { this.cerrarBuscador(); }
-        else { this.abrirBuscador(); }
+    logout(): void {
+        this.authService.logout();
     }
 
-    abrirBuscador(): void {
-        this.mostrarBuscador = true;
-        setTimeout(() => {
-            const el = document.getElementById('search-inline-input');
-            if (el) (el as HTMLInputElement).focus();
-        }, 150);
+    navigateTo(route: string): void {
+        this.router.navigate([route]);
     }
-
-    onSearchBlur(): void {
-        // Pequeño delay para permitir que el click en sugerencias funcione
-        setTimeout(() => this.cerrarBuscador(), 200);
-    }
-
-    cerrarBuscador(): void {
-        this.mostrarBuscador = false;
-        this.terminoBusqueda = '';
-    }
-
-    buscar(): void {
-        const q = this.terminoBusqueda.trim().toLowerCase();
-        if (!q) return;
-        if (['paciente','cedula'].some(k => q.includes(k)))          this.router.navigate(['/pacientes']);
-        else if (['cita','agendar'].some(k => q.includes(k)))        this.router.navigate(['/citas']);
-        else if (['tratamiento'].some(k => q.includes(k)))           this.router.navigate(['/tratamientos']);
-        else if (['empleado','doctor'].some(k => q.includes(k)))     this.router.navigate(['/empleados']);
-        else if (['inventario','producto','stock'].some(k => q.includes(k))) this.router.navigate(['/inventario']);
-        else if (['factura','pago','cobro'].some(k => q.includes(k))) this.router.navigate(['/facturacion']);
-        else if (['horario'].some(k => q.includes(k)))               this.router.navigate(['/horarios']);
-        else if (['reporte'].some(k => q.includes(k)))               this.router.navigate(['/reportes']);
-        else                                                          this.router.navigate(['/pacientes']);
-        this.cerrarBuscador();
-    }
-
-    buscarDirecto(ruta: string): void {
-        this.router.navigate([ruta]);
-        this.cerrarBuscador();
-    }
-
-    // ── Opciones de usuario ──────────────────────────────────────────────
-    irAPerfil():        void { this.router.navigate(['/perfil']); }
-    irAConfiguracion(): void { this.router.navigate(['/configuracion']); }
-    irAAyuda():         void { this.router.navigate(['/ayuda']); }
 }
