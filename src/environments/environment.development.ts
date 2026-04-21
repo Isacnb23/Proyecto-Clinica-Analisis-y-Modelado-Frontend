@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:5022/api'
+  production: true,
+  apiUrl: 'https://proyecto-clinica-analisis-y-modelado-backend-production.up.railway.app/api'
 };
