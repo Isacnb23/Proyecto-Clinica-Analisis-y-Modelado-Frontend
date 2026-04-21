@@ -14,7 +14,8 @@
           <div class="clinic-info" *ngIf="sidenavOpened">
             <h3>Clínica Dental</h3>
             <p>PCA</p>
-          </div>
+          
+</div>
         </div>
       </div>
 
@@ -22,14 +23,14 @@
       <mat-nav-list class="nav-list">
         <a
           mat-list-item
-          *ngFor="let item of menuItems"
+          *ngFor="let item of visibleMenuItems"
           [routerLink]="item.route"
           routerLinkActive="active"
           [matTooltip]="!sidenavOpened ? item.label : ''"
           matTooltipPosition="right"
           class="nav-item">
 
-          <mat-icon matListItemIcon [matBadge]="item.badge" matBadgeColor="warn">
+          <mat-icon matListItemIcon [matBadge]="item.badge" [matBadgeHidden]="!item.badge" matBadgeColor="warn">
             {{ item.icon }}
           </mat-icon>
 
@@ -70,57 +71,26 @@
         <span class="spacer"></span>
 
         <!-- Notificaciones -->
-        <button
-          mat-icon-button
-          [matMenuTriggerFor]="notificationsMenu"
-          matTooltip="Notificaciones">
-          <mat-icon [matBadge]="5" matBadgeColor="warn">notifications</mat-icon>
-        </button>
+        <app-notification-bell></app-notification-bell>
 
-        <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
-          <div class="menu-header">
-            <h3>Notificaciones</h3>
-            <button mat-button color="primary">Marcar todas como leídas</button>
-          </div>
-
-          <mat-divider></mat-divider>
-
-          <button mat-menu-item class="notification-item">
-            <mat-icon color="primary">event</mat-icon>
-            <div class="notification-content">
-              <p class="notification-title">Nueva cita agendada</p>
-              <p class="notification-time">Hace 5 minutos</p>
-            </div>
+        <!-- Buscador expandible en el toolbar -->
+        <div class="search-bar-active" *ngIf="mostrarBuscador">
+          <mat-icon class="search-lupa-icon">search</mat-icon>
+          <input
+            id="search-inline-input"
+            type="text"
+            [(ngModel)]="terminoBusqueda"
+            placeholder="Buscar paciente, cita, módulo..."
+            (keyup.enter)="buscar()"
+            (keyup.escape)="cerrarBuscador()"
+            class="search-bar-input">
+          <button mat-icon-button class="btn-search-close" (click)="cerrarBuscador()">
+            <mat-icon>close</mat-icon>
           </button>
-
-          <button mat-menu-item class="notification-item">
-            <mat-icon color="warn">inventory_2</mat-icon>
-            <div class="notification-content">
-              <p class="notification-title">Stock bajo en inventario</p>
-              <p class="notification-time">Hace 1 hora</p>
-            </div>
-          </button>
-
-          <button mat-menu-item class="notification-item">
-            <mat-icon color="accent">person_add</mat-icon>
-            <div class="notification-content">
-              <p class="notification-title">Nuevo paciente registrado</p>
-              <p class="notification-time">Hace 2 horas</p>
-            </div>
-          </button>
-
-          <mat-divider></mat-divider>
-
-          <button mat-menu-item class="view-all">
-            <mat-icon>arrow_forward</mat-icon>
-            Ver todas las notificaciones
-          </button>
-        </mat-menu>
-
-        <!-- Búsqueda rápida -->
-        <button
-          mat-icon-button
-          matTooltip="Búsqueda rápida">
+        </div>
+        <button mat-icon-button matTooltip="Buscar"
+          *ngIf="!mostrarBuscador"
+          (click)="abrirBuscador()">
           <mat-icon>search</mat-icon>
         </button>
 
@@ -146,17 +116,17 @@
 
           <mat-divider></mat-divider>
 
-          <button mat-menu-item>
+          <button mat-menu-item (click)="irAPerfil()">
             <mat-icon>person</mat-icon>
             <span>Mi Perfil</span>
           </button>
 
-          <button mat-menu-item>
+          <button mat-menu-item (click)="irAConfiguracion()">
             <mat-icon>settings</mat-icon>
             <span>Configuración</span>
           </button>
 
-          <button mat-menu-item>
+          <button mat-menu-item (click)="irAAyuda()">
             <mat-icon>help</mat-icon>
             <span>Ayuda</span>
           </button>

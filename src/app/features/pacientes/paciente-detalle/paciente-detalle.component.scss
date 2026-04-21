@@ -375,3 +375,67 @@
     padding-left: 30px;
   }
 }
+/* ── Tabs badges ──────────────────────── */
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #c9a227;
+  color: white;
+  border-radius: 10px;
+  font-size: .7rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 6px;
+}
+
+/* ── Loading dentro de tab ──────────── */
+.loading-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  color: #9ca3af;
+  gap: 1rem;
+}
+
+/* ── Tabla de citas/tratamientos en detalle ── */
+.citas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .93rem;
+
+  th {
+    background: #1a365d;
+    color: white;
+    padding: .65rem 1rem;
+    text-align: left;
+    font-weight: 500;
+  }
+
+  td {
+    padding: .65rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+}
+
+/* ── Badges de estado ────────────────── */
+.cita-badge {
+  padding: .2rem .7rem;
+  border-radius: 12px;
+  font-size: .8rem;
+  font-weight: 600;
+}
+.badge-pend { background: #fef3c7; color: #92400e; }
+.badge-conf { background: #dbeafe; color: #1e40af; }
+.badge-comp { background: #d1fae5; color: #065f46; }
+.badge-canc { background: #fee2e2; color: #991b1b; }
+
+/* ── Saldo ───────────────────────────── */
+.saldo-pend { color: #d97706; font-weight: 700; }
+.saldo-ok   { color: #059669; }

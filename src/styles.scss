@@ -53,3 +53,206 @@ body {
 .mb-2 { margin-bottom: 1rem; }
 .mb-3 { margin-bottom: 1.5rem; }
 .mb-4 { margin-bottom: 2rem; }
+
+.page-shell {
+  padding: 16px;
+}
+
+.page-card {
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+}
+
+.toolbar-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.page-subtitle {
+  margin: 6px 0 0;
+  color: #6b7280;
+}
+
+.filters-grid,
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.app-table th,
+.app-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.app-table th {
+  background: #f8fafc;
+  font-weight: 700;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+/* ============================================================
+   PRINT STYLES - Solo para impresión de reportes
+   ============================================================ */
+@media print {
+  /* Ocultar toda la UI de navegación */
+  app-main-layout mat-sidenav,
+  app-main-layout mat-toolbar,
+  app-main-layout .mat-sidenav,
+  app-main-layout mat-sidenav-container > mat-sidenav,
+  .mat-drawer,
+  .mat-sidenav,
+  mat-sidenav,
+  mat-toolbar,
+  .mat-toolbar,
+  [mat-sidenav],
+  .sidenav,
+  .sidebar,
+  .toolbar,
+  app-notification-bell,
+  .no-print {
+    display: none !important;
+  }
+
+  /* El contenido principal ocupa todo el ancho */
+  mat-sidenav-container,
+  .mat-sidenav-container,
+  mat-sidenav-content,
+  .mat-sidenav-content,
+  .mat-drawer-container,
+  .mat-drawer-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+  }
+
+  /* Contenedor de la app */
+  body, html {
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  /* La tabla del reporte */
+  .rep-table thead th {
+    background: #1e3a5f !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .rep-table tbody tr:nth-child(even) td {
+    background: #f8fafc !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Mostrar cabecera de impresión */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Footer oculto */
+  .mat-sidenav-content > footer,
+  footer {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   PALETA DE COLORES ELEGANTE - Clínica Dental PCA
+   ============================================================
+   Uso consistente en todas las tarjetas estadísticas:
+   
+   Slot 1 - PRIMARIO (Total/General):  Azul Rey       #030e24 → #1B3A6F
+   Slot 2 - SECUNDARIO (Hoy/Activo):   Borgoña        #7b1f2c → #a33040
+   Slot 3 - TERCIARIO (Pendiente/$):   Dorado Bronce  #92400e → #C49B63
+   Slot 4 - CUATERNARIO (Confirmado):  Esmeralda      #1a5c38 → #2d8653
+   Extra  - Azul Acero:                               #0f3460 → #16537e
+   Extra  - Vino:                                     #4a1942 → #6b2d5e
+   ============================================================ */
+
+:root {
+  --clr-navy:      linear-gradient(135deg, #030e24 0%, #1B3A6F 100%);
+  --clr-burgundy:  linear-gradient(135deg, #7b1f2c 0%, #a33040 100%);
+  --clr-bronze:    linear-gradient(135deg, #92400e 0%, #C49B63 100%);
+  --clr-emerald:   linear-gradient(135deg, #1a5c38 0%, #2d8653 100%);
+  --clr-steel:     linear-gradient(135deg, #0f3460 0%, #16537e 100%);
+  --clr-wine:      linear-gradient(135deg, #4a1942 0%, #6b2d5e 100%);
+  --clr-gold:      linear-gradient(135deg, #C49B63 0%, #D4AF37 100%);
+}
+
+/* ============================================================
+   CONFIGURACIÓN DEL SISTEMA - Clases aplicadas al body
+   ============================================================ */
+
+/* Tamaño de texto */
+body.font-small  { font-size: 13px !important; }
+body.font-medium { font-size: 15px !important; }
+body.font-large  { font-size: 17px !important; }
+
+/* Modo oscuro básico */
+body.dark-mode {
+  background: #0f172a !important;
+  color: #e2e8f0 !important;
+
+  .mat-toolbar.navbar { background: #1e293b !important; }
+  mat-sidenav { background: #0f172a !important; }
+  mat-sidenav-content { background: #0f172a !important; }
+
+  mat-card, .section-card, .page-header, .table-container,
+  .stat-card, .chart-card, .citas-card, .alertas-card {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+
+  h1, h2, h3, strong, .stat-info h3 { color: #f1f5f9 !important; }
+  p, .stat-info p, td, th { color: #94a3b8 !important; }
+
+  table tbody td { border-color: #334155 !important; }
+  table thead th { background: #1e40af !important; }
+}

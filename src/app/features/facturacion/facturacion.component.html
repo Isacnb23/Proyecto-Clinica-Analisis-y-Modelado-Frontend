@@ -1,0 +1,260 @@
+<div class="facturacion-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1><mat-icon>payments</mat-icon> Facturación y Pagos</h1>
+        <p>Gestión de cobros por tratamiento</p>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="stats-cards">
+      <div class="stat-card cobrado">
+        <div class="stat-icon"><mat-icon>check_circle</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{ formatCurrency(totalCobrado) }}</h3>
+          <p>Total Cobrado</p>
+        </div>
+      </div>
+      <div class="stat-card pendiente">
+        <div class="stat-icon"><mat-icon>pending</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{ formatCurrency(totalPendiente) }}</h3>
+          <p>Saldo Pendiente</p>
+        </div>
+      </div>
+      <div class="stat-card con-saldo">
+        <div class="stat-icon"><mat-icon>warning</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{ conPendiente }}</h3>
+          <p>Con saldo pendiente</p>
+        </div>
+      </div>
+      <div class="stat-card al-dia">
+        <div class="stat-icon"><mat-icon>done_all</mat-icon></div>
+        <div class="stat-info">
+          <h3>{{ alDia }}</h3>
+          <p>Al día (pagados)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-container">
+    <div class="table-header">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Estado</mat-label>
+        <mat-select [(ngModel)]="filtroEstado" (selectionChange)="onFiltroChange()">
+          <mat-option value="todos">Todos</mat-option>
+          <mat-option value="pendiente">Con saldo pendiente</mat-option>
+          <mat-option value="pagado">Pagados</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>filter_list</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Buscar paciente o tratamiento</mat-label>
+        <input matInput (keyup)="onBuscar($event)" placeholder="Nombre, tratamiento...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <div *ngIf="cargando" class="loading-state">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Cargando datos de facturación...</p>
+    </div>
+
+    <div class="table-wrapper" *ngIf="!cargando">
+      <table mat-table [dataSource]="dataSource" class="fact-table">
+
+        <!-- Paciente -->
+        <ng-container matColumnDef="paciente">
+          <th mat-header-cell *matHeaderCellDef>Paciente</th>
+          <td mat-cell *matCellDef="let t">
+            <strong>{{ t.pacienteNombre }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Tratamiento -->
+        <ng-container matColumnDef="tratamiento">
+          <th mat-header-cell *matHeaderCellDef>Tratamiento</th>
+          <td mat-cell *matCellDef="let t">{{ t.nombre }}</td>
+        </ng-container>
+
+        <!-- Costo -->
+        <ng-container matColumnDef="costo">
+          <th mat-header-cell *matHeaderCellDef>Costo</th>
+          <td mat-cell *matCellDef="let t">{{ formatCurrency(t.costoTotal) }}</td>
+        </ng-container>
+
+        <!-- Pagado -->
+        <ng-container matColumnDef="pagado">
+          <th mat-header-cell *matHeaderCellDef>Pagado</th>
+          <td mat-cell *matCellDef="let t" class="txt-green">
+            <strong>{{ formatCurrency(t.montoPagado) }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Saldo -->
+        <ng-container matColumnDef="saldo">
+          <th mat-header-cell *matHeaderCellDef>Saldo</th>
+          <td mat-cell *matCellDef="let t"
+            [class.txt-orange]="t.saldo > 0" [class.txt-green]="t.saldo <= 0">
+            <strong>{{ formatCurrency(t.saldo) }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let t">
+            <mat-chip-set>
+              <mat-chip [class]="getEstadoClass(t)">
+                {{ getEstadoBadge(t) }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let t">
+            <button mat-stroked-button class="btn-hist"
+              (click)="toggleHistorial(t)">
+              {{ tratamientoDetalle?.id === t.id ? 'Ocultar' : 'Historial' }}
+            </button>
+            <button mat-raised-button color="primary" class="btn-pago"
+              *ngIf="t.saldo > 0"
+              (click)="abrirPago(t)">
+              <mat-icon>add_card</mat-icon> Registrar pago
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+          [class.row-pendiente]="row.saldo > 0"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data" [attr.colspan]="displayedColumns.length">
+            <mat-icon>receipt_long</mat-icon>
+            <p>No hay tratamientos registrados</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <!-- PANEL HISTORIAL -->
+  <div class="hist-panel" *ngIf="tratamientoDetalle">
+    <div class="hist-header">
+      <h3>
+        <mat-icon>receipt_long</mat-icon>
+        Pagos: {{ tratamientoDetalle.nombre }} — {{ tratamientoDetalle.pacienteNombre }}
+      </h3>
+      <button mat-icon-button (click)="tratamientoDetalle = null; pagosDetalle = []">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+
+    <div *ngIf="cargandoPagos" class="loading-state">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+
+    <table class="pagos-table" *ngIf="!cargandoPagos && pagosDetalle.length > 0">
+      <thead>
+        <tr><th>Fecha</th><th>Monto</th><th>Referencia</th><th>Notas</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pagosDetalle">
+          <td>{{ p.fechaPago | date:'dd/MM/yyyy' }}</td>
+          <td class="txt-green"><strong>{{ formatCurrency(p.monto) }}</strong></td>
+          <td>{{ p.numeroReferencia || '—' }}</td>
+          <td>{{ p.notas || '—' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="no-data" *ngIf="!cargandoPagos && pagosDetalle.length === 0">
+      <mat-icon>money_off</mat-icon>
+      <p>Sin pagos registrados para este tratamiento</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── MODAL REGISTRAR PAGO ──────────────────────────────────── -->
+<div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <mat-card class="modal-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h2><mat-icon>add_card</mat-icon> Registrar Pago</h2>
+      <button mat-icon-button (click)="cerrarModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-subtitle">
+      <strong>{{ tratSeleccionado?.pacienteNombre }}</strong>
+      &nbsp;·&nbsp;
+      {{ tratSeleccionado?.nombre }}
+      <br>
+      Saldo pendiente:
+      <span class="txt-orange"><strong>{{ formatCurrency(saldoActual) }}</strong></span>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="modal-body">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Monto a pagar (₡) *</mat-label>
+        <input matInput type="number" [(ngModel)]="pago.monto"
+          [min]="1" [max]="saldoActual" step="100">
+        <mat-icon matPrefix>payments</mat-icon>
+        <mat-hint>Máximo: {{ formatCurrency(saldoActual) }}</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Método de pago *</mat-label>
+        <mat-select [(ngModel)]="pago.metodoPagoId">
+          <mat-option [value]="0">— Seleccione —</mat-option>
+          <mat-option *ngFor="let m of metodosPago" [value]="m.id">{{ m.nombre }}</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>credit_card</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Referencia (opcional)</mat-label>
+        <input matInput [(ngModel)]="pago.numeroReferencia"
+          placeholder="N° SINPE, comprobante, cheque...">
+        <mat-icon matPrefix>tag</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notas (opcional)</mat-label>
+        <input matInput [(ngModel)]="pago.notas" placeholder="Observaciones del pago">
+        <mat-icon matPrefix>notes</mat-icon>
+      </mat-form-field>
+
+    </div>
+
+    <div class="modal-actions">
+      <button mat-button (click)="cerrarModal()">Cancelar</button>
+      <button mat-raised-button color="primary"
+        (click)="guardarPago()" [disabled]="guardando">
+        <mat-icon>check</mat-icon>
+        {{ guardando ? 'Registrando...' : 'Confirmar Pago' }}
+      </button>
+    </div>
+
+  </mat-card>
+</div>

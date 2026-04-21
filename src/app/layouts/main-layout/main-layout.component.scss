@@ -538,3 +538,105 @@
     padding: 12px;
   }
 }
+/* ── BUSCADOR GLOBAL ───────────────────────────────────────────── */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 14, 36, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 120px;
+  z-index: 9999;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 14px;
+  padding: 16px 20px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  gap: 12px;
+}
+
+.search-icon-big {
+  font-size: 1.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: #C49B63;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1.1rem;
+  color: #1a365d;
+  background: transparent;
+
+  &::placeholder { color: #9ca3af; }
+}
+
+.search-close mat-icon { color: #9ca3af; }
+
+.search-hints {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+  color: rgba(255,255,255,0.6);
+  font-size: .8rem;
+}
+
+
+
+/* ── BUSCADOR TOOLBAR ─────────────────────────────────────── */
+.search-bar-active {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #C49B63;
+  border-radius: 22px;
+  padding: 0 6px 0 12px;
+  height: 38px;
+  width: 260px;
+  animation: searchExpand .25s cubic-bezier(.4,0,.2,1);
+
+  @media (max-width: 768px) { width: 150px; }
+}
+
+@keyframes searchExpand {
+  from { width: 0; opacity: 0; }
+  to   { width: 260px; opacity: 1; }
+}
+
+.search-lupa-icon {
+  font-size: 1rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  color: #C49B63;
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+
+.search-bar-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: .88rem;
+  color: #1a365d;
+  min-width: 0;
+  &::placeholder { color: #9ca3af; }
+}
+
+.btn-search-close {
+  width: 26px !important;
+  height: 26px !important;
+  flex-shrink: 0;
+  mat-icon { font-size: .9rem !important; color: #9ca3af; }
+}

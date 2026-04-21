@@ -10,9 +10,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { TratamientoService } from '../../../core/services/tratamiento.service';
-import { CategoriaTratamiento } from '../../../core/models/tratamiento.model';
+import { EmpleadosService } from '../../../core/services/empleados.service';
+import { PacienteService } from '../../../core/services/paciente.service';
 import { ToastrService } from 'ngx-toastr';
+
+// Categorías retornadas por GET /api/tratamientos/categorias (backend ya las tiene hardcodeadas)
+interface CategoriaTrat { id: number; nombre: string; descripcion?: string; }
 
 @Component({
   selector: 'app-tratamiento-form',
@@ -27,21 +33,34 @@ import { ToastrService } from 'ngx-toastr';
     MatSelectModule,
     MatCheckboxModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   templateUrl: './tratamiento-form.component.html',
   styleUrl: './tratamiento-form.component.scss'
 })
 export class TratamientoFormComponent implements OnInit {
   tratamientoForm!: FormGroup;
-  categorias: CategoriaTratamiento[] = [];
+  categorias: CategoriaTrat[] = [];
+  pacientes: any[] = [];
+  empleados: any[] = [];
   isEditMode = false;
   tratamientoId?: number;
   loading = false;
 
+  // Estados de tratamiento (definidos en el sistema)
+  estados = [
+    { id: 1, nombre: 'En Proceso' },
+    { id: 2, nombre: 'Completado' },
+    { id: 3, nombre: 'Cancelado' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private tratamientoService: TratamientoService,
+    private empleadosService: EmpleadosService,
+    private pacienteService: PacienteService,
     private router: Router,
     private route: ActivatedRoute,
     private toastr: ToastrService
@@ -50,31 +69,65 @@ export class TratamientoFormComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.cargarCategorias();
+    this.cargarPacientes();
+    this.cargarEmpleados();
     this.checkEditMode();
   }
 
   initForm(): void {
     this.tratamientoForm = this.fb.group({
-      codigo: ['', [Validators.required, Validators.minLength(3)]],
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      descripcion: ['', [Validators.required, Validators.minLength(10)]],
-      categoriaId: ['', Validators.required],
-      duracionEstimada: [30, [Validators.required, Validators.min(15), Validators.max(240)]],
-      costo: [0, [Validators.required, Validators.min(0)]],
-      requiereAutorizacion: [false],
-      observaciones: ['']
+      pacienteId:   ['', Validators.required],
+      empleadoId:   ['', Validators.required],
+      nombre:       ['', [Validators.required, Validators.minLength(3)]],
+      descripcion:  [''],
+      categoriaId:  ['', Validators.required],
+      fechaInicio:  ['', Validators.required],
+      costoTotal:   [0, [Validators.required, Validators.min(0)]],
+      numeroSesiones: [1, [Validators.required, Validators.min(1)]],
+      estadoId:     [1, Validators.required],   // default: En Proceso
+      notas:        ['']
     });
   }
 
   cargarCategorias(): void {
     this.tratamientoService.getCategorias().subscribe({
-      next: (categorias) => {
-        this.categorias = categorias;
-      },
-      error: (error) => {
-        this.toastr.error('Error al cargar categorías', 'Error');
-        console.error(error);
+      next: (cats: any[]) => { this.categorias = cats; },
+      error: () => {
+        // Fallback si el endpoint falla
+        this.categorias = [
+          { id: 1, nombre: 'Preventivo' },
+          { id: 2, nombre: 'Restaurativo' },
+          { id: 3, nombre: 'Endodoncia' },
+          { id: 4, nombre: 'Ortodoncia' },
+          { id: 5, nombre: 'Cirugía Oral' },
+          { id: 6, nombre: 'Periodoncia' },
+          { id: 7, nombre: 'Estética Dental' },
+          { id: 8, nombre: 'Prótesis' },
+          { id: 9, nombre: 'Odontopediatría' },
+          { id: 10, nombre: 'Otros' }
+        ];
       }
+    });
+  }
+
+  cargarPacientes(): void {
+    this.pacienteService.getPacientes().subscribe({
+      next: (p: any[]) => { this.pacientes = p.filter((x: any) => x.activo !== false); },
+      error: () => { this.toastr.error('Error al cargar pacientes', 'Error'); }
+    });
+  }
+
+  cargarEmpleados(): void {
+    this.empleadosService.getEmpleados(true).subscribe({
+      next: (e: any[]) => {
+        // ✅ Mostrar preferentemente odontólogos pero si no hay, mostrar todos
+        const odontologos = e.filter((emp: any) =>
+          (emp.rol || '').toLowerCase().includes('odont') ||
+          (emp.especialidad || '').trim() !== ''
+        );
+        this.empleados = odontologos.length > 0 ? odontologos : e;
+      },
+      error: () => { this.toastr.error('Error al cargar profesionales', 'Error'); }
     });
   }
 
@@ -89,28 +142,23 @@ export class TratamientoFormComponent implements OnInit {
 
   cargarTratamiento(): void {
     if (!this.tratamientoId) return;
-
     this.tratamientoService.getTratamientoById(this.tratamientoId).subscribe({
-      next: (tratamiento) => {
-        if (tratamiento) {
-          this.tratamientoForm.patchValue({
-            codigo: tratamiento.codigo,
-            nombre: tratamiento.nombre,
-            descripcion: tratamiento.descripcion,
-            categoriaId: tratamiento.categoriaId,
-            duracionEstimada: tratamiento.duracionEstimada,
-            costo: tratamiento.costo,
-            requiereAutorizacion: tratamiento.requiereAutorizacion,
-            observaciones: tratamiento.observaciones || ''
-          });
-        } else {
-          this.toastr.error('Tratamiento no encontrado', 'Error');
-          this.router.navigate(['/tratamientos']);
-        }
+      next: (t: any) => {
+        this.tratamientoForm.patchValue({
+          pacienteId:    t.pacienteId,
+          empleadoId:    t.empleadoId,
+          nombre:        t.nombre,
+          descripcion:   t.descripcion || '',
+          categoriaId:   t.categoriaId,
+          fechaInicio:   t.fechaInicio?.substring(0, 10),
+          costoTotal:    t.costoTotal,
+          numeroSesiones: t.numeroSesiones || 1,
+          estadoId:      t.estadoId || 1,
+          notas:         t.notas || ''
+        });
       },
-      error: (error) => {
+      error: () => {
         this.toastr.error('Error al cargar el tratamiento', 'Error');
-        console.error(error);
         this.router.navigate(['/tratamientos']);
       }
     });
@@ -124,60 +172,61 @@ export class TratamientoFormComponent implements OnInit {
     }
 
     this.loading = true;
+    const v = this.tratamientoForm.value;
 
-    const formData = this.tratamientoForm.value;
+    // ✅ Body que coincide exactamente con TratamientoCreateDTO del backend
+    const payload: any = {
+      pacienteId:        v.pacienteId,
+      empleadoId:        v.empleadoId,
+      nombre:            v.nombre,
+      descripcion:       v.descripcion || null,
+      categoriaId:       v.categoriaId,
+      fechaInicio:       v.fechaInicio instanceof Date
+                           ? v.fechaInicio.toISOString()
+                           : new Date(v.fechaInicio).toISOString(),
+      costoTotal:        v.costoTotal,
+      costoMateriales:   null,
+      numeroSesiones:    v.numeroSesiones || 1,
+      sesionesCompletadas: 0,
+      estadoId:          v.estadoId,
+      diagnostico:       null,
+      notas:             v.notas || null
+    };
 
     if (this.isEditMode && this.tratamientoId) {
-      // Actualizar
-      this.tratamientoService.actualizarTratamiento(this.tratamientoId, formData).subscribe({
+      payload.id = this.tratamientoId;
+      this.tratamientoService.actualizarTratamiento(this.tratamientoId, payload).subscribe({
         next: () => {
           this.toastr.success('Tratamiento actualizado correctamente', '¡Éxito!');
-          this.router.navigate(['/tratamientos']).then(() => {
-            window.location.reload();
-          });
+          this.router.navigate(['/tratamientos']);
         },
-        error: (error) => {
-          this.toastr.error('Error al actualizar el tratamiento', 'Error');
-          console.error(error);
+        error: (err: any) => {
+          this.toastr.error(err?.error?.message || 'Error al actualizar', 'Error');
           this.loading = false;
         }
       });
     } else {
-      // Crear
-      this.tratamientoService.crearTratamiento(formData).subscribe({
+      this.tratamientoService.crearTratamiento(payload).subscribe({
         next: () => {
           this.toastr.success('Tratamiento creado correctamente', '¡Éxito!');
-          this.router.navigate(['/tratamientos']).then(() => {
-            window.location.reload();
-          });
+          this.router.navigate(['/tratamientos']);
         },
-        error: (error) => {
-          this.toastr.error('Error al crear el tratamiento', 'Error');
-          console.error(error);
+        error: (err: any) => {
+          this.toastr.error(err?.error?.message || 'Error al crear tratamiento', 'Error');
           this.loading = false;
         }
       });
     }
   }
 
-  cancelar(): void {
-    this.router.navigate(['/tratamientos']).then(() => {
-      window.location.reload();
-    });
-  }
+  cancelar(): void { this.router.navigate(['/tratamientos']); }
 
-  // Helpers para obtener el color de la categoría seleccionada
-  getCategoriaColor(): string {
-    const categoriaId = this.tratamientoForm.get('categoriaId')?.value;
-    const categoria = this.categorias.find(c => c.id === categoriaId);
-    return categoria ? categoria.color : '#667eea';
-  }
-
-  // Getters para validaciones
-  get codigo() { return this.tratamientoForm.get('codigo'); }
-  get nombre() { return this.tratamientoForm.get('nombre'); }
-  get descripcion() { return this.tratamientoForm.get('descripcion'); }
-  get categoriaId() { return this.tratamientoForm.get('categoriaId'); }
-  get duracionEstimada() { return this.tratamientoForm.get('duracionEstimada'); }
-  get costo() { return this.tratamientoForm.get('costo'); }
+  // Getters para validaciones en el template
+  get pacienteIdCtrl()  { return this.tratamientoForm.get('pacienteId'); }
+  get empleadoIdCtrl()  { return this.tratamientoForm.get('empleadoId'); }
+  get nombre()          { return this.tratamientoForm.get('nombre'); }
+  get descripcion()     { return this.tratamientoForm.get('descripcion'); }
+  get categoriaId()     { return this.tratamientoForm.get('categoriaId'); }
+  get fechaInicioCtrl() { return this.tratamientoForm.get('fechaInicio'); }
+  get costoTotal()      { return this.tratamientoForm.get('costoTotal'); }
 }

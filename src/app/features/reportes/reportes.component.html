@@ -1,0 +1,96 @@
+<div class="reportes-container">
+
+  <!-- HEADER -->
+  <div class="page-header no-print">
+    <div class="title-section">
+      <h1><mat-icon>assessment</mat-icon> Reportes</h1>
+      <p>Genera y exporta reportes del sistema en tiempo real</p>
+    </div>
+    <div class="header-actions" *ngIf="reporteActivo">
+      <button mat-stroked-button (click)="volver()">
+        <mat-icon>arrow_back</mat-icon> Volver
+      </button>
+      <button mat-raised-button color="primary" (click)="imprimir()">
+        <mat-icon>print</mat-icon> Imprimir / PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- ── GRID DE TARJETAS ─────────────────────────────────────────── -->
+  <div class="report-grid no-print" *ngIf="!reporteActivo">
+    <div *ngFor="let r of reportes" class="rep-card" (click)="cargar(r.tipo)">
+      <div class="rep-icon-wrap" [style.background]="r.color + '18'">
+        <mat-icon [style.color]="r.color">{{ r.icon }}</mat-icon>
+      </div>
+      <h3>{{ r.titulo }}</h3>
+      <p>{{ r.descripcion }}</p>
+      <div class="rep-action" [style.color]="r.color">
+        Generar reporte <mat-icon>arrow_forward</mat-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REPORTE GENERADO ─────────────────────────────────────────── -->
+  <div class="reporte-wrap" *ngIf="reporteActivo">
+
+    <!-- Cabecera imprimible -->
+    <div class="print-header print-only">
+      <h2>Clínica Dental PCA</h2>
+      <h3>Reporte de {{ tituloActivo }}</h3>
+      <p>Generado: {{ generadoEl }}</p>
+      <mat-divider></mat-divider>
+    </div>
+
+    <!-- Info del reporte (pantalla) -->
+    <div class="reporte-info no-print">
+      <div class="ri-left">
+        <mat-icon>description</mat-icon>
+        <div>
+          <strong>Reporte de {{ tituloActivo }}</strong>
+          <span>Generado: {{ generadoEl }}</span>
+        </div>
+      </div>
+      <span class="ri-count" *ngIf="!cargando">{{ datos.length }} registro(s)</span>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" *ngIf="cargando">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Cargando datos...</p>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-wrap" *ngIf="!cargando">
+      <div *ngIf="datos.length === 0" class="empty-report">
+        <mat-icon>inbox</mat-icon>
+        <p>No hay datos disponibles para este reporte</p>
+      </div>
+
+      <table *ngIf="datos.length > 0" class="rep-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th *ngFor="let col of columnasActivas">{{ col }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of datos; let i = index">
+            <td class="td-num">{{ i + 1 }}</td>
+            <td *ngFor="let celda of getCeldas(row)" [class]="getEstadoCelda(celda)">
+              {{ celda }}
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td [attr.colspan]="columnasActivas.length + 1" class="tfoot-total">
+              Total: {{ datos.length }} registros
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div><!-- /reporte-wrap -->
+
+</div>

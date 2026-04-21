@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,6 +19,7 @@ import { ToastrService } from 'ngx-toastr';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -40,6 +41,11 @@ export class InventarioFormComponent implements OnInit {
 
   unidadesMedida = ['Unidad', 'Caja', 'Paquete', 'Frasco', 'Litro', 'Kilogramo', 'Metro'];
 
+  // Modal crear categoría
+  mostrarModalCategoria = false;
+  nuevaCategoria = { nombre: '', descripcion: '' };
+  creandoCategoria = false;
+
   constructor(
     private fb: FormBuilder,
     private inventarioService: InventarioService,
@@ -55,9 +61,17 @@ export class InventarioFormComponent implements OnInit {
     this.checkEditMode();
   }
 
+  // Genera código automático tipo PROD-20260420-001
+  generarCodigo(): string {
+    const hoy = new Date();
+    const fecha = hoy.toISOString().slice(2,10).replace(/-/g,'');
+    const rand = Math.floor(Math.random() * 900) + 100;
+    return `PROD-${fecha}-${rand}`;
+  }
+
   initForm(): void {
     this.productoForm = this.fb.group({
-      codigo: ['', [Validators.required, Validators.minLength(3)]],
+      codigo: [this.generarCodigo(), [Validators.required, Validators.minLength(3)]],
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       descripcion: ['', [Validators.required, Validators.minLength(10)]],
       categoriaId: ['', Validators.required],
@@ -90,10 +104,7 @@ export class InventarioFormComponent implements OnInit {
       next: (proveedores) => {
         this.proveedores = proveedores;
       },
-      error: (error) => {
-        this.toastr.error('Error al cargar proveedores', 'Error');
-        console.error(error);
-      }
+      error: () => { this.proveedores = []; }
     });
   }
 
@@ -112,20 +123,20 @@ export class InventarioFormComponent implements OnInit {
     this.inventarioService.getProductoById(this.productoId).subscribe({
       next: (producto) => {
         if (producto) {
+          // ✅ Mapear campos del backend (CategoriaInventarioId → categoriaId)
           this.productoForm.patchValue({
-            codigo: producto.codigo,
-            nombre: producto.nombre,
-            descripcion: producto.descripcion,
-            categoriaId: producto.categoriaId,
-            stockActual: producto.stockActual,
-            stockMinimo: producto.stockMinimo,
-            stockMaximo: producto.stockMaximo,
-            unidadMedida: producto.unidadMedida,
-            proveedorId: producto.proveedorId || '',
-            costoUnitario: producto.costoUnitario,
-            precioVenta: producto.precioVenta || 0,
-            ubicacion: producto.ubicacion || '',
-            observaciones: producto.observaciones || ''
+            codigo:       (producto as any).codigo,
+            nombre:       (producto as any).nombre,
+            descripcion:  (producto as any).descripcion || '',
+            categoriaId:  (producto as any).categoriaInventarioId ?? (producto as any).categoriaId,
+            stockActual:  (producto as any).stockActual ?? 0,
+            stockMinimo:  (producto as any).stockMinimo ?? 0,
+            stockMaximo:  (producto as any).stockMinimo ?? 0,   // backend no devuelve stockMaximo
+            unidadMedida: (producto as any).unidadMedida || 'Unidad',
+            costoUnitario:(producto as any).precioUnitario ?? 0,
+            precioVenta:  0,
+            ubicacion:    '',
+            observaciones:''
           });
         } else {
           this.toastr.error('Producto no encontrado', 'Error');
@@ -158,45 +169,83 @@ export class InventarioFormComponent implements OnInit {
 
     this.loading = true;
 
-    const formData = this.productoForm.value;
+    const v = this.productoForm.value;
+
+    // ✅ Payload que coincide EXACTAMENTE con ProductoInventarioCreateDTO/UpdateDTO del backend
+    const payload: any = {
+      categoriaInventarioId: v.categoriaId,   // ← nombre correcto para el backend
+      codigo:       v.codigo,
+      nombre:       v.nombre,
+      descripcion:  v.descripcion || null,
+      unidadMedida: v.unidadMedida || 'Unidad',
+      stockActual:  v.stockActual ?? 0,
+      stockMinimo:  v.stockMinimo ?? 0,
+      precioUnitario: v.costoUnitario ?? 0,   // ← nombre correcto para el backend
+      activo:       true
+    };
 
     if (this.isEditMode && this.productoId) {
-      // Actualizar
-      this.inventarioService.actualizarProducto(this.productoId, formData).subscribe({
+      this.inventarioService.actualizarProducto(this.productoId, payload).subscribe({
         next: () => {
           this.toastr.success('Producto actualizado correctamente', '¡Éxito!');
-          this.router.navigate(['/inventario']).then(() => {
-            window.location.reload();
-          });
+          this.router.navigate(['/inventario']);
         },
-        error: (error) => {
-          this.toastr.error('Error al actualizar el producto', 'Error');
-          console.error(error);
+        error: (err: any) => {
+          this.toastr.error(err?.error?.message || 'Error al actualizar el producto', 'Error');
           this.loading = false;
         }
       });
     } else {
-      // Crear
-      this.inventarioService.crearProducto(formData).subscribe({
+      this.inventarioService.crearProducto(payload).subscribe({
         next: () => {
           this.toastr.success('Producto creado correctamente', '¡Éxito!');
-          this.router.navigate(['/inventario']).then(() => {
-            window.location.reload();
-          });
+          this.router.navigate(['/inventario']);
         },
-        error: (error) => {
-          this.toastr.error('Error al crear el producto', 'Error');
-          console.error(error);
+        error: (err: any) => {
+          this.toastr.error(err?.error?.message || 'Error al crear el producto', 'Error');
           this.loading = false;
         }
       });
     }
   }
 
-  cancelar(): void {
-    this.router.navigate(['/inventario']).then(() => {
-      window.location.reload();
+  abrirModalCategoria(): void {
+    this.nuevaCategoria = { nombre: '', descripcion: '' };
+    this.mostrarModalCategoria = true;
+  }
+
+  cerrarModalCategoria(): void {
+    this.mostrarModalCategoria = false;
+    this.creandoCategoria = false;
+  }
+
+  guardarCategoria(): void {
+    if (!this.nuevaCategoria.nombre.trim()) {
+      this.toastr.warning('El nombre de la categoría es requerido.');
+      return;
+    }
+    this.creandoCategoria = true;
+    this.inventarioService.crearCategoria(
+      this.nuevaCategoria.nombre,
+      this.nuevaCategoria.descripcion
+    ).subscribe({
+      next: (cat: any) => {
+        this.toastr.success('Categoría creada correctamente.');
+        this.cerrarModalCategoria();
+        this.cargarCategorias();
+        setTimeout(() => {
+          this.productoForm.patchValue({ categoriaId: cat.id });
+        }, 400);
+      },
+      error: (err: any) => {
+        this.toastr.error(err?.error?.message || 'Error al crear categoría.');
+        this.creandoCategoria = false;
+      }
     });
+  }
+
+  cancelar(): void {
+    this.router.navigate(['/inventario']);
   }
 
   getCategoriaColor(): string {

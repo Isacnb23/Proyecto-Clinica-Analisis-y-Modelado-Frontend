@@ -102,6 +102,13 @@
             <mat-error *ngIf="categoriaId?.hasError('required')">
               La categoría es requerida
             </mat-error>
+            <mat-hint>
+              <span style="color:#9ca3af">¿No existe? </span>
+              <a href="javascript:void(0)" (click)="abrirModalCategoria()"
+                style="color:#c9a227;font-weight:600;font-size:.8rem;text-decoration:none">
+                + Crear categoría
+              </a>
+            </mat-hint>
           </mat-form-field>
         </div>
       </div>
@@ -238,21 +245,13 @@
             </mat-error>
           </mat-form-field>
 
-          <!-- Proveedor -->
+                    <!-- Proveedor - campo libre -->
           <mat-form-field appearance="outline">
             <mat-label>Proveedor (Opcional)</mat-label>
-            <mat-select formControlName="proveedorId">
-              <mat-option [value]="">Ninguno</mat-option>
-              <mat-option 
-                *ngFor="let proveedor of proveedores" 
-                [value]="proveedor.id">
-                <div class="proveedor-option">
-                  <strong>{{ proveedor.nombre }}</strong>
-                  <span *ngIf="proveedor.contacto">{{ proveedor.contacto }}</span>
-                </div>
-              </mat-option>
-            </mat-select>
+            <input matInput formControlName="observaciones"
+              placeholder="Nombre del proveedor o referencia">
             <mat-icon matPrefix>business</mat-icon>
+            <mat-hint>Se guardará en observaciones</mat-hint>
           </mat-form-field>
 
           <!-- Ubicación -->
@@ -314,4 +313,39 @@
     </mat-card>
   </form>
 
+</div>
+<!-- MODAL CREAR CATEGORÍA -->
+<div *ngIf="mostrarModalCategoria"
+  style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:2000"
+  (click)="cerrarModalCategoria()">
+  <div style="background:white;border-radius:12px;padding:2rem;width:90%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.25)"
+    (click)="$event.stopPropagation()">
+    <h3 style="margin:0 0 1.25rem;color:#1a365d;font-size:1.1rem">➕ Nueva Categoría de Inventario</h3>
+
+    <div style="margin-bottom:1rem">
+      <label style="display:block;font-weight:500;color:#374151;margin-bottom:.35rem;font-size:.9rem">Nombre *</label>
+      <input type="text" [(ngModel)]="nuevaCategoria.nombre" [ngModelOptions]="{standalone:true}"
+        placeholder="Ej: Guantes, Antisépticos, Instrumental..."
+        style="width:100%;padding:.65rem;border:1px solid #d1d5db;border-radius:6px;font-size:.95rem;box-sizing:border-box">
+    </div>
+
+    <div style="margin-bottom:1.5rem">
+      <label style="display:block;font-weight:500;color:#374151;margin-bottom:.35rem;font-size:.9rem">Descripción (opcional)</label>
+      <input type="text" [(ngModel)]="nuevaCategoria.descripcion" [ngModelOptions]="{standalone:true}"
+        placeholder="Descripción breve"
+        style="width:100%;padding:.65rem;border:1px solid #d1d5db;border-radius:6px;font-size:.95rem;box-sizing:border-box">
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:.75rem">
+      <button type="button" (click)="cerrarModalCategoria()"
+        style="background:#6b7280;color:white;border:none;padding:.6rem 1.2rem;border-radius:6px;cursor:pointer;font-size:.9rem">
+        Cancelar
+      </button>
+      <button type="button" (click)="guardarCategoria()" [disabled]="creandoCategoria"
+        style="background:#1a365d;color:white;border:none;padding:.6rem 1.2rem;border-radius:6px;cursor:pointer;font-size:.9rem"
+        [style.background]="creandoCategoria ? '#9ca3af' : '#1a365d'">
+        {{ creandoCategoria ? 'Creando...' : 'Crear Categoría' }}
+      </button>
+    </div>
+  </div>
 </div>

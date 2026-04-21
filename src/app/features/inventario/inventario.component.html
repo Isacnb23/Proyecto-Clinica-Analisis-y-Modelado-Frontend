@@ -153,11 +153,8 @@
       </mat-form-field>
 
       <div class="table-actions">
-        <button mat-icon-button matTooltip="Exportar">
-          <mat-icon>download</mat-icon>
-        </button>
-        <button mat-icon-button matTooltip="Imprimir">
-          <mat-icon>print</mat-icon>
+<button mat-stroked-button (click)="imprimirLista()" matTooltip="Imprimir lista">
+          <mat-icon>print</mat-icon> Imprimir
         </button>
       </div>
     </div>
@@ -206,7 +203,7 @@
               <mat-icon>{{ getStockIcon(producto) }}</mat-icon>
               <div class="stock-info">
                 <strong>{{ producto.stockActual }}</strong>
-                <span>Mín: {{ producto.stockMinimo }} | Máx: {{ producto.stockMaximo }}</span>
+                <span>Mín: {{ producto.stockMinimo }}</span>
               </div>
             </div>
           </td>
@@ -306,7 +303,7 @@
           mat-row 
           *matRowDef="let row; columns: displayedColumns;"
           class="table-row"
-          (click)="verDetalle(row)">
+>
         </tr>
 
         <!-- Fila cuando no hay datos -->

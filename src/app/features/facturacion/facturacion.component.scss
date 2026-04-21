@@ -1,0 +1,287 @@
+// ============================================
+// FACTURACIÓN - AZUL REY & DORADO BRONCE
+// ============================================
+
+.facturacion-container {
+  padding: 0;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────
+.page-header {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3,14,36,0.1);
+  margin-bottom: 24px;
+  border-top: 4px solid #C49B63;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+      color: #030e24;
+      font-weight: 700;
+
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+        color: #C49B63;
+      }
+    }
+    p { margin: 0; color: #666; font-size: .95rem; }
+  }
+}
+
+// ── KPIs ─────────────────────────────────────────────────────────────────
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.2);
+      flex-shrink: 0;
+
+      mat-icon { font-size: 1.5rem; width: 1.5rem; height: 1.5rem; color: white; }
+    }
+
+    .stat-info {
+      h3 { margin: 0; font-size: 1.4rem; font-weight: 700; }
+      p  { margin: 4px 0 0; font-size: .85rem; opacity: .9; }
+    }
+
+    &.cobrado   { background: linear-gradient(135deg, #1a5c38 0%, #2d8653 100%); .stat-info h3, .stat-info p { color: #065f46; } .stat-icon { background: rgba(6,95,70,.2); } mat-icon { color: #065f46 !important; } }
+    &.pendiente { background: linear-gradient(135deg, #7b1f2c 0%, #a33040 100%); }
+    &.con-saldo { background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%); .stat-info h3, .stat-info p { color: #030e24; } }
+    &.al-dia    { background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%); }
+  }
+}
+
+// ── Tabla ─────────────────────────────────────────────────────────────────
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3,14,36,0.1);
+  overflow: hidden;
+  border-top: 4px solid #C49B63;
+  margin-bottom: 24px;
+}
+
+.table-header {
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid rgba(196,155,99,0.2);
+
+  .filter-field { width: 200px; margin: 0; }
+  .search-field { flex: 1; margin: 0; }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  gap: 1rem;
+  color: #9ca3af;
+}
+
+.table-wrapper { overflow-x: auto; }
+
+.fact-table {
+  width: 100%;
+
+  .mat-mdc-header-cell {
+    background: #1e3a5f;
+    color: white;
+    font-weight: 600;
+    font-size: .9rem;
+  }
+
+  .mat-mdc-row {
+    &:hover { background: #f8fafc; }
+    &.row-pendiente { background: #fffbeb; }
+    &.row-pendiente:hover { background: #fef3c7; }
+  }
+
+  .mat-mdc-cell { font-size: .9rem; }
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #9ca3af;
+
+  mat-icon { font-size: 3rem; width: 3rem; height: 3rem; display: block; margin: 0 auto 1rem; }
+}
+
+.btn-hist {
+  margin-right: 8px;
+  font-size: .82rem;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 12px;
+}
+
+.btn-pago {
+  font-size: .82rem;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 12px;
+
+  mat-icon { font-size: 1rem; width: 1rem; height: 1rem; margin-right: 4px; }
+}
+
+// Chips
+.chip-pagado    { background: #d1fae5 !important; color: #065f46 !important; font-weight: 600 !important; }
+.chip-pendiente { background: #fef3c7 !important; color: #92400e !important; font-weight: 600 !important; }
+
+// Colores
+.txt-green  { color: #059669; }
+.txt-orange { color: #d97706; }
+
+// ── Historial ──────────────────────────────────────────────────────────────
+.hist-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(3,14,36,0.1);
+  border: 2px solid #dbeafe;
+  padding: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.hist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+    color: #1a365d;
+    font-size: 1rem;
+
+    mat-icon { color: #C49B63; font-size: 1.2rem; width: 1.2rem; height: 1.2rem; }
+  }
+}
+
+.pagos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+  margin-top: 1rem;
+
+  th {
+    background: #1e3a5f;
+    color: white;
+    padding: .6rem 1rem;
+    text-align: left;
+    font-weight: 500;
+  }
+
+  td {
+    padding: .65rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  width: 90%;
+  max-width: 500px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: #1e3a5f;
+  color: white;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+
+    mat-icon { color: #C49B63; }
+  }
+
+  button mat-icon { color: rgba(255,255,255,.7); }
+}
+
+.modal-subtitle {
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: .95rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.full-width { width: 100%; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 768px) {
+  .stats-cards { grid-template-columns: repeat(2, 1fr); }
+  .table-header { flex-direction: column; .filter-field, .search-field { width: 100%; } }
+}

@@ -133,11 +133,16 @@
     }
 
     &.activos {
-      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      background: linear-gradient(135deg, #1a5c38 0%, #2d8653 100%);
 
       .stat-icon {
         background: rgba(255, 255, 255, 0.2);
       }
+    }
+
+    &.inactivos {
+      background: linear-gradient(135deg, #7b1f2c 0%, #a33040 100%);
+      .stat-icon { background: rgba(255,255,255,0.2); }
     }
 
     &.mes {
@@ -154,7 +159,7 @@
     }
 
     &.ingresos {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      background: linear-gradient(135deg, #0f3460 0%, #16537e 100%);
 
       .stat-icon {
         background: rgba(255, 255, 255, 0.2);
@@ -284,7 +289,7 @@
   }
 
   &.completado {
-    background: #e8f5e9 !important;
+    background: #e8f0f8 !important;
     color: #2e7d32 !important;
   }
 
@@ -294,7 +299,7 @@
   }
 
   &.pausado {
-    background: #e3f2fd !important;
+    background: #f0eee8 !important;
     color: #1976d2 !important;
   }
 }
@@ -304,12 +309,12 @@
   font-weight: 500;
 
   &.preventivo {
-    background: #e8f5e9 !important;
+    background: #e8f0f8 !important;
     color: #2e7d32 !important;
   }
 
   &.restaurativo {
-    background: #e3f2fd !important;
+    background: #f0eee8 !important;
     color: #1976d2 !important;
   }
 
