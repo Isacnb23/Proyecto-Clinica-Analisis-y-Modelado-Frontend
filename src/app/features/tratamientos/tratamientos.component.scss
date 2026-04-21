@@ -140,6 +140,11 @@
       }
     }
 
+    &.inactivos {
+      background: linear-gradient(135deg, #7b1f2c 0%, #a33040 100%);
+      .stat-icon { background: rgba(255,255,255,0.2); }
+    }
+
     &.mes {
       background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%);
 
@@ -284,7 +289,7 @@
   }
 
   &.completado {
-    background: #e8f5e9 !important;
+    background: #e8f0f8 !important;
     color: #2e7d32 !important;
   }
 
@@ -294,7 +299,7 @@
   }
 
   &.pausado {
-    background: #e3f2fd !important;
+    background: #f0eee8 !important;
     color: #1976d2 !important;
   }
 }
@@ -304,12 +309,12 @@
   font-weight: 500;
 
   &.preventivo {
-    background: #e8f5e9 !important;
+    background: #e8f0f8 !important;
     color: #2e7d32 !important;
   }
 
   &.restaurativo {
-    background: #e3f2fd !important;
+    background: #f0eee8 !important;
     color: #1976d2 !important;
   }
 
@@ -379,47 +384,4 @@
       width: 100%;
     }
   }
-}
-/* ── Stats cards faltantes ──────────────────── */
-.stat-card.inactivos {
-  background: linear-gradient(135deg, #7b1f2c 0%, #a33040 100%);
-  .stat-icon { background: rgba(255,255,255,0.2); }
-}
-
-.stat-card.promedio {
-  background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%);
-  .stat-icon { background: rgba(3,14,36,0.2); }
-  .stat-info h3, .stat-info p { color: #030e24; }
-}
-
-/* ── Nombre cell: descripcion en nueva línea ── */
-.nombre-cell {
-  display: flex;
-  flex-direction: column;
-
-  strong { color: #111827; }
-
-  .descripcion {
-    display: block;
-    font-size: 0.8rem;
-    color: #9ca3af;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 220px;
-  }
-}
-
-/* ── Estado chips ───────────────────────────── */
-.chip-activo {
-  background: #d1fae5 !important;
-  color: #065f46 !important;
-  font-weight: 600 !important;
-}
-
-.chip-inactivo {
-  background: #fee2e2 !important;
-  color: #991b1b !important;
-  font-weight: 600 !important;
 }
