@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -66,8 +67,14 @@ export class CitasComponent implements OnInit {
     private toastr: ToastrService
   ) {}
 
+
   ngOnInit(): void {
     this.cargarCitas();
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd)
+    ).subscribe((e: any) => {
+      if (e.url === '/citas') this.cargarCitas();
+    });
   }
 
   cargarCitas(): void {
@@ -160,20 +167,18 @@ export class CitasComponent implements OnInit {
   }
 
   getCitasPorFecha(fecha: Date): Cita[] {
-    return this.todasLasCitas.filter(c => {
-      const fechaCita = new Date(c.fecha);
-      fechaCita.setHours(0, 0, 0, 0);
-      const fechaBuscar = new Date(fecha);
-      fechaBuscar.setHours(0, 0, 0, 0);
-      return fechaCita.getTime() === fechaBuscar.getTime();
-    });
+    const toISO = (d: any) => typeof d === 'string' ? d.substring(0, 10) : new Date(d).toISOString().substring(0, 10);
+    const target = toISO(fecha);
+    return this.todasLasCitas.filter(c => toISO(c.fecha) === target);
   }
 
   filtrarCitasMesActual(): void {
+    const mes  = this.fechaActual.getMonth() + 1;
+    const anio = this.fechaActual.getFullYear();
     this.citasFiltradas = this.todasLasCitas.filter(c => {
-      const fechaCita = new Date(c.fecha);
-      return fechaCita.getMonth() === this.fechaActual.getMonth() &&
-             fechaCita.getFullYear() === this.fechaActual.getFullYear();
+      const raw = typeof c.fecha === 'string' ? c.fecha : '';
+      const [y, m] = raw.substring(0, 7).split('-').map(Number);
+      return m === mes && y === anio;
     });
     this.dataSource.data = this.citasFiltradas;
   }
