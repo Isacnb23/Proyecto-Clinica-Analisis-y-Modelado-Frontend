@@ -8,7 +8,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   'dashboard':    'dashboard.ver',
   'pacientes':    'pacientes.ver',
   'citas':        'citas.ver',
-  'horarios':     'citas.ver',
+  'horarios':     'empleados.ver', // Solo admin y quienes vean empleados
   'tratamientos': 'tratamientos.ver',
   'empleados':    'empleados.ver',
   'inventario':   'inventario.ver',
