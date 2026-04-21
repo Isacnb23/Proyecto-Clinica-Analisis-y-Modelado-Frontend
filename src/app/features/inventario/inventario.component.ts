@@ -1,7 +1,8 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -61,6 +62,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   dataSource: MatTableDataSource<ProductoInventario>;
   categorias: CategoriaInventario[] = [];
+  todosLosProductos: any[] = [];
   estadisticas?: EstadisticasInventario;
   categoriaSeleccionada?: number;
 
@@ -89,7 +91,13 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   cargarProductos(): void {
     this.inventarioService.getProductos().subscribe({
       next: (productos) => {
-        this.dataSource.data = productos;
+        const normalized = productos.map((p: any) => ({
+              ...p,
+              categoriaId: p.categoriaInventarioId ?? p.categoriaId,
+              costoUnitario: p.precioUnitario ?? p.costoUnitario ?? 0
+            }));
+            this.todosLosProductos = normalized;
+            this.dataSource.data = normalized;
         
         setTimeout(() => {
           this.dataSource.paginator = this.paginator;
@@ -146,15 +154,12 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   filtrarPorCategoria(categoriaId?: number): void {
     this.categoriaSeleccionada = categoriaId;
-
-    if (categoriaId) {
-      this.inventarioService.getProductosByCategoria(categoriaId).subscribe({
-        next: (productos) => {
-          this.dataSource.data = productos;
-        }
-      });
+    if (!categoriaId) {
+      this.dataSource.data = this.todosLosProductos;
     } else {
-      this.cargarProductos();
+      this.dataSource.data = this.todosLosProductos.filter(
+        p => p.categoriaId === categoriaId || (p as any).categoriaInventarioId === categoriaId
+      );
     }
   }
 

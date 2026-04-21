@@ -181,6 +181,7 @@ export class PacientesComponent implements OnInit, OnDestroy {
       this.pacienteService.eliminarPaciente(paciente.id).subscribe({
         next: () => {
           this.toastr.success('Paciente desactivado correctamente', 'Éxito');
+          this.filtroEstado = 'todos';  // Volver a todos para ver el inactivo
           this.cargarPacientes();
         },
         error: (error) => {
@@ -205,6 +206,8 @@ export class PacientesComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  imprimirLista(): void { window.print(); }
 
   nuevoPaciente(): void {
     this.router.navigate(['/pacientes', 'nuevo']);

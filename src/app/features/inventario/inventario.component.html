@@ -153,8 +153,11 @@
       </mat-form-field>
 
       <div class="table-actions">
-<button mat-stroked-button (click)="imprimirLista()" matTooltip="Imprimir lista">
-          <mat-icon>print</mat-icon> Imprimir
+        <button mat-icon-button matTooltip="Exportar">
+          <mat-icon>download</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Imprimir">
+          <mat-icon>print</mat-icon>
         </button>
       </div>
     </div>
@@ -203,7 +206,7 @@
               <mat-icon>{{ getStockIcon(producto) }}</mat-icon>
               <div class="stock-info">
                 <strong>{{ producto.stockActual }}</strong>
-                <span>Mín: {{ producto.stockMinimo }}</span>
+                <span>Mín: {{ producto.stockMinimo }} | Máx: {{ producto.stockMaximo }}</span>
               </div>
             </div>
           </td>
@@ -221,7 +224,7 @@
         <ng-container matColumnDef="costo">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Costo</th>
           <td mat-cell *matCellDef="let producto">
-            <strong class="costo">{{ formatCurrency(producto.costoUnitario) }}</strong>
+            <strong class="costo">{{ formatCurrency(producto.costoUnitario ?? producto.precioUnitario ?? 0) }}</strong>
           </td>
         </ng-container>
 
@@ -303,7 +306,7 @@
           mat-row 
           *matRowDef="let row; columns: displayedColumns;"
           class="table-row"
->
+          (click)="verDetalle(row)">
         </tr>
 
         <!-- Fila cuando no hay datos -->

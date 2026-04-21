@@ -225,10 +225,7 @@ export class InventarioFormComponent implements OnInit {
       return;
     }
     this.creandoCategoria = true;
-    this.inventarioService.crearCategoria(
-      this.nuevaCategoria.nombre,
-      this.nuevaCategoria.descripcion
-    ).subscribe({
+    this.inventarioService.crearCategoria({ nombre: this.nuevaCategoria.nombre, descripcion: this.nuevaCategoria.descripcion }).subscribe({
       next: (cat: any) => {
         this.toastr.success('Categoría creada correctamente.');
         this.cerrarModalCategoria();
