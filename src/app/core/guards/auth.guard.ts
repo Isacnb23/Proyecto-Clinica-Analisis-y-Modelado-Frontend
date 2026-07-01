@@ -13,4 +13,5 @@ export const authGuard = () => {
   // Redirigir al login si no está autenticado
   router.navigate(['/login']);
   return false;
+  
 };
