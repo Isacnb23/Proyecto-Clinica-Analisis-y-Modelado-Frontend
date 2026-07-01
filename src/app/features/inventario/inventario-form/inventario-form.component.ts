@@ -131,7 +131,7 @@ export class InventarioFormComponent implements OnInit {
             categoriaId:  (producto as any).categoriaInventarioId ?? (producto as any).categoriaId,
             stockActual:  (producto as any).stockActual ?? 0,
             stockMinimo:  (producto as any).stockMinimo ?? 0,
-            stockMaximo:  (producto as any).stockMinimo ?? 0,   // backend no devuelve stockMaximo
+            stockMaximo:  (producto as any).stockMaximo ?? 0,
             unidadMedida: (producto as any).unidadMedida || 'Unidad',
             costoUnitario:(producto as any).precioUnitario ?? 0,
             precioVenta:  0,

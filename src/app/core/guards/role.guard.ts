@@ -8,13 +8,21 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   'dashboard':    'dashboard.ver',
   'pacientes':    'pacientes.ver',
   'citas':        'citas.ver',
-  'horarios':     'empleados.ver', // Solo admin y quienes vean empleados
+  'horarios':     'horarios.ver',
   'tratamientos': 'tratamientos.ver',
   'empleados':    'empleados.ver',
   'inventario':   'inventario.ver',
   'facturacion':  'facturacion.ver',
   'roles':        'roles.ver',
   'reportes':     'reportes.ver',
+
+  // Sub-rutas de formularios (permiso distinto al de la vista de listado)
+  'pacientes/nuevo':          'pacientes.crear',
+  'pacientes/editar/:id':     'pacientes.editar',
+  'citas/nueva':              'citas.crear',
+  'tratamientos/nuevo':       'tratamientos.crear',
+  'empleados/nuevo':          'empleados.crear',
+  'inventario/nuevo':         'inventario.editar',
 };
 
 export const roleGuard = (route: ActivatedRouteSnapshot) => {
@@ -33,8 +41,10 @@ export const roleGuard = (route: ActivatedRouteSnapshot) => {
   // Admin siempre tiene acceso total
   if (user.rol?.toLowerCase() === 'admin') return true;
 
-  const routePath = route.routeConfig?.path?.split('/')[0] || '';
-  const requiredPermission = ROUTE_PERMISSIONS[routePath];
+  const fullPath = route.routeConfig?.path || '';
+  const routePath = fullPath.split('/')[0] || '';
+  // Prioriza el permiso de la sub-ruta exacta (ej. 'pacientes/nuevo') sobre el de la ruta base
+  const requiredPermission = ROUTE_PERMISSIONS[fullPath] ?? ROUTE_PERMISSIONS[routePath];
 
   // Si la ruta no tiene permiso configurado, permitir
   if (!requiredPermission) return true;

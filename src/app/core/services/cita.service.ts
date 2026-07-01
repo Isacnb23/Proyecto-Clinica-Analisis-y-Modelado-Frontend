@@ -124,12 +124,24 @@ export class CitaService {
     ]);
   }
 
-  // Horarios disponibles (slots fijos — pendiente integración con horarios reales)
-  getHorariosDisponibles(_fecha: any, _empleadoId: number): Observable<string[]> {
-    return of([
+  // Horarios disponibles: filtra los slots ya ocupados por citas del mismo día y empleado
+  getHorariosDisponibles(fecha: string, empleadoId: number): Observable<string[]> {
+    const todosLosSlots = [
       '07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30',
-      '11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30',
-      '16:00','16:30','17:00'
-    ]);
+      '11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30',
+      '15:00','15:30','16:00','16:30','17:00'
+    ];
+    return this.getCitas().pipe(
+      map(citas => {
+        const ocupados = citas
+          .filter(c =>
+            c.empleadoId === empleadoId &&
+            (typeof c.fecha === 'string' ? c.fecha : '').substring(0, 10) === fecha &&
+            c.estado !== 'Cancelada'
+          )
+          .map(c => c.horaInicio?.substring(0, 5));
+        return todosLosSlots.filter(slot => !ocupados.includes(slot));
+      })
+    );
   }
 }

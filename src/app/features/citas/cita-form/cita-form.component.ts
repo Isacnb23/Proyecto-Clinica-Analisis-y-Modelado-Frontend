@@ -156,7 +156,7 @@ export class CitaFormComponent implements OnInit {
     const fecha = this.citaForm.get('fecha')?.value;
     const odontologoId = this.citaForm.get('odontologoId')?.value;
     if (fecha && odontologoId) {
-      this.citaService.getHorariosDisponibles(fecha, odontologoId).subscribe({
+      this.citaService.getHorariosDisponibles(this.formatearFecha(fecha), odontologoId).subscribe({
         next: (horarios) => { this.horariosDisponibles = horarios; },
         error: () => { this.horariosDisponibles = []; }
       });

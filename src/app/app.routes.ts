@@ -29,10 +29,12 @@ export const routes: Routes = [
       },
       {
         path: 'pacientes/nuevo',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/pacientes/paciente-form/paciente-form.component').then(m => m.PacienteFormComponent)
       },
       {
         path: 'pacientes/editar/:id',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/pacientes/paciente-form/paciente-form.component').then(m => m.PacienteFormComponent)
       },
       {
@@ -46,6 +48,7 @@ export const routes: Routes = [
       },
       {
         path: 'citas/nueva',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/citas/cita-form/cita-form.component').then(m => m.CitaFormComponent)
       },
       {
@@ -60,6 +63,7 @@ export const routes: Routes = [
       },
       {
         path: 'tratamientos/nuevo',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/tratamientos/tratamiento-form/tratamiento-form.component').then(m => m.TratamientoFormComponent)
       },
       {
@@ -73,6 +77,7 @@ export const routes: Routes = [
       },
       {
         path: 'empleados/nuevo',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/empleados/empleado-form/empleado-form.component').then(m => m.EmpleadoFormComponent)
       },
       {
@@ -86,6 +91,7 @@ export const routes: Routes = [
       },
       {
         path: 'inventario/nuevo',
+        canActivate: [roleGuard],
         loadComponent: () => import('./features/inventario/inventario-form/inventario-form.component').then(m => m.InventarioFormComponent)
       },
       {
@@ -132,11 +138,6 @@ export const routes: Routes = [
       {
         path: 'ayuda',
         loadComponent: () => import('./features/perfil/perfil-config-ayuda.component').then(m => m.AyudaComponent)
-      },
-      {
-        path: 'roles-permisos',
-        loadComponent: () => import('./features/roles-permisos/roles-permisos.component').then(m => m.RolesPermisosComponent),
-        canActivate: [authGuard]
       }
 
     ]

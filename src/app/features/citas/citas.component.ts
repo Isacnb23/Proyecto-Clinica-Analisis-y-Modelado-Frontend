@@ -94,15 +94,11 @@ export class CitasComponent implements OnInit {
 
   calcularEstadisticas(): void {
     this.totalCitas = this.todasLasCitas.length;
-    
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    
-    this.citasHoy = this.todasLasCitas.filter(c => {
-      const fechaCita = new Date(c.fecha);
-      fechaCita.setHours(0, 0, 0, 0);
-      return fechaCita.getTime() === hoy.getTime();
-    }).length;
+
+    const hoyStr = new Date().toISOString().substring(0, 10);
+    this.citasHoy = this.todasLasCitas.filter(c =>
+      (typeof c.fecha === 'string' ? c.fecha : '').substring(0, 10) === hoyStr
+    ).length;
 
     this.citasPendientes = this.todasLasCitas.filter(c => c.estado === 'Pendiente').length;
     this.citasConfirmadas = this.todasLasCitas.filter(c => c.estado === 'Confirmada').length;

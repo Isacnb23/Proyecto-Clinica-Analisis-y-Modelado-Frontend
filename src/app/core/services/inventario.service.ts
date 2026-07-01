@@ -19,7 +19,7 @@ export class InventarioService {
     return this.http.post<ProductoInventario>(`${this.apiUrl}/productos`, data);
   }
   actualizarProducto(id: number, payload: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/productos`, payload);
+    return this.http.put(`${this.apiUrl}/productos/${id}`, payload);
   }
   eliminarProducto(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/productos/${id}`);
