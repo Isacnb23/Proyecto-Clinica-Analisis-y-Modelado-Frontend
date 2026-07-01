@@ -2,9 +2,11 @@ export interface EstadisticasDashboard {
   // Resumen general
   totalPacientes: number;
   pacientesActivos: number;
+  pacientesInactivos: number;
   citasHoy: number;
   citasSemana: number;
   tratamientosActivos: number;
+  tratamientosCancelados: number;
   ingresosmes: number;
   
   // Gráficas

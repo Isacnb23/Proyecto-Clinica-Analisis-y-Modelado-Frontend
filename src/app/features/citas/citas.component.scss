@@ -408,6 +408,29 @@
   overflow-x: auto;
 }
 
+.filtro-dia-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: #eef4ff;
+  border-bottom: 1px solid #d8e4fb;
+}
+
+// ============================================
+// IMPRESIÓN
+// ============================================
+@media print {
+  .lista-card {
+    box-shadow: none;
+  }
+
+  .citas-table {
+    width: 100% !important;
+    font-size: .8rem;
+  }
+}
+
 .citas-table {
   width: 100%;
 

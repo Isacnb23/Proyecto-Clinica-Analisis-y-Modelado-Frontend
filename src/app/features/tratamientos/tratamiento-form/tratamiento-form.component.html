@@ -126,11 +126,12 @@
           <!-- Costo Total -->
           <mat-form-field appearance="outline">
             <mat-label>Costo Total (₡) *</mat-label>
-            <input matInput type="number" formControlName="costoTotal" placeholder="0" min="0" step="1000">
+            <input matInput type="number" formControlName="costoTotal" placeholder="0" min="1" max="10000000" step="1000">
             <mat-icon matPrefix>payments</mat-icon>
             <span matTextPrefix>₡&nbsp;</span>
             <mat-error *ngIf="costoTotal?.hasError('required')">El costo es requerido</mat-error>
-            <mat-error *ngIf="costoTotal?.hasError('min')">El costo no puede ser negativo</mat-error>
+            <mat-error *ngIf="costoTotal?.hasError('min')">El costo debe ser mayor a 0</mat-error>
+            <mat-error *ngIf="costoTotal?.hasError('max')">El costo no puede superar ₡10,000,000</mat-error>
           </mat-form-field>
 
           <!-- Número de Sesiones -->

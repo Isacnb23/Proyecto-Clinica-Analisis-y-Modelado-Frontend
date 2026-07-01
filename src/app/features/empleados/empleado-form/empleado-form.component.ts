@@ -20,6 +20,10 @@ import {
   EmpleadoUpdateDto
 } from '../../../core/models/empleado-api.model';
 
+const NOMBRE_PATTERN = /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s\-]{2,}$/;
+const CEDULA_PATTERN = /^[1-9]-?\d{4}-?\d{4}$/;
+const TELEFONO_PATTERN = /^[24678]\d{3}-?\d{4}$/;
+
 @Component({
   selector: 'app-empleado-form',
   standalone: true,
@@ -58,13 +62,13 @@ export class EmpleadoFormComponent implements OnInit {
     this.form = this.fb.group({
       usuarioId: [null as number | null],
       codigo: ['', [Validators.required, Validators.maxLength(20)]],
-      nombre: ['', [Validators.required, Validators.maxLength(80)]],
-      apellidos: ['', [Validators.required, Validators.maxLength(120)]],
-      cedula: ['', [Validators.required, Validators.maxLength(20)]],
+      nombre: ['', [Validators.required, Validators.maxLength(80), Validators.pattern(NOMBRE_PATTERN)]],
+      apellidos: ['', [Validators.required, Validators.maxLength(120), Validators.pattern(NOMBRE_PATTERN)]],
+      cedula: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(CEDULA_PATTERN)]],
       rolId: [null as number | null, Validators.required],
       especialidad: [''],
       codigoProfesional: [''],
-      telefono: ['', [Validators.required, Validators.maxLength(20)]],
+      telefono: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(TELEFONO_PATTERN)]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(100)]],
       direccion: [''],
       fechaIngreso: ['', Validators.required]

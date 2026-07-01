@@ -64,9 +64,8 @@
             placeholder="Ej: Juan"
             aria-label="Nombre del empleado">
           <mat-icon matPrefix>person</mat-icon>
-          <mat-error *ngIf="f['nombre'].touched && f['nombre'].invalid">
-            El nombre es requerido.
-          </mat-error>
+          <mat-error *ngIf="f['nombre'].hasError('required')">El nombre es requerido.</mat-error>
+          <mat-error *ngIf="f['nombre'].hasError('pattern')">Solo letras y espacios.</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -77,9 +76,8 @@
             placeholder="Ej: Pérez Soto"
             aria-label="Apellidos del empleado">
           <mat-icon matPrefix>person_outline</mat-icon>
-          <mat-error *ngIf="f['apellidos'].touched && f['apellidos'].invalid">
-            Los apellidos son requeridos.
-          </mat-error>
+          <mat-error *ngIf="f['apellidos'].hasError('required')">Los apellidos son requeridos.</mat-error>
+          <mat-error *ngIf="f['apellidos'].hasError('pattern')">Solo letras y espacios.</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -90,9 +88,8 @@
             placeholder="1-1234-5678"
             aria-label="Cédula del empleado">
           <mat-icon matPrefix>credit_card</mat-icon>
-          <mat-error *ngIf="f['cedula'].touched && f['cedula'].invalid">
-            La cédula es requerida.
-          </mat-error>
+          <mat-error *ngIf="f['cedula'].hasError('required')">La cédula es requerida.</mat-error>
+          <mat-error *ngIf="f['cedula'].hasError('pattern')">Formato: 1-1234-5678.</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -103,9 +100,8 @@
             placeholder="8888-1234"
             aria-label="Teléfono del empleado">
           <mat-icon matPrefix>phone</mat-icon>
-          <mat-error *ngIf="f['telefono'].touched && f['telefono'].invalid">
-            El teléfono es requerido.
-          </mat-error>
+          <mat-error *ngIf="f['telefono'].hasError('required')">El teléfono es requerido.</mat-error>
+          <mat-error *ngIf="f['telefono'].hasError('pattern')">Formato: 8888-1234.</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">

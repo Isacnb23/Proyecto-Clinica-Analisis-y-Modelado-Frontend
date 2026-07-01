@@ -22,6 +22,7 @@ export class EstadisticaService {
     }).pipe(
       map(data => {
         const pacientesActivos = data.pacientes.filter((p: any) => p.activo !== false).length;
+        const pacientesInactivos = data.pacientes.filter((p: any) => !p.activo).length;
 
         // Citas de hoy
         const citasHoy = data.citas.filter((c: any) =>
@@ -41,6 +42,9 @@ export class EstadisticaService {
         // Tratamientos activos — backend usa estadoId: 1=En Proceso, 2=Completado, 3=Cancelado
         const tratamientosActivos = data.tratamientos.filter((t: any) =>
           t.estadoId === 1 || (t.activo !== false && t.estadoId !== 3)
+        ).length;
+        const tratamientosCancelados = data.tratamientos.filter((t: any) =>
+          t.estadoId === 3 || t.estado?.toLowerCase?.().includes('cancel')
         ).length;
 
         // Ingresos del mes: sumamos montoPagado de tratamientos activos en el mes
@@ -72,9 +76,11 @@ export class EstadisticaService {
         return {
           totalPacientes: data.pacientes.length,
           pacientesActivos,
+          pacientesInactivos,
           citasHoy,
           citasSemana,
           tratamientosActivos,
+          tratamientosCancelados,
           ingresosmes,
           citasPorMes,
           tratamientosMasRealizados,

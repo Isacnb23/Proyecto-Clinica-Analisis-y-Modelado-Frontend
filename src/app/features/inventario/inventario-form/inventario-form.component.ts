@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { InventarioService } from '../../../core/services/inventario.service';
 import { CategoriaInventario, Proveedor } from '../../../core/models/inventario.model';
 import { ToastrService } from 'ngx-toastr';
+
+function enteroValidator(control: AbstractControl): ValidationErrors | null {
+  if (control.value === null || control.value === '') return null;
+  return Number.isInteger(Number(control.value)) ? null : { entero: true };
+}
 
 @Component({
   selector: 'app-inventario-form',
@@ -71,17 +76,17 @@ export class InventarioFormComponent implements OnInit {
 
   initForm(): void {
     this.productoForm = this.fb.group({
-      codigo: [this.generarCodigo(), [Validators.required, Validators.minLength(3)]],
+      codigo: [this.generarCodigo(), [Validators.required, Validators.minLength(3), Validators.pattern(/^[A-Z0-9-]{3,}$/)]],
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       descripcion: ['', [Validators.required, Validators.minLength(10)]],
       categoriaId: ['', Validators.required],
-      stockActual: [0, [Validators.required, Validators.min(0)]],
-      stockMinimo: [0, [Validators.required, Validators.min(0)]],
-      stockMaximo: [0, [Validators.required, Validators.min(1)]],
+      stockActual: [0, [Validators.required, Validators.min(0), enteroValidator]],
+      stockMinimo: [0, [Validators.required, Validators.min(0), enteroValidator]],
+      stockMaximo: [0, [Validators.required, Validators.min(1), enteroValidator]],
       unidadMedida: ['Unidad', Validators.required],
       proveedorId: [''],
-      costoUnitario: [0, [Validators.required, Validators.min(0)]],
-      precioVenta: [0, Validators.min(0)],
+      costoUnitario: [0, [Validators.required, Validators.min(1), Validators.max(10000000)]],
+      precioVenta: [0, [Validators.min(0), Validators.max(10000000)]],
       ubicacion: [''],
       observaciones: ['']
     });

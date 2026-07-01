@@ -11,10 +11,11 @@
         <p>Administra las citas de la clínica</p>
       </div>
       
-      <button 
-        mat-raised-button 
-        color="primary" 
-        class="btn-nueva"
+      <button
+        *ngIf="puedeCrear"
+        mat-raised-button
+        color="primary"
+        class="btn-nueva no-print"
         (click)="nuevaCita()">
         <mat-icon>add</mat-icon>
         Nueva Cita
@@ -22,7 +23,7 @@
     </div>
 
     <!-- Estadísticas -->
-    <div class="stats-cards">
+    <div class="stats-cards no-print">
       <div class="stat-card total" data-aos="fade-up" data-aos-delay="100">
         <div class="stat-icon">
           <mat-icon>event_note</mat-icon>
@@ -70,7 +71,7 @@
     
     <!-- TAB 1: CALENDARIO -->
     <mat-tab label="Calendario">
-      <div class="tab-content">
+      <div class="tab-content no-print">
         <mat-card class="calendario-card">
           
           <!-- Controles del Calendario -->
@@ -139,7 +140,18 @@
     <mat-tab label="Lista de Citas">
       <div class="tab-content">
         <mat-card class="lista-card">
-          
+
+          <div class="filtro-dia-banner no-print" *ngIf="diaSeleccionado">
+            <span>Mostrando citas del {{ diaSeleccionado | date:'dd/MM/yyyy' }}</span>
+            <button mat-button color="primary" (click)="mostrarTodasLasCitas()">Ver todas las citas</button>
+          </div>
+
+          <div class="no-print" style="display:flex; justify-content:flex-end; padding: 12px 20px 0;">
+            <button mat-stroked-button (click)="imprimirLista()" matTooltip="Imprimir lista">
+              <mat-icon>print</mat-icon> Imprimir
+            </button>
+          </div>
+
           <div class="table-wrapper">
             <table mat-table [dataSource]="dataSource" class="citas-table">
               
@@ -181,6 +193,14 @@
                 </td>
               </ng-container>
 
+              <!-- Columna Motivo -->
+              <ng-container matColumnDef="motivo">
+                <th mat-header-cell *matHeaderCellDef>Motivo</th>
+                <td mat-cell *matCellDef="let cita">
+                  {{ cita.motivo || '—' }}
+                </td>
+              </ng-container>
+
               <!-- Columna Estado -->
               <ng-container matColumnDef="estado">
                 <th mat-header-cell *matHeaderCellDef>Estado</th>
@@ -195,8 +215,8 @@
 
               <!-- Columna Acciones -->
               <ng-container matColumnDef="acciones">
-                <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                <td mat-cell *matCellDef="let cita">
+                <th mat-header-cell *matHeaderCellDef class="no-print">Acciones</th>
+                <td mat-cell *matCellDef="let cita" class="no-print">
                   <button 
                     mat-icon-button 
                     [matMenuTriggerFor]="menu"
@@ -244,7 +264,7 @@
 
           <div class="no-data" *ngIf="dataSource.data.length === 0">
             <mat-icon>event_busy</mat-icon>
-            <p>No hay citas para este mes</p>
+            <p>No hay citas registradas</p>
           </div>
 
         </mat-card>

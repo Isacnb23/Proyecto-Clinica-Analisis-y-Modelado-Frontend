@@ -19,6 +19,8 @@ import { Paciente } from '../../core/models/paciente.model';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription, filter } from 'rxjs';
 import { MatSelectModule } from '@angular/material/select';
+import { AuthService } from '../../core/services/auth.service';
+import { RolesService } from '../../core/services/roles.service';
 
 @Component({
   selector: 'app-pacientes',
@@ -63,6 +65,8 @@ export class PacientesComponent implements OnInit, OnDestroy {
 
   private routerSubscription?: Subscription;
 
+  puedeCrear = false;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -71,12 +75,17 @@ export class PacientesComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastr: ToastrService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private rolesService: RolesService
   ) {
     this.dataSource = new MatTableDataSource<Paciente>([]);
   }
 
   ngOnInit(): void {
+    const rol = this.authService.currentUserValue?.rol;
+    this.puedeCrear = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('pacientes.crear');
+
     this.cargarPacientes();
 
     // Suscribirse a eventos de navegación

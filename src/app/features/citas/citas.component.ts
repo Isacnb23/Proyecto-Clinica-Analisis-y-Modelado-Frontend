@@ -13,6 +13,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { CitaService, Cita } from '../../core/services/cita.service';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '../../core/services/auth.service';
+import { RolesService } from '../../core/services/roles.service';
 
 interface DiaCalendario {
   fecha: Date;
@@ -54,21 +56,29 @@ export class CitasComponent implements OnInit {
   citasConfirmadas = 0;
 
   // Tabla
-  displayedColumns: string[] = ['fecha', 'hora', 'paciente', 'odontologo', 'estado', 'acciones'];
+  displayedColumns: string[] = ['fecha', 'hora', 'paciente', 'odontologo', 'motivo', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Cita>([]);
 
   // Datos
   todasLasCitas: Cita[] = [];
   citasFiltradas: Cita[] = [];
+  diaSeleccionado: Date | null = null;
+
+  puedeCrear = false;
 
   constructor(
     private citaService: CitaService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService,
+    private rolesService: RolesService
   ) {}
 
 
   ngOnInit(): void {
+    const rol = this.authService.currentUserValue?.rol;
+    this.puedeCrear = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('citas.crear');
+
     this.cargarCitas();
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
@@ -83,13 +93,21 @@ export class CitasComponent implements OnInit {
         this.todasLasCitas = citas;
         this.calcularEstadisticas();
         this.generarCalendario();
-        this.filtrarCitasMesActual();
+        this.mostrarTodasLasCitas();
       },
       error: (error) => {
         this.toastr.error('Error al cargar las citas', 'Error');
         console.error(error);
       }
     });
+  }
+
+  // La lista muestra TODAS las citas por defecto, sin filtro de mes.
+  // El filtro por mes solo aplica al calendario (generarCalendario / getCitasPorFecha).
+  mostrarTodasLasCitas(): void {
+    this.diaSeleccionado = null;
+    this.citasFiltradas = this.todasLasCitas;
+    this.dataSource.data = this.todasLasCitas;
   }
 
   calcularEstadisticas(): void {
@@ -168,39 +186,26 @@ export class CitasComponent implements OnInit {
     return this.todasLasCitas.filter(c => toISO(c.fecha) === target);
   }
 
-  filtrarCitasMesActual(): void {
-    const mes  = this.fechaActual.getMonth() + 1;
-    const anio = this.fechaActual.getFullYear();
-    this.citasFiltradas = this.todasLasCitas.filter(c => {
-      const raw = typeof c.fecha === 'string' ? c.fecha : '';
-      const [y, m] = raw.substring(0, 7).split('-').map(Number);
-      return m === mes && y === anio;
-    });
-    this.dataSource.data = this.citasFiltradas;
-  }
-
   mesAnterior(): void {
     this.fechaActual.setMonth(this.fechaActual.getMonth() - 1);
     this.generarCalendario();
-    this.filtrarCitasMesActual();
   }
 
   mesSiguiente(): void {
     this.fechaActual.setMonth(this.fechaActual.getMonth() + 1);
     this.generarCalendario();
-    this.filtrarCitasMesActual();
   }
 
   hoy(): void {
     this.fechaActual = new Date();
     this.generarCalendario();
-    this.filtrarCitasMesActual();
   }
 
   seleccionarDia(dia: DiaCalendario): void {
     if (dia.citas.length > 0) {
+      this.diaSeleccionado = dia.fecha;
       this.dataSource.data = dia.citas;
-    } else {
+    } else if (this.puedeCrear) {
       this.nuevaCita(dia.fecha);
     }
   }
@@ -283,4 +288,6 @@ export class CitasComponent implements OnInit {
   getEmpleadoNombre(cita: Cita): string {
     return cita.empleadoNombre || 'No asignado';
   }
+
+  imprimirLista(): void { window.print(); }
 }

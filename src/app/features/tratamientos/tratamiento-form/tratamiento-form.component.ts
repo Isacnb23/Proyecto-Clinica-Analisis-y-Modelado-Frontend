@@ -82,7 +82,7 @@ export class TratamientoFormComponent implements OnInit {
       descripcion:  [''],
       categoriaId:  ['', Validators.required],
       fechaInicio:  ['', Validators.required],
-      costoTotal:   [0, [Validators.required, Validators.min(0)]],
+      costoTotal:   [0, [Validators.required, Validators.min(1), Validators.max(10000000)]],
       numeroSesiones: [1, [Validators.required, Validators.min(1)]],
       estadoId:     [1, Validators.required],   // default: En Proceso
       notas:        ['']

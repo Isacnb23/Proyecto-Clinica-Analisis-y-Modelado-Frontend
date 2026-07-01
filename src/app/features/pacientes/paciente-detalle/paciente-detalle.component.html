@@ -72,6 +72,16 @@
                 <span class="label">Tipo de Sangre:</span>
                 <span class="value">{{ paciente.tipo_sangre }}</span>
               </div>
+              <mat-divider></mat-divider>
+              <div class="info-item">
+                <span class="label">Ocupación:</span>
+                <span class="value">{{ paciente.ocupacion || 'No registrado' }}</span>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="info-item">
+                <span class="label">Estado Civil:</span>
+                <span class="value">{{ paciente.estadoCivil || 'No registrado' }}</span>
+              </div>
             </mat-card-content>
           </mat-card>
 
@@ -181,8 +191,24 @@
               </div>
               <p>{{ paciente.medicamentos }}</p>
             </div>
+            <mat-divider *ngIf="paciente.medicamentos && paciente.observaciones"></mat-divider>
+            <div class="medical-section" *ngIf="paciente.observaciones">
+              <div class="section-header">
+                <mat-icon>note</mat-icon>
+                <h3>Observaciones</h3>
+              </div>
+              <p>{{ paciente.observaciones }}</p>
+            </div>
+            <mat-divider *ngIf="paciente.observaciones && paciente.referencia"></mat-divider>
+            <div class="medical-section" *ngIf="paciente.referencia">
+              <div class="section-header">
+                <mat-icon>info</mat-icon>
+                <h3>Referencia</h3>
+              </div>
+              <p>{{ paciente.referencia }}</p>
+            </div>
             <div class="no-medical-data"
-              *ngIf="!paciente.alergias && !paciente.enfermedades_cronicas && !paciente.medicamentos">
+              *ngIf="!paciente.alergias && !paciente.enfermedades_cronicas && !paciente.medicamentos && !paciente.observaciones && !paciente.referencia">
               <mat-icon>info</mat-icon>
               <p>No hay información médica registrada para este paciente.</p>
             </div>

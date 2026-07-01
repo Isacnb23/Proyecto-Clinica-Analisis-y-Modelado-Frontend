@@ -44,6 +44,9 @@
             <mat-error *ngIf="codigo?.hasError('minlength')">
               Mínimo 3 caracteres
             </mat-error>
+            <mat-error *ngIf="codigo?.hasError('pattern')">
+              Solo letras mayúsculas, números y guiones
+            </mat-error>
           </mat-form-field>
 
           <!-- Nombre -->
@@ -140,6 +143,9 @@
             <mat-error *ngIf="stockActual?.hasError('min')">
               Debe ser mayor o igual a 0
             </mat-error>
+            <mat-error *ngIf="stockActual?.hasError('entero')">
+              Debe ser un número entero
+            </mat-error>
           </mat-form-field>
 
           <!-- Stock Mínimo -->
@@ -159,6 +165,9 @@
             <mat-error *ngIf="stockMinimo?.hasError('min')">
               Debe ser mayor o igual a 0
             </mat-error>
+            <mat-error *ngIf="stockMinimo?.hasError('entero')">
+              Debe ser un número entero
+            </mat-error>
           </mat-form-field>
 
           <!-- Stock Máximo -->
@@ -177,6 +186,9 @@
             </mat-error>
             <mat-error *ngIf="stockMaximo?.hasError('min')">
               Debe ser mayor a 0
+            </mat-error>
+            <mat-error *ngIf="stockMaximo?.hasError('entero')">
+              Debe ser un número entero
             </mat-error>
           </mat-form-field>
 
@@ -214,7 +226,8 @@
               type="number" 
               formControlName="costoUnitario"
               placeholder="0"
-              min="0"
+              min="1"
+              max="10000000"
               step="100">
             <mat-icon matPrefix>shopping_cart</mat-icon>
             <span matTextPrefix>₡&nbsp;</span>
@@ -223,7 +236,10 @@
               El costo unitario es requerido
             </mat-error>
             <mat-error *ngIf="costoUnitario?.hasError('min')">
-              Debe ser mayor o igual a 0
+              Debe ser mayor a 0
+            </mat-error>
+            <mat-error *ngIf="costoUnitario?.hasError('max')">
+              No puede superar ₡10,000,000
             </mat-error>
           </mat-form-field>
 

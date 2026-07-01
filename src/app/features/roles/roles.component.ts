@@ -129,6 +129,14 @@ export class RolesComponent implements OnInit {
 
   crearUsuario(): void {
     if (!this.nuevoUsuario.email || !this.nuevoUsuario.password) { this.toast.warning('Email y contraseña requeridos'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.nuevoUsuario.email)) {
+      this.toast.warning('Ingrese un correo electrónico válido');
+      return;
+    }
+    if (!/^(?=.*[A-Z])(?=.*\d).{6,}$/.test(this.nuevoUsuario.password)) {
+      this.toast.warning('La contraseña debe tener mínimo 6 caracteres, una mayúscula y un número');
+      return;
+    }
     if (this.nuevoUsuario.password !== this.nuevoUsuario.confirmPassword) { this.toast.warning('Las contraseñas no coinciden'); return; }
     if (!this.nuevoUsuario.rolId) { this.toast.warning('Selecciona un rol'); return; }
     this.creandoUsuario = true;

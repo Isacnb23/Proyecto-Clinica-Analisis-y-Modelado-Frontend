@@ -21,6 +21,8 @@ import { FormsModule } from '@angular/forms';
 import { InventarioService } from '../../core/services/inventario.service';
 import { ProductoInventario, CategoriaInventario, EstadisticasInventario } from '../../core/models/inventario.model';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '../../core/services/auth.service';
+import { RolesService } from '../../core/services/roles.service';
 
 @Component({
   selector: 'app-inventario',
@@ -66,13 +68,17 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   estadisticas?: EstadisticasInventario;
   categoriaSeleccionada?: number;
 
+  puedeCrear = false;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private inventarioService: InventarioService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService,
+    private rolesService: RolesService
   ) {
     this.dataSource = new MatTableDataSource<ProductoInventario>([]);
   }
@@ -83,6 +89,9 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    const rol = this.authService.currentUserValue?.rol;
+    this.puedeCrear = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('inventario.editar');
+
     this.cargarProductos();
     this.cargarCategorias();
     this.cargarEstadisticas();
@@ -173,7 +182,9 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   verDetalle(producto: ProductoInventario): void {
-    this.router.navigate(['/inventario', producto.id]);
+    // No existe una ruta de detalle dedicada para inventario (solo /inventario/editar/:id).
+    // Navegar a una ruta inexistente cae en el wildcard "**" -> /login, que parece un cierre de sesión.
+    this.editarProducto(producto);
   }
 
   editarProducto(producto: ProductoInventario): void {

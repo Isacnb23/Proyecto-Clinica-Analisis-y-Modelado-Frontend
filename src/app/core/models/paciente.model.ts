@@ -16,6 +16,7 @@ export interface Paciente {
   observaciones?: string;
   referencia?: string;
   tipo_sangre?: string;
+  esMenorDeEdad?: boolean;
   nombre_emergencia?: string;
   telefono_emergencia?: string;
   relacion_emergencia?: string;

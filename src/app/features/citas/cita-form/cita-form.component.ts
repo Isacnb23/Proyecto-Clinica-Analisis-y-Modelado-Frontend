@@ -98,6 +98,7 @@ export class CitaFormComponent implements OnInit {
     this.pacienteService.getPacientes().subscribe({
       next: (pacientes: any) => {
         this.pacientes = Array.isArray(pacientes) ? pacientes.filter((p: any) => p.activo) : [];
+        this.verificarPacientePreseleccionado();
       },
       error: () => this.toastr.error('Error al cargar pacientes', 'Error')
     });
@@ -170,6 +171,19 @@ export class CitaFormComponent implements OnInit {
     }
   }
 
+  verificarPacientePreseleccionado(): void {
+    const pacienteIdParam = this.route.snapshot.queryParamMap.get('pacienteId');
+    if (!pacienteIdParam || this.pacientes.length === 0) return;
+
+    const paciente = this.pacientes.find(p => p.id === Number(pacienteIdParam));
+    if (paciente) {
+      this.citaForm.patchValue({
+        pacienteId: paciente.id,
+        pacienteBusqueda: paciente
+      });
+    }
+  }
+
   private formatearFecha(fecha: Date): string {
     const y = fecha.getFullYear();
     const m = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -191,6 +205,15 @@ export class CitaFormComponent implements OnInit {
     }
 
     const v = this.citaForm.value;
+
+    const fechaHoraCita = new Date(v.fecha);
+    const [h, min] = (v.hora as string).split(':').map(Number);
+    fechaHoraCita.setHours(h, min, 0, 0);
+    if (fechaHoraCita < new Date()) {
+      this.toastr.error('No se puede agendar una cita en un horario ya transcurrido.', 'Error');
+      return;
+    }
+
     this.loading = true;
 
     const formData: Cita = {

@@ -96,8 +96,6 @@ import { ToastrService } from 'ngx-toastr';
             <span class="field-label">Observaciones</span>
             <span class="field-val">{{ cita.observaciones }}</span>
           </div>
-          <div class="field">
-            <span class="field-label">Registrada el</span>
         </div>
       </div>
 

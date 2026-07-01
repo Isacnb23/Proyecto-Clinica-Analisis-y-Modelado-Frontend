@@ -52,6 +52,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Segundo Apellido (Opcional)</mat-label>
                 <input matInput formControlName="apellido2" placeholder="Ej: González">
+                <mat-error *ngIf="pacienteForm.get('apellido2')?.hasError('pattern')">Solo letras y espacios</mat-error>
               </mat-form-field>
 
               <!-- Cédula -->
@@ -70,6 +71,8 @@
                 <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
                 <mat-error *ngIf="fechaNacimiento?.hasError('required')">La fecha es requerida</mat-error>
+                <mat-error *ngIf="fechaNacimiento?.hasError('fechaFutura')">La fecha no puede ser futura</mat-error>
+                <mat-error *ngIf="fechaNacimiento?.hasError('fechaMuyAntigua')">La fecha es demasiado antigua</mat-error>
               </mat-form-field>
 
               <!-- Género -->
@@ -155,11 +158,14 @@
             <!-- Responsable -->
             <mat-divider class="divider"></mat-divider>
 
-            <div class="checkbox-section">
+            <div class="checkbox-section" *ngIf="!esMayorDeEdad">
               <mat-checkbox formControlName="esmenor" color="primary">
                 <strong>Es menor de edad (requiere responsable)</strong>
               </mat-checkbox>
             </div>
+            <p *ngIf="esMayorDeEdad" class="hint-mayor-edad">
+              La fecha de nacimiento indica que el paciente es mayor de edad, no requiere responsable.
+            </p>
 
             <div *ngIf="esmenor?.value" class="responsable-section">
               <h3>
@@ -173,6 +179,7 @@
                   <input matInput formControlName="responsableNombre" placeholder="Ej: María González">
                   <mat-icon matPrefix>person</mat-icon>
                   <mat-error *ngIf="responsableNombre?.hasError('required')">El nombre es requerido</mat-error>
+                  <mat-error *ngIf="responsableNombre?.hasError('pattern')">Solo letras y espacios</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
@@ -219,6 +226,14 @@
 
           <mat-card-content>
             <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo de Sangre (Opcional)</mat-label>
+                <mat-select formControlName="tipoSangre">
+                  <mat-option *ngFor="let ts of tiposSangre" [value]="ts">{{ ts }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix>bloodtype</mat-icon>
+              </mat-form-field>
+
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Alergias (Opcional)</mat-label>
                 <textarea matInput formControlName="alergias" rows="2" placeholder="Ej: Penicilina, Aspirina"></textarea>

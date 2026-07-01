@@ -17,6 +17,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { TratamientoService } from '../../core/services/tratamiento.service';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '../../core/services/auth.service';
+import { RolesService } from '../../core/services/roles.service';
 
 @Component({
   selector: 'app-tratamientos',
@@ -47,13 +49,17 @@ export class TratamientosComponent implements OnInit, AfterViewInit {
 
   filtroEstado = 'todos';
 
+  puedeCrear = false;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private tratamientoService: TratamientoService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService,
+    private rolesService: RolesService
   ) {}
 
   ngAfterViewInit(): void {
@@ -62,6 +68,9 @@ export class TratamientosComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    const rol = this.authService.currentUserValue?.rol;
+    this.puedeCrear = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('tratamientos.crear');
+
     this.dataSource.filterPredicate = (row: any, f: string) => {
       const q = f.toLowerCase();
       return (row.nombre         || '').toLowerCase().includes(q)

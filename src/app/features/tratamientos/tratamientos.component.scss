@@ -180,6 +180,23 @@
   border-top: 4px solid #C49B63;
 }
 
+// ============================================
+// IMPRESIÓN
+// ============================================
+@media print {
+  .stats-cards { display: none !important; }
+
+  .table-container {
+    box-shadow: none;
+    border-top: none;
+  }
+
+  .trat-table {
+    width: 100% !important;
+    font-size: .8rem;
+  }
+}
+
 .table-header {
   padding: 20px;
   display: flex;

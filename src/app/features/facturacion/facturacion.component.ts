@@ -17,6 +17,8 @@ import {
   FacturacionService, TratamientoFactura, PagoResponse, PagoCreate, METODOS_PAGO
 } from '../../core/services/facturacion.service';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '../../core/services/auth.service';
+import { RolesService } from '../../core/services/roles.service';
 
 @Component({
   selector: 'app-facturacion',
@@ -56,12 +58,21 @@ export class FacturacionComponent implements OnInit, AfterViewInit {
   metodosPago  = METODOS_PAGO;
   pago: PagoCreate = { tratamientoId: 0, monto: 0, metodoPagoId: 0 };
 
+  puedePagar = false;
+
   constructor(
     private facturacionService: FacturacionService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService,
+    private rolesService: RolesService
   ) {}
 
-  ngOnInit(): void { this.cargar(); }
+  ngOnInit(): void {
+    const rol = this.authService.currentUserValue?.rol;
+    this.puedePagar = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('facturacion.pagar');
+
+    this.cargar();
+  }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;

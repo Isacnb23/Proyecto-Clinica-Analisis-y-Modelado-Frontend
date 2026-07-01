@@ -25,7 +25,7 @@
         <div class="stat-content">
           <h3>{{ estadisticas?.totalPacientes ?? 0 }}</h3>
           <p>Total Pacientes</p>
-          <span class="stat-detail">{{ estadisticas?.pacientesActivos ?? 0 }} activos</span>
+          <span class="stat-detail">{{ estadisticas?.pacientesActivos ?? 0 }} activos · {{ estadisticas?.pacientesInactivos ?? 0 }} inactivos</span>
         </div>
       </mat-card>
 
@@ -43,7 +43,7 @@
         <div class="stat-content">
           <h3>{{ estadisticas?.tratamientosActivos ?? 0 }}</h3>
           <p>Tratamientos Activos</p>
-          <span class="stat-detail">En proceso actualmente</span>
+          <span class="stat-detail">En proceso · {{ estadisticas?.tratamientosCancelados ?? 0 }} cancelados</span>
         </div>
       </mat-card>
 

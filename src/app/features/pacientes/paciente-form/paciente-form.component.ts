@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,6 +15,21 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { PacienteService } from '../../../core/services/paciente.service';
 import { ToastrService } from 'ngx-toastr';
+
+const NOMBRE_PATTERN = /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s\-]{2,}$/;
+const CEDULA_PATTERN = /^[1-9]-?\d{4}-?\d{4}$/;
+const TELEFONO_PATTERN = /^[24678]\d{3}-?\d{4}$/;
+
+function fechaNacimientoValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+  const fecha = new Date(control.value);
+  const hoy = new Date();
+  const hace120 = new Date();
+  hace120.setFullYear(hoy.getFullYear() - 120);
+  if (fecha > hoy) return { fechaFutura: true };
+  if (fecha < hace120) return { fechaMuyAntigua: true };
+  return null;
+}
 
 @Component({
   selector: 'app-paciente-form',
@@ -43,9 +58,11 @@ export class PacienteFormComponent implements OnInit {
   pacienteId?: number;
   loading = false;
   maxDate = new Date();
+  esMayorDeEdad = false;
 
   generos = ['Masculino', 'Femenino', 'Otro'];
   estadosCiviles = ['Soltero', 'Casado', 'Divorciado', 'Viudo', 'Unión Libre'];
+  tiposSangre = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Desconocido'];
 
   constructor(
     private fb: FormBuilder,
@@ -63,25 +80,26 @@ export class PacienteFormComponent implements OnInit {
   initForm(): void {
     this.pacienteForm = this.fb.group({
       // Datos Personales
-      nombre: ['', [Validators.required, Validators.minLength(2)]],
-      apellido1: ['', [Validators.required, Validators.minLength(2)]],
-      apellido2: [''],
-      cedula: ['', [Validators.required, Validators.pattern(/^\d{1}-\d{4}-\d{4}$/)]],
-      fechaNacimiento: ['', Validators.required],
+      nombre: ['', [Validators.required, Validators.minLength(2), Validators.pattern(NOMBRE_PATTERN)]],
+      apellido1: ['', [Validators.required, Validators.minLength(2), Validators.pattern(NOMBRE_PATTERN)]],
+      apellido2: ['', [Validators.pattern(NOMBRE_PATTERN)]],
+      cedula: ['', [Validators.required, Validators.pattern(CEDULA_PATTERN)]],
+      fechaNacimiento: ['', [Validators.required, fechaNacimientoValidator]],
       genero: ['', Validators.required],
-      telefono: ['', [Validators.required, Validators.pattern(/^\d{4}-\d{4}$/)]],
-      telefonoSecundario: ['', Validators.pattern(/^\d{4}-\d{4}$/)],
+      telefono: ['', [Validators.required, Validators.pattern(TELEFONO_PATTERN)]],
+      telefonoSecundario: ['', Validators.pattern(TELEFONO_PATTERN)],
       email: ['', Validators.email],
       direccion: [''],
       ocupacion: [''],
       estadoCivil: [''],
+      tipoSangre: [''],
 
       // Responsable (si es menor)
-      esmenor: [false],
-      responsableNombre: [''],
+      esmenor: [{ value: false, disabled: false }],
+      responsableNombre: ['', [Validators.pattern(NOMBRE_PATTERN)]],
       responsableParentesco: [''],
-      responsableTelefono: ['', Validators.pattern(/^\d{4}-\d{4}$/)],
-      responsableCedula: ['', Validators.pattern(/^\d{1}-\d{4}-\d{4}$/)],
+      responsableTelefono: ['', Validators.pattern(TELEFONO_PATTERN)],
+      responsableCedula: ['', Validators.pattern(CEDULA_PATTERN)],
 
       // Información Médica
       alergias: [''],
@@ -98,9 +116,9 @@ export class PacienteFormComponent implements OnInit {
       const responsableTelefono = this.pacienteForm.get('responsableTelefono');
 
       if (esmenor) {
-        responsableNombre?.setValidators([Validators.required, Validators.minLength(2)]);
+        responsableNombre?.setValidators([Validators.required, Validators.minLength(2), Validators.pattern(NOMBRE_PATTERN)]);
         responsableParentesco?.setValidators([Validators.required]);
-        responsableTelefono?.setValidators([Validators.required, Validators.pattern(/^\d{4}-\d{4}$/)]);
+        responsableTelefono?.setValidators([Validators.required, Validators.pattern(TELEFONO_PATTERN)]);
       } else {
         responsableNombre?.clearValidators();
         responsableParentesco?.clearValidators();
@@ -111,6 +129,39 @@ export class PacienteFormComponent implements OnInit {
       responsableParentesco?.updateValueAndValidity();
       responsableTelefono?.updateValueAndValidity();
     });
+
+    // Edad calculada a partir de fecha de nacimiento: fuerza esmenor=false y bloquea el checkbox si es mayor de edad
+    this.pacienteForm.get('fechaNacimiento')?.valueChanges.subscribe(fecha => {
+      this.actualizarEsMayorDeEdad(fecha);
+    });
+  }
+
+  calcularEdad(fechaNac: string | Date): number {
+    const hoy = new Date();
+    const nac = new Date(fechaNac);
+    let edad = hoy.getFullYear() - nac.getFullYear();
+    const mesDiff = hoy.getMonth() - nac.getMonth();
+    if (mesDiff < 0 || (mesDiff === 0 && hoy.getDate() < nac.getDate())) edad--;
+    return edad;
+  }
+
+  actualizarEsMayorDeEdad(fecha: string | Date | null): void {
+    const esmenorControl = this.pacienteForm.get('esmenor');
+    if (!fecha) {
+      this.esMayorDeEdad = false;
+      esmenorControl?.enable({ emitEvent: false });
+      return;
+    }
+
+    const edad = this.calcularEdad(fecha);
+    this.esMayorDeEdad = edad >= 18;
+
+    if (this.esMayorDeEdad) {
+      esmenorControl?.setValue(false, { emitEvent: true });
+      esmenorControl?.disable({ emitEvent: false });
+    } else {
+      esmenorControl?.enable({ emitEvent: false });
+    }
   }
 
   checkEditMode(): void {
@@ -151,7 +202,7 @@ export class PacienteFormComponent implements OnInit {
             direccion: paciente.direccion || '',
             ocupacion: paciente.ocupacion || '',
             estadoCivil: paciente.estadoCivil || '',
-            esmenor: !!paciente.nombre_emergencia,
+            tipoSangre: paciente.tipo_sangre || '',
             responsableNombre: paciente.nombre_emergencia || '',
             responsableParentesco: paciente.relacion_emergencia || '',
             responsableTelefono: paciente.telefono_emergencia || '',
@@ -161,6 +212,12 @@ export class PacienteFormComponent implements OnInit {
             referencia: paciente.referencia || '',
             observaciones: paciente.observaciones || ''
           });
+
+          // La edad calculada manda: si es mayor de edad, el checkbox queda bloqueado en false
+          this.actualizarEsMayorDeEdad(paciente.fecha_nacimiento);
+          if (!this.esMayorDeEdad) {
+            this.pacienteForm.get('esmenor')?.setValue(!!paciente.esMenorDeEdad);
+          }
         }
         this.loading = false;
       },
@@ -180,7 +237,8 @@ export class PacienteFormComponent implements OnInit {
     }
 
     this.loading = true;
-    const formData = this.pacienteForm.value;
+    // getRawValue() incluye los controles disabled (ej. "esmenor" cuando es mayor de edad)
+    const formData = this.pacienteForm.getRawValue();
 
     // Mapeo de géneros a IDs
     const generoMap: { [key: string]: number } = {
@@ -212,13 +270,12 @@ export class PacienteFormComponent implements OnInit {
       medicamentos: formData.medicamentos || '',
       observaciones: formData.observaciones || '',
       referencia: formData.referencia || '',
-      tipo_sangre: '',
+      tipo_sangre: formData.tipoSangre || '',
+      esMenorDeEdad: !!formData.esmenor,
       nombre_emergencia: formData.responsableNombre || '',
       telefono_emergencia: formData.responsableTelefono || '',
       relacion_emergencia: formData.responsableParentesco || ''
     };
-
-    console.log('Datos a enviar:', pacienteEnviar);
 
     if (this.isEditMode && this.pacienteId) {
       this.pacienteService.actualizarPaciente({

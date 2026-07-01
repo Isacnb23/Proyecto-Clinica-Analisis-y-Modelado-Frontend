@@ -128,7 +128,7 @@
               {{ tratamientoDetalle?.id === t.id ? 'Ocultar' : 'Historial' }}
             </button>
             <button mat-raised-button color="primary" class="btn-pago"
-              *ngIf="t.saldo > 0"
+              *ngIf="t.saldo > 0 && puedePagar"
               (click)="abrirPago(t)">
               <mat-icon>add_card</mat-icon> Registrar pago
             </button>
