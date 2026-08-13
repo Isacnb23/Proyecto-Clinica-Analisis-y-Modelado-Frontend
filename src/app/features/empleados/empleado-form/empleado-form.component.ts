@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgxMaskDirective } from 'ngx-mask';
 import { forkJoin } from 'rxjs';
 import { EmpleadosService } from '../../../core/services/empleados.service';
 import { RolesService } from '../../../core/services/roles.service';
@@ -36,7 +37,8 @@ const TELEFONO_PATTERN = /^[24678]\d{3}-?\d{4}$/;
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    NgxMaskDirective
   ],
   templateUrl: './empleado-form.component.html',
   styleUrl: './empleado-form.component.scss'
@@ -48,6 +50,7 @@ export class EmpleadoFormComponent implements OnInit {
 
   roles: Rol[] = [];
   usuarios: UsuarioResumen[] = [];
+  usuariosPorRol: { rol: string; usuarios: UsuarioResumen[] }[] = [];
 
   form!: ReturnType<FormBuilder['group']>;
 
@@ -89,11 +92,24 @@ export class EmpleadoFormComponent implements OnInit {
       next: ({ roles, usuarios }: { roles: Rol[]; usuarios: UsuarioResumen[] }) => {
         this.roles = roles.filter((r: Rol) => r.activo);
         this.usuarios = usuarios.filter((u: UsuarioResumen) => u.activo);
+        this.usuariosPorRol = this.agruparUsuariosPorRol(this.usuarios);
       },
       error: (error: any) => {
         this.toast.httpError(error, 'No fue posible cargar roles y usuarios');
       }
     });
+  }
+
+  private agruparUsuariosPorRol(usuarios: UsuarioResumen[]): { rol: string; usuarios: UsuarioResumen[] }[] {
+    const grupos = new Map<string, UsuarioResumen[]>();
+    for (const u of usuarios) {
+      const rol = u.rol || 'Sin rol';
+      if (!grupos.has(rol)) grupos.set(rol, []);
+      grupos.get(rol)!.push(u);
+    }
+    return Array.from(grupos.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([rol, usuarios]) => ({ rol, usuarios }));
   }
 
   detectarModoEdicion(): void {

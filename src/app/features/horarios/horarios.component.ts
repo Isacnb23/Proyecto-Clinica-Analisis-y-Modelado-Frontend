@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -14,7 +14,8 @@ import { EmpleadosService } from '../../core/services/empleados.service';
 import { AuthService } from '../../core/services/auth.service';
 import { EmpleadoApi } from '../../core/models/empleado-api.model';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, of } from 'rxjs';
+import { catchError, of, Subject, takeUntil } from 'rxjs';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-horarios',
@@ -22,12 +23,14 @@ import { catchError, of } from 'rxjs';
   imports: [
     CommonModule, FormsModule,
     MatCardModule, MatSelectModule, MatButtonModule, MatIconModule,
-    MatFormFieldModule, MatInputModule, MatDividerModule, MatChipsModule
+    MatFormFieldModule, MatInputModule, MatDividerModule, MatChipsModule,
+    TranslatePipe
   ],
   templateUrl: './horarios.component.html',
   styleUrl: './horarios.component.scss'
 })
-export class HorariosComponent implements OnInit {
+export class HorariosComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   empleados: EmpleadoApi[] = [];
   empleadoSeleccionado: EmpleadoApi | null = null;
@@ -75,10 +78,16 @@ export class HorariosComponent implements OnInit {
 
     // Cargar empleados — silencioso si no tiene permiso
     this.empleadosService.getEmpleados(true).pipe(
-      catchError(() => of([]))
+      catchError(() => of([])),
+      takeUntil(this.destroy$)
     ).subscribe(empleados => {
       this.empleados = empleados;
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onEmpleadoChange(): void {
@@ -90,7 +99,7 @@ export class HorariosComponent implements OnInit {
   cargarBloques(): void {
     if (!this.empleadoSeleccionado) return;
     this.cargandoBloques = true;
-    this.horariosService.getBloques(this.empleadoSeleccionado.id).subscribe({
+    this.horariosService.getBloques(this.empleadoSeleccionado.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (b) => { this.bloques = b; this.cargandoBloques = false; },
       error: () => { this.bloques = []; this.cargandoBloques = false; }
     });
@@ -99,7 +108,7 @@ export class HorariosComponent implements OnInit {
   cargarExcepciones(): void {
     if (!this.empleadoSeleccionado) return;
     this.cargandoExcep = true;
-    this.horariosService.getExcepciones(this.empleadoSeleccionado.id).subscribe({
+    this.horariosService.getExcepciones(this.empleadoSeleccionado.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (e) => { this.excepciones = e; this.cargandoExcep = false; },
       error: () => { this.excepciones = []; this.cargandoExcep = false; }
     });
@@ -129,7 +138,7 @@ export class HorariosComponent implements OnInit {
       this.empleadoSeleccionado.id,
       this.formBloque.diaSemana,
       hi, hf
-    ).subscribe({
+    ).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.toastr.success('Bloque agregado correctamente');
         this.mostrarFormBloque = false;
@@ -145,7 +154,7 @@ export class HorariosComponent implements OnInit {
 
   eliminarBloque(bloqueId: number): void {
     if (!confirm('¿Eliminar este bloque?')) return;
-    this.horariosService.eliminarBloque(bloqueId).subscribe({
+    this.horariosService.eliminarBloque(bloqueId).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => { this.toastr.success('Bloque eliminado'); this.cargarBloques(); },
       error: () => this.toastr.error('Error al eliminar bloque')
     });
@@ -168,7 +177,7 @@ export class HorariosComponent implements OnInit {
       fechaFin:    new Date(this.formExcep.fechaFin).toISOString(),
       tipo:        this.formExcep.tipo,
       motivo:      this.formExcep.motivo
-    }).subscribe({
+    }).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.toastr.success('Excepción registrada correctamente');
         this.mostrarFormExcep = false;
@@ -184,7 +193,7 @@ export class HorariosComponent implements OnInit {
 
   eliminarExcepcion(id: number): void {
     if (!confirm('¿Eliminar esta excepción?')) return;
-    this.horariosService.eliminarExcepcion(id).subscribe({
+    this.horariosService.eliminarExcepcion(id).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => { this.toastr.success('Excepción eliminada'); this.cargarExcepciones(); },
       error: () => this.toastr.error('Error al eliminar excepción')
     });

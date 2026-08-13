@@ -136,12 +136,12 @@
       }
     }
 
-    // Citas Hoy - Rosa/Magenta
+    // Citas Hoy - Azul institucional (familia navy)
     &.hoy {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      background: linear-gradient(135deg, #1B3A6F 0%, #2C5299 100%);
 
       .stat-icon {
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.2);
       }
     }
 
@@ -159,9 +159,9 @@
       }
     }
 
-    // Confirmadas - Verde
+    // Confirmadas - Verde institucional apagado
     &.confirmadas {
-      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      background: linear-gradient(135deg, #1F6B3D 0%, #2E8B57 100%);
 
       .stat-icon {
         background: rgba(255, 255, 255, 0.2);

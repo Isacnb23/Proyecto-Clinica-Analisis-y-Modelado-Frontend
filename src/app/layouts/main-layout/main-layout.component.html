@@ -26,7 +26,7 @@
           *ngFor="let item of visibleMenuItems"
           [routerLink]="item.route"
           routerLinkActive="active"
-          [matTooltip]="!sidenavOpened ? item.label : ''"
+          [matTooltip]="!sidenavOpened ? (item.labelKey | translate) : ''"
           matTooltipPosition="right"
           class="nav-item">
 
@@ -35,7 +35,7 @@
           </mat-icon>
 
           <span matListItemTitle *ngIf="sidenavOpened">
-            {{ item.label }}
+            {{ item.labelKey | translate }}
           </span>
 
           <span matListItemLine *ngIf="sidenavOpened && item.badge" class="badge-text">
@@ -69,6 +69,17 @@
 
         <!-- Spacer -->
         <span class="spacer"></span>
+
+        <!-- Selector de idioma -->
+        <div class="lang-toggle" matTooltip="Idioma / Language">
+          <button mat-button
+            [class.lang-active]="translate.currentLang() === 'es'"
+            (click)="setLang('es')">ES</button>
+          <span class="lang-sep">|</span>
+          <button mat-button
+            [class.lang-active]="translate.currentLang() === 'en'"
+            (click)="setLang('en')">EN</button>
+        </div>
 
         <!-- Notificaciones -->
         <app-notification-bell></app-notification-bell>
@@ -118,24 +129,24 @@
 
           <button mat-menu-item (click)="irAPerfil()">
             <mat-icon>person</mat-icon>
-            <span>Mi Perfil</span>
+            <span>{{ 'nav.perfil' | translate }}</span>
           </button>
 
           <button mat-menu-item (click)="irAConfiguracion()">
             <mat-icon>settings</mat-icon>
-            <span>Configuración</span>
+            <span>{{ 'nav.configuracion' | translate }}</span>
           </button>
 
           <button mat-menu-item (click)="irAAyuda()">
             <mat-icon>help</mat-icon>
-            <span>Ayuda</span>
+            <span>{{ 'nav.ayuda' | translate }}</span>
           </button>
 
           <mat-divider></mat-divider>
 
           <button mat-menu-item (click)="logout()" class="logout-button">
             <mat-icon color="warn">logout</mat-icon>
-            <span>Cerrar Sesión</span>
+            <span>{{ 'nav.logout' | translate }}</span>
           </button>
         </mat-menu>
       </mat-toolbar>

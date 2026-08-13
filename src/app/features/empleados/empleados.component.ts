@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { EmpleadosService } from '../../core/services/empleados.service';
 import { EmpleadoApi } from '../../core/models/empleado-api.model';
 import { ToastService } from '../../core/services/toast.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-empleados',
@@ -26,18 +27,21 @@ import { ToastService } from '../../core/services/toast.service';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    MatSelectModule
+    MatSelectModule,
+    TranslatePipe
   ],
   templateUrl: './empleados.component.html',
   styleUrl: './empleados.component.scss'
 })
-export class EmpleadosComponent implements OnInit {
+export class EmpleadosComponent implements OnInit, OnDestroy {
   empleados: EmpleadoApi[] = [];
   empleadosFiltrados: EmpleadoApi[] = [];
 
   searchTerm = '';
   estadoFiltro = 'todos';
   loading = false;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private empleadosService: EmpleadosService,
@@ -49,10 +53,15 @@ export class EmpleadosComponent implements OnInit {
     this.cargarEmpleados();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargarEmpleados(): void {
     this.loading = true;
 
-    this.empleadosService.getEmpleados().subscribe({
+    this.empleadosService.getEmpleados().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: EmpleadoApi[]) => {
         this.empleados = data;
         this.aplicarFiltros();
@@ -105,7 +114,7 @@ export class EmpleadosComponent implements OnInit {
       ? this.empleadosService.desactivarEmpleado(empleado.id)
       : this.empleadosService.activarEmpleado(empleado.id);
 
-    request.subscribe({
+    request.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.toast.success(`Empleado ${empleado.activo ? 'desactivado' : 'activado'} correctamente`);
         this.cargarEmpleados();

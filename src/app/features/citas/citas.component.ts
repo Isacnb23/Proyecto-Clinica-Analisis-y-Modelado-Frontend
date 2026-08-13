@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { filter, skip, takeUntil } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -15,6 +16,7 @@ import { CitaService, Cita } from '../../core/services/cita.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../core/services/auth.service';
 import { RolesService } from '../../core/services/roles.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 interface DiaCalendario {
   fecha: Date;
@@ -37,12 +39,13 @@ interface DiaCalendario {
     MatChipsModule,
     MatMenuModule,
     MatTooltipModule,
-    MatBadgeModule
+    MatBadgeModule,
+    TranslatePipe
   ],
   templateUrl: './citas.component.html',
   styleUrl: './citas.component.scss'
 })
-export class CitasComponent implements OnInit {
+export class CitasComponent implements OnInit, OnDestroy {
   // Calendario
   fechaActual = new Date();
   mesActual: DiaCalendario[] = [];
@@ -65,6 +68,9 @@ export class CitasComponent implements OnInit {
   diaSeleccionado: Date | null = null;
 
   puedeCrear = false;
+  puedeCancelar = false;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private citaService: CitaService,
@@ -78,17 +84,28 @@ export class CitasComponent implements OnInit {
   ngOnInit(): void {
     const rol = this.authService.currentUserValue?.rol;
     this.puedeCrear = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('citas.crear');
+    this.puedeCancelar = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('citas.cancelar');
 
     this.cargarCitas();
+    // skip(1): la primera NavigationEnd corresponde a la navegación que ya creó
+    // esta instancia (NoReuseStrategy la recrea siempre). Solo nos interesa
+    // recargar si se vuelve a navegar a /citas estando ya en ella.
     this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd)
+      filter(e => e instanceof NavigationEnd),
+      skip(1),
+      takeUntil(this.destroy$)
     ).subscribe((e: any) => {
       if (e.url === '/citas') this.cargarCitas();
     });
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargarCitas(): void {
-    this.citaService.getCitas().subscribe({
+    this.citaService.getCitas().pipe(takeUntil(this.destroy$)).subscribe({
       next: (citas) => {
         this.todasLasCitas = citas;
         this.calcularEstadisticas();
@@ -222,7 +239,7 @@ export class CitasComponent implements OnInit {
   confirmarCita(cita: Cita): void {
     if (!cita.id) return;
     
-    this.citaService.confirmarCita(cita.id).subscribe({
+    this.citaService.confirmarCita(cita.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.toastr.success('Cita confirmada correctamente', 'Éxito');
         this.cargarCitas();
@@ -237,7 +254,7 @@ export class CitasComponent implements OnInit {
   completarCita(cita: Cita): void {
     if (!cita.id) return;
     
-    this.citaService.completarCita(cita.id).subscribe({
+    this.citaService.completarCita(cita.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.toastr.success('Cita completada correctamente', 'Éxito');
         this.cargarCitas();
@@ -254,7 +271,7 @@ export class CitasComponent implements OnInit {
     
     const nombrePaciente = cita.pacienteNombre || 'este paciente';
     if (confirm(`¿Está seguro de cancelar la cita de ${nombrePaciente}?`)) {
-      this.citaService.cancelarCita(cita.id).subscribe({
+      this.citaService.cancelarCita(cita.id).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
           this.toastr.success('Cita cancelada correctamente', 'Éxito');
           this.cargarCitas();

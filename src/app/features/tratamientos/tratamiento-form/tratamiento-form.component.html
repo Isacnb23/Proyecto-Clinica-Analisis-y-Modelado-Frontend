@@ -27,7 +27,7 @@
 
           <!-- Paciente -->
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Paciente *</mat-label>
+            <mat-label>Paciente</mat-label>
             <mat-select formControlName="pacienteId">
               <mat-option *ngFor="let p of pacientes" [value]="p.id">
                 {{ p.nombre }} {{ p.apellidos }} — {{ p.cedula }}
@@ -41,7 +41,7 @@
 
           <!-- Empleado / Odontólogo -->
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Odontólogo / Profesional *</mat-label>
+            <mat-label>Odontólogo / Profesional</mat-label>
             <mat-select formControlName="empleadoId">
               <mat-option *ngFor="let e of empleados" [value]="e.id">
                 {{ e.nombre }} {{ e.apellidos }}
@@ -67,7 +67,7 @@
 
           <!-- Nombre -->
           <mat-form-field appearance="outline">
-            <mat-label>Nombre del Tratamiento *</mat-label>
+            <mat-label>Nombre del Tratamiento</mat-label>
             <input matInput formControlName="nombre" placeholder="Ej: Limpieza Dental" maxlength="100">
             <mat-icon matPrefix>medical_services</mat-icon>
             <mat-error *ngIf="nombre?.hasError('required')">El nombre es requerido</mat-error>
@@ -76,7 +76,7 @@
 
           <!-- Categoría -->
           <mat-form-field appearance="outline">
-            <mat-label>Categoría *</mat-label>
+            <mat-label>Categoría</mat-label>
             <mat-select formControlName="categoriaId">
               <mat-option *ngFor="let cat of categorias" [value]="cat.id">
                 {{ cat.nombre }}
@@ -107,7 +107,7 @@
 
           <!-- Fecha de Inicio -->
           <mat-form-field appearance="outline">
-            <mat-label>Fecha de Inicio *</mat-label>
+            <mat-label>Fecha de Inicio</mat-label>
             <input matInput [matDatepicker]="picker" formControlName="fechaInicio">
             <mat-datepicker-toggle matPrefix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
@@ -116,7 +116,7 @@
 
           <!-- Estado -->
           <mat-form-field appearance="outline">
-            <mat-label>Estado *</mat-label>
+            <mat-label>Estado</mat-label>
             <mat-select formControlName="estadoId">
               <mat-option *ngFor="let e of estados" [value]="e.id">{{ e.nombre }}</mat-option>
             </mat-select>
@@ -125,7 +125,7 @@
 
           <!-- Costo Total -->
           <mat-form-field appearance="outline">
-            <mat-label>Costo Total (₡) *</mat-label>
+            <mat-label>Costo Total (₡)</mat-label>
             <input matInput type="number" formControlName="costoTotal" placeholder="0" min="1" max="10000000" step="1000">
             <mat-icon matPrefix>payments</mat-icon>
             <span matTextPrefix>₡&nbsp;</span>
@@ -136,7 +136,7 @@
 
           <!-- Número de Sesiones -->
           <mat-form-field appearance="outline">
-            <mat-label>Número de Sesiones *</mat-label>
+            <mat-label>Número de Sesiones</mat-label>
             <input matInput type="number" formControlName="numeroSesiones" placeholder="1" min="1">
             <mat-icon matPrefix>repeat</mat-icon>
           </mat-form-field>

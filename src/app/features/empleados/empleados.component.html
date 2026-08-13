@@ -5,9 +5,9 @@
       <div class="title-section">
         <h1>
           <mat-icon>badge</mat-icon>
-          Gestión de Empleados
+          {{ 'empleados.titulo' | translate }}
         </h1>
-        <p>Administra el personal de la clínica y controla su estado.</p>
+        <p>{{ 'empleados.subtitulo' | translate }}</p>
       </div>
 
       <button
@@ -18,7 +18,7 @@
         matTooltip="Registrar un nuevo empleado"
         aria-label="Crear nuevo empleado">
         <mat-icon>person_add</mat-icon>
-        Nuevo Empleado
+        {{ 'empleados.nuevo' | translate }}
       </button>
     </div>
   </div>

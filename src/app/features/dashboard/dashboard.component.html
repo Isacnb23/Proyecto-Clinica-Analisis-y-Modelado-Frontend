@@ -11,8 +11,8 @@
     <!-- HEADER -->
     <div class="dashboard-header">
       <div>
-        <h1><mat-icon>dashboard</mat-icon> Panel de Control</h1>
-        <p>Resumen general de la Clínica Dental PCA</p>
+        <h1><mat-icon>dashboard</mat-icon> {{ 'dashboard.title' | translate }}</h1>
+        <p>{{ 'dashboard.subtitle' | translate }}</p>
       </div>
       <span class="fecha-hoy">{{ mesActual | titlecase }}</span>
     </div>
@@ -24,7 +24,7 @@
         <div class="stat-icon"><mat-icon>people</mat-icon></div>
         <div class="stat-content">
           <h3>{{ estadisticas?.totalPacientes ?? 0 }}</h3>
-          <p>Total Pacientes</p>
+          <p>{{ 'dashboard.totalPacientes' | translate }}</p>
           <span class="stat-detail">{{ estadisticas?.pacientesActivos ?? 0 }} activos · {{ estadisticas?.pacientesInactivos ?? 0 }} inactivos</span>
         </div>
       </mat-card>
@@ -33,7 +33,7 @@
         <div class="stat-icon"><mat-icon>event</mat-icon></div>
         <div class="stat-content">
           <h3>{{ estadisticas?.citasHoy ?? 0 }}</h3>
-          <p>Citas Hoy</p>
+          <p>{{ 'dashboard.citasHoy' | translate }}</p>
           <span class="stat-detail">{{ estadisticas?.citasSemana ?? 0 }} esta semana</span>
         </div>
       </mat-card>
@@ -42,7 +42,7 @@
         <div class="stat-icon"><mat-icon>medical_services</mat-icon></div>
         <div class="stat-content">
           <h3>{{ estadisticas?.tratamientosActivos ?? 0 }}</h3>
-          <p>Tratamientos Activos</p>
+          <p>{{ 'dashboard.tratamientosActivos' | translate }}</p>
           <span class="stat-detail">En proceso · {{ estadisticas?.tratamientosCancelados ?? 0 }} cancelados</span>
         </div>
       </mat-card>
@@ -51,7 +51,7 @@
         <div class="stat-icon"><mat-icon>payments</mat-icon></div>
         <div class="stat-content">
           <h3>{{ formatCurrency(estadisticas?.ingresosmes || 0) }}</h3>
-          <p>Ingresos del Mes</p>
+          <p>{{ 'dashboard.ingresosMes' | translate }}</p>
           <span class="stat-detail">{{ mesActual | titlecase }}</span>
         </div>
       </mat-card>
@@ -64,7 +64,7 @@
       <!-- Citas por mes - barras CSS -->
       <mat-card class="chart-card">
         <mat-card-header>
-          <mat-card-title><mat-icon>trending_up</mat-icon> Citas por Mes</mat-card-title>
+          <mat-card-title><mat-icon>trending_up</mat-icon> {{ 'dashboard.citasPorMes' | translate }}</mat-card-title>
           <mat-card-subtitle>Últimos 6 meses</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
@@ -86,7 +86,7 @@
       <!-- Ingresos por mes - barras CSS -->
       <mat-card class="chart-card">
         <mat-card-header>
-          <mat-card-title><mat-icon>bar_chart</mat-icon> Ingresos Mensuales</mat-card-title>
+          <mat-card-title><mat-icon>bar_chart</mat-icon> {{ 'dashboard.ingresosMensuales' | translate }}</mat-card-title>
           <mat-card-subtitle>En colones (₡)</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
@@ -110,7 +110,7 @@
       <!-- Tratamientos más realizados -->
       <mat-card class="chart-card">
         <mat-card-header>
-          <mat-card-title><mat-icon>pie_chart</mat-icon> Top Tratamientos</mat-card-title>
+          <mat-card-title><mat-icon>pie_chart</mat-icon> {{ 'dashboard.topTratamientos' | translate }}</mat-card-title>
           <mat-card-subtitle>Por frecuencia</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
@@ -139,7 +139,7 @@
       <!-- Pacientes nuevos vs recurrentes -->
       <mat-card class="chart-card">
         <mat-card-header>
-          <mat-card-title><mat-icon>donut_large</mat-icon> Pacientes</mat-card-title>
+          <mat-card-title><mat-icon>donut_large</mat-icon> {{ 'dashboard.pacientesNuevos' | translate }}</mat-card-title>
           <mat-card-subtitle>Nuevos vs Recurrentes</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
@@ -178,7 +178,7 @@
       <mat-card class="citas-card">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon>schedule</mat-icon> Próximas Citas
+            <mat-icon>schedule</mat-icon> {{ 'dashboard.proximasCitas' | translate }}
           </mat-card-title>
           <mat-card-subtitle>Pendientes los próximos 7 días</mat-card-subtitle>
         </mat-card-header>
@@ -236,7 +236,7 @@
       <mat-card class="alertas-card">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon>warning</mat-icon> Alertas de Stock
+            <mat-icon>warning</mat-icon> {{ 'dashboard.alertasStock' | translate }}
           </mat-card-title>
           <mat-card-subtitle>Productos bajo el mínimo</mat-card-subtitle>
         </mat-card-header>

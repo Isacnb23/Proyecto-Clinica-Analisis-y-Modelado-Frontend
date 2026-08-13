@@ -18,10 +18,12 @@ import { NotificationBellComponent } from '../../shared/notification-bell/notifi
 import { PacienteService } from '../../core/services/paciente.service';
 import { CitaService } from '../../core/services/cita.service';
 import { InventarioService } from '../../core/services/inventario.service';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 interface MenuItem {
     icon: string;
     label: string;
+    labelKey: string;
     route: string;
     badge?: number;
     permission?: string;
@@ -45,7 +47,8 @@ interface MenuItem {
         MatBadgeModule,
         MatTooltipModule,
         MatDividerModule,
-        NotificationBellComponent
+        NotificationBellComponent,
+        TranslatePipe
     ],
     templateUrl: './main-layout.component.html',
     styleUrl: './main-layout.component.scss'
@@ -59,16 +62,16 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     };
 
     menuItems: MenuItem[] = [
-        { icon: 'dashboard',            label: 'Dashboard',        route: '/dashboard',    permission: 'dashboard.ver'    },
-        { icon: 'people',               label: 'Pacientes',        route: '/pacientes',    permission: 'pacientes.ver',    badge: 0 },
-        { icon: 'badge',                label: 'Empleados',        route: '/empleados',    permission: 'empleados.ver'    },
-        { icon: 'event',                label: 'Citas',            route: '/citas',        permission: 'citas.ver',        badge: 0 },
-        { icon: 'schedule',             label: 'Horarios',         route: '/horarios',     permission: 'citas.ver'        },
-        { icon: 'medical_services',     label: 'Tratamientos',     route: '/tratamientos', permission: 'tratamientos.ver' },
-        { icon: 'inventory_2',          label: 'Inventario',       route: '/inventario',   permission: 'inventario.ver',   badge: 0 },
-        { icon: 'receipt_long',         label: 'Facturación',      route: '/facturacion',  permission: 'facturacion.ver'  },
-        { icon: 'admin_panel_settings', label: 'Roles y Permisos', route: '/roles',        permission: 'roles.ver'        },
-        { icon: 'assessment',           label: 'Reportes',         route: '/reportes',     permission: 'reportes.ver'     },
+        { icon: 'dashboard',            label: 'Dashboard',        labelKey: 'nav.dashboard',    route: '/dashboard',    permission: 'dashboard.ver'    },
+        { icon: 'people',               label: 'Pacientes',        labelKey: 'nav.pacientes',    route: '/pacientes',    permission: 'pacientes.ver',    badge: 0 },
+        { icon: 'badge',                label: 'Empleados',        labelKey: 'nav.empleados',    route: '/empleados',    permission: 'empleados.ver'    },
+        { icon: 'event',                label: 'Citas',            labelKey: 'nav.citas',        route: '/citas',        permission: 'citas.ver',        badge: 0 },
+        { icon: 'schedule',             label: 'Horarios',         labelKey: 'nav.horarios',     route: '/horarios',     permission: 'horarios.ver'     },
+        { icon: 'medical_services',     label: 'Tratamientos',     labelKey: 'nav.tratamientos', route: '/tratamientos', permission: 'tratamientos.ver' },
+        { icon: 'inventory_2',          label: 'Inventario',       labelKey: 'nav.inventario',   route: '/inventario',   permission: 'inventario.ver',   badge: 0 },
+        { icon: 'receipt_long',         label: 'Facturación',      labelKey: 'nav.facturacion',  route: '/facturacion',  permission: 'facturacion.ver'  },
+        { icon: 'admin_panel_settings', label: 'Roles y Permisos', labelKey: 'nav.roles',        route: '/roles',        permission: 'roles.ver'        },
+        { icon: 'assessment',           label: 'Reportes',         labelKey: 'nav.reportes',     route: '/reportes',     permission: 'reportes.ver'     },
     ];
 
     get visibleMenuItems(): MenuItem[] {
@@ -98,13 +101,22 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         private rolesService: RolesService,
         private pacienteService: PacienteService,
         private citaService: CitaService,
-        private inventarioService: InventarioService
+        private inventarioService: InventarioService,
+        public translate: TranslateService
     ) { }
+
+    setLang(lang: string): void {
+        this.translate.use(lang);
+        localStorage.setItem('appLang', lang);
+    }
 
     ngOnInit(): void {
         this.currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
         window.addEventListener('storage', this.storageListener);
         this.cargarContadores();
+
+        const savedLang = localStorage.getItem('appLang');
+        if (savedLang) this.translate.use(savedLang);
     }
 
     ngOnDestroy(): void {

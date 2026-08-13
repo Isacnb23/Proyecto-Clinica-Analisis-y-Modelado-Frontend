@@ -1,6 +1,7 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
@@ -19,6 +20,8 @@ import { TratamientoService } from '../../core/services/tratamiento.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../core/services/auth.service';
 import { RolesService } from '../../core/services/roles.service';
+import { formatCRC } from '../../core/utils/currency.util';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tratamientos',
@@ -28,12 +31,14 @@ import { RolesService } from '../../core/services/roles.service';
     MatTableModule, MatPaginatorModule, MatSortModule,
     MatInputModule, MatFormFieldModule, MatButtonModule,
     MatIconModule, MatTooltipModule, MatChipsModule,
-    MatMenuModule, MatCardModule, MatSelectModule, MatDividerModule
+    MatMenuModule, MatCardModule, MatSelectModule, MatDividerModule,
+    TranslatePipe
   ],
   templateUrl: './tratamientos.component.html',
   styleUrl: './tratamientos.component.scss'
 })
-export class TratamientosComponent implements OnInit, AfterViewInit {
+export class TratamientosComponent implements OnInit, AfterViewInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   // Columnas según los campos reales del TratamientoResponseDTO
   displayedColumns: string[] = ['nombre', 'paciente', 'profesional', 'costo', 'saldo', 'estado', 'acciones'];
@@ -81,8 +86,13 @@ export class TratamientosComponent implements OnInit, AfterViewInit {
     this.cargarTratamientos();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargarTratamientos(): void {
-    this.tratamientoService.getTratamientos().subscribe({
+    this.tratamientoService.getTratamientos().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any[]) => {
         this.todos = data;
         this.calcularKPIs(data);
@@ -134,13 +144,13 @@ export class TratamientosComponent implements OnInit, AfterViewInit {
 
   cancelarTratamiento(t: any): void {
     if (!confirm(`¿Cancelar "${t.nombre}" de ${t.pacienteNombre}?`)) return;
-    this.tratamientoService.eliminarTratamiento(t.id).subscribe({
+    this.tratamientoService.eliminarTratamiento(t.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => { this.toastr.success('Tratamiento cancelado'); this.cargarTratamientos(); },
       error: () => this.toastr.error('Error al cancelar')
     });
   }
 
   fmt(v: number): string {
-    return new Intl.NumberFormat('es-CR', { style:'currency', currency:'CRC', minimumFractionDigits:0 }).format(v ?? 0);
+    return formatCRC(v);
   }
 }

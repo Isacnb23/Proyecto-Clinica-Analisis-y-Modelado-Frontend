@@ -75,7 +75,7 @@
                 <div class="tratamiento-option">
                   <strong>{{ tratamiento.nombre }}</strong>
                   <span class="tratamiento-info">
-                    {{ tratamiento.duracionEstimada }} min | ₡{{ tratamiento.costo | number }}
+                    {{ tratamiento.duracionEstimada }} min | {{ tratamiento.costo | crc }}
                   </span>
                 </div>
               </mat-option>
@@ -90,7 +90,7 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Odontólogo</mat-label>
             <mat-select formControlName="odontologoId">
-              <mat-option *ngFor="let odontologo of odontologos" [value]="odontologo.id">
+              <mat-option *ngFor="let odontologo of odontologosSugeridos" [value]="odontologo.id">
                 <div class="odontologo-option">
                   <mat-icon>person</mat-icon>
                   <div>
@@ -101,6 +101,9 @@
               </mat-option>
             </mat-select>
             <mat-icon matPrefix>medical_services</mat-icon>
+            <mat-hint *ngIf="filtrandoPorEspecialidad">
+              Mostrando odontólogos con especialidad afín al tratamiento
+            </mat-hint>
             <mat-error *ngIf="odontologoId?.hasError('required')">
               El odontólogo es requerido
             </mat-error>

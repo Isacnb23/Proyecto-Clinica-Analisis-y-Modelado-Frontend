@@ -1,4 +1,5 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -18,7 +19,9 @@ import {
 } from '../../core/services/facturacion.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../core/services/auth.service';
+import { formatCRC } from '../../core/utils/currency.util';
 import { RolesService } from '../../core/services/roles.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-facturacion',
@@ -27,12 +30,14 @@ import { RolesService } from '../../core/services/roles.service';
     CommonModule, FormsModule,
     MatCardModule, MatButtonModule, MatIconModule, MatTableModule,
     MatInputModule, MatFormFieldModule, MatSelectModule, MatDividerModule,
-    MatPaginatorModule, MatChipsModule, MatTooltipModule, MatProgressSpinnerModule
+    MatPaginatorModule, MatChipsModule, MatTooltipModule, MatProgressSpinnerModule,
+    TranslatePipe
   ],
   templateUrl: './facturacion.component.html',
   styleUrl: './facturacion.component.scss'
 })
-export class FacturacionComponent implements OnInit, AfterViewInit {
+export class FacturacionComponent implements OnInit, AfterViewInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   displayedColumns = ['paciente', 'tratamiento', 'costo', 'pagado', 'saldo', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<TratamientoFactura>([]);
@@ -78,9 +83,14 @@ export class FacturacionComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargar(): void {
     this.cargando = true;
-    this.facturacionService.getTratamientosFacturacion().subscribe({
+    this.facturacionService.getTratamientosFacturacion().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any[]) => {
         this.todos = data.map((t: any) => ({
           ...t,
@@ -130,7 +140,7 @@ export class FacturacionComponent implements OnInit, AfterViewInit {
     this.tratamientoDetalle = t;
     this.cargandoPagos = true;
     this.pagosDetalle = [];
-    this.facturacionService.getPagosPorTratamiento(t.id).subscribe({
+    this.facturacionService.getPagosPorTratamiento(t.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: (p) => { this.pagosDetalle = p; this.cargandoPagos = false; },
       error: () => { this.pagosDetalle = []; this.cargandoPagos = false; }
     });
@@ -153,7 +163,7 @@ export class FacturacionComponent implements OnInit, AfterViewInit {
     if (this.pago.monto > this.saldoActual)           { this.toastr.warning('El monto supera el saldo'); return; }
     if (!this.pago.metodoPagoId)                      { this.toastr.warning('Seleccione método de pago'); return; }
     this.guardando = true;
-    this.facturacionService.registrarPago(this.pago).subscribe({
+    this.facturacionService.registrarPago(this.pago).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.toastr.success('Pago registrado correctamente', '¡Éxito!');
         this.cerrarModal();
@@ -172,8 +182,6 @@ export class FacturacionComponent implements OnInit, AfterViewInit {
   getEstadoClass(t: TratamientoFactura): string  { return t.saldo <= 0 ? 'chip-pagado' : 'chip-pendiente'; }
 
   formatCurrency(v: number): string {
-    return new Intl.NumberFormat('es-CR', {
-      style: 'currency', currency: 'CRC', minimumFractionDigits: 0
-    }).format(v ?? 0);
+    return formatCRC(v);
   }
 }

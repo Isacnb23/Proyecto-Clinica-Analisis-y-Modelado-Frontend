@@ -7,6 +7,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 // ── CSS compartido (declarado antes de los componentes) ──────────────────
 const SHARED_STYLES = `
@@ -97,7 +98,7 @@ export class PerfilComponent {
 @Component({
   selector: 'app-configuracion',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule, MatDividerModule],
+  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule, MatDividerModule, TranslatePipe],
   template: `
 <div class="page-wrap">
   <div class="page-header">
@@ -192,9 +193,18 @@ export class PerfilComponent {
 
   <!-- Sistema -->
   <div class="section-card">
-    <h3><mat-icon>info</mat-icon> Sistema</h3>
+    <h3><mat-icon>info</mat-icon> {{ 'config.sistema' | translate }}</h3>
     <mat-divider style="margin:.75rem 0 1rem"></mat-divider>
-    <div class="config-item"><div class="ci-left"><mat-icon>language</mat-icon><div><strong>Idioma</strong><p>Idioma del sistema</p></div></div><span class="ci-value">Español (Costa Rica)</span></div>
+    <div class="config-item">
+      <div class="ci-left">
+        <mat-icon>language</mat-icon>
+        <div><strong>{{ 'config.idioma' | translate }}</strong><p>{{ 'config.idiomaDesc' | translate }}</p></div>
+      </div>
+      <div class="rows-btns">
+        <button [class.active]="translate.currentLang()==='es'" (click)="setLang('es')">ES</button>
+        <button [class.active]="translate.currentLang()==='en'" (click)="setLang('en')">EN</button>
+      </div>
+    </div>
     <mat-divider></mat-divider>
     <div class="config-item"><div class="ci-left"><mat-icon>payments</mat-icon><div><strong>Moneda</strong></div></div><span class="ci-value">₡ CRC</span></div>
     <mat-divider></mat-divider>
@@ -226,8 +236,13 @@ export class PerfilComponent {
 export class ConfiguracionComponent {
   cfg = this.cargar();
 
-  constructor(private router: Router) {
+  constructor(private router: Router, public translate: TranslateService) {
     this.aplicar(); // Aplicar config al cargar
+  }
+
+  setLang(lang: string): void {
+    this.translate.use(lang);
+    localStorage.setItem('appLang', lang);
   }
 
   cargar() {

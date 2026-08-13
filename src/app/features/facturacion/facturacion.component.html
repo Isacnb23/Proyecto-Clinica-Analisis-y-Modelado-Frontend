@@ -4,8 +4,8 @@
   <div class="page-header">
     <div class="header-content">
       <div class="title-section">
-        <h1><mat-icon>payments</mat-icon> Facturación y Pagos</h1>
-        <p>Gestión de cobros por tratamiento</p>
+        <h1><mat-icon>payments</mat-icon> {{ 'facturacion.titulo' | translate }}</h1>
+        <p>{{ 'facturacion.subtitulo' | translate }}</p>
       </div>
     </div>
 
@@ -15,28 +15,28 @@
         <div class="stat-icon"><mat-icon>check_circle</mat-icon></div>
         <div class="stat-info">
           <h3>{{ formatCurrency(totalCobrado) }}</h3>
-          <p>Total Cobrado</p>
+          <p>{{ 'facturacion.cobrado' | translate }}</p>
         </div>
       </div>
       <div class="stat-card pendiente">
         <div class="stat-icon"><mat-icon>pending</mat-icon></div>
         <div class="stat-info">
           <h3>{{ formatCurrency(totalPendiente) }}</h3>
-          <p>Saldo Pendiente</p>
+          <p>{{ 'facturacion.pendiente' | translate }}</p>
         </div>
       </div>
       <div class="stat-card con-saldo">
         <div class="stat-icon"><mat-icon>warning</mat-icon></div>
         <div class="stat-info">
           <h3>{{ conPendiente }}</h3>
-          <p>Con saldo pendiente</p>
+          <p>{{ 'facturacion.conSaldo' | translate }}</p>
         </div>
       </div>
       <div class="stat-card al-dia">
         <div class="stat-icon"><mat-icon>done_all</mat-icon></div>
         <div class="stat-info">
           <h3>{{ alDia }}</h3>
-          <p>Al día (pagados)</p>
+          <p>{{ 'facturacion.alDia' | translate }}</p>
         </div>
       </div>
     </div>
@@ -216,16 +216,16 @@
     <div class="modal-body">
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Monto a pagar (₡) *</mat-label>
-        <input matInput type="number" [(ngModel)]="pago.monto"
-          [min]="1" [max]="saldoActual" step="100">
+        <mat-label>Monto a pagar (₡)</mat-label>
+        <input matInput type="number" [(ngModel)]="pago.monto" name="monto"
+          [min]="1" [max]="saldoActual" step="100" required>
         <mat-icon matPrefix>payments</mat-icon>
         <mat-hint>Máximo: {{ formatCurrency(saldoActual) }}</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Método de pago *</mat-label>
-        <mat-select [(ngModel)]="pago.metodoPagoId">
+        <mat-label>Método de pago</mat-label>
+        <mat-select [(ngModel)]="pago.metodoPagoId" name="metodoPagoId" required>
           <mat-option [value]="0">— Seleccione —</mat-option>
           <mat-option *ngFor="let m of metodosPago" [value]="m.id">{{ m.nombre }}</mat-option>
         </mat-select>

@@ -316,8 +316,8 @@
                   <td><strong>{{ t.nombre }}</strong></td>
                   <td>{{ t.empleadoNombre || '—' }}</td>
                   <td>{{ t.fechaInicio | date:'dd/MM/yyyy' }}</td>
-                  <td>₡{{ t.costoTotal | number:'1.0-0' }}</td>
-                  <td [class]="getSaldoClass(t)">₡{{ t.saldo | number:'1.0-0' }}</td>
+                  <td>{{ t.costoTotal | crc }}</td>
+                  <td [class]="getSaldoClass(t)">{{ t.saldo | crc }}</td>
                   <td>
                     <span class="cita-badge"
                       [class]="t.estadoId === 2 ? 'badge-comp' : t.estadoId === 3 ? 'badge-canc' : 'badge-pend'">

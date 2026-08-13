@@ -73,7 +73,7 @@
       p  { margin: 4px 0 0; font-size: .85rem; opacity: .9; }
     }
 
-    &.cobrado   { background: linear-gradient(135deg, #1a5c38 0%, #2d8653 100%); .stat-info h3, .stat-info p { color: #065f46; } .stat-icon { background: rgba(6,95,70,.2); } mat-icon { color: #065f46 !important; } }
+    &.cobrado   { background: linear-gradient(135deg, #1a5c38 0%, #2d8653 100%); }
     &.pendiente { background: linear-gradient(135deg, #7b1f2c 0%, #a33040 100%); }
     &.con-saldo { background: linear-gradient(135deg, #C49B63 0%, #D4AF37 100%); .stat-info h3, .stat-info p { color: #030e24; } }
     &.al-dia    { background: linear-gradient(135deg, #030e24 0%, #1B3A6F 100%); }

@@ -4,11 +4,11 @@
   <div class="page-header">
     <div class="header-content">
       <div class="title-section">
-        <h1><mat-icon>admin_panel_settings</mat-icon> Roles y Permisos</h1>
-        <p>Gestión de roles, permisos por módulo y usuarios del sistema</p>
+        <h1><mat-icon>admin_panel_settings</mat-icon> {{ 'roles.titulo' | translate }}</h1>
+        <p>{{ 'roles.subtitulo' | translate }}</p>
       </div>
       <button mat-raised-button class="btn-nuevo" (click)="abrirModalUsuario()">
-        <mat-icon>person_add</mat-icon> Nuevo Usuario
+        <mat-icon>person_add</mat-icon> {{ 'roles.nuevoUsuario' | translate }}
       </button>
     </div>
   </div>
@@ -188,27 +188,27 @@
 
     <div class="modal-body">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email *</mat-label>
-        <input matInput type="email" [(ngModel)]="nuevoUsuario.email" placeholder="usuario@clinica.com">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [(ngModel)]="nuevoUsuario.email" placeholder="usuario@clinica.com" name="email" required>
         <mat-icon matPrefix>email</mat-icon>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Contraseña *</mat-label>
-        <input matInput type="password" [(ngModel)]="nuevoUsuario.password" name="password">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" [(ngModel)]="nuevoUsuario.password" name="password" required>
         <mat-icon matPrefix>lock</mat-icon>
         <mat-hint>Mínimo 6 caracteres, una mayúscula y un número</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Confirmar contraseña *</mat-label>
-        <input matInput type="password" [(ngModel)]="nuevoUsuario.confirmPassword">
+        <mat-label>Confirmar contraseña</mat-label>
+        <input matInput type="password" [(ngModel)]="nuevoUsuario.confirmPassword" name="confirmPassword" required>
         <mat-icon matPrefix>lock_reset</mat-icon>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Rol *</mat-label>
-        <mat-select [(ngModel)]="nuevoUsuario.rolId">
+        <mat-label>Rol</mat-label>
+        <mat-select [(ngModel)]="nuevoUsuario.rolId" name="rolId" required>
           <mat-option [value]="0">— Seleccione —</mat-option>
           <mat-option *ngFor="let r of roles" [value]="r.id">{{ r.nombre }}</mat-option>
         </mat-select>

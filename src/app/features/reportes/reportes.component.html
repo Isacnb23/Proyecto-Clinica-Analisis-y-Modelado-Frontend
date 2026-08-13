@@ -3,8 +3,8 @@
   <!-- HEADER -->
   <div class="page-header no-print">
     <div class="title-section">
-      <h1><mat-icon>assessment</mat-icon> Reportes</h1>
-      <p>Genera y exporta reportes del sistema en tiempo real</p>
+      <h1><mat-icon>assessment</mat-icon> {{ 'reportes.titulo' | translate }}</h1>
+      <p>{{ 'reportes.subtitulo' | translate }}</p>
     </div>
     <div class="header-actions" *ngIf="reporteActivo">
       <button mat-stroked-button (click)="volver()">

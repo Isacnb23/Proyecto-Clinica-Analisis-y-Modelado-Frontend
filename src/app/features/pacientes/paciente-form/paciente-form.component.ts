@@ -15,6 +15,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { PacienteService } from '../../../core/services/paciente.service';
 import { ToastrService } from 'ngx-toastr';
+import { NgxMaskDirective } from 'ngx-mask';
 
 const NOMBRE_PATTERN = /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s\-]{2,}$/;
 const CEDULA_PATTERN = /^[1-9]-?\d{4}-?\d{4}$/;
@@ -47,7 +48,8 @@ function fechaNacimientoValidator(control: AbstractControl): ValidationErrors | 
     MatCheckboxModule,
     MatCardModule,
     MatDividerModule,
-    MatStepperModule
+    MatStepperModule,
+    NgxMaskDirective
   ],
   templateUrl: './paciente-form.component.html',
   styleUrl: './paciente-form.component.scss'

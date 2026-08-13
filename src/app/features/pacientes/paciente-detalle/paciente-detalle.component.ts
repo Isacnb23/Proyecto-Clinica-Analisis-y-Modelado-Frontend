@@ -14,6 +14,7 @@ import { TratamientoService } from '../../../core/services/tratamiento.service';
 import { Paciente } from '../../../core/models/paciente.model';
 import { Tratamiento } from '../../../core/models/tratamiento.model';
 import { ToastrService } from 'ngx-toastr';
+import { CrcCurrencyPipe } from '../../../shared/pipes/crc-currency.pipe';
 
 @Component({
   selector: 'app-paciente-detalle',
@@ -26,7 +27,8 @@ import { ToastrService } from 'ngx-toastr';
     MatChipsModule,
     MatDividerModule,
     MatTabsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    CrcCurrencyPipe
   ],
   templateUrl: './paciente-detalle.component.html',
   styleUrl: './paciente-detalle.component.scss'

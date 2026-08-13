@@ -235,24 +235,64 @@ body.font-small  { font-size: 13px !important; }
 body.font-medium { font-size: 15px !important; }
 body.font-large  { font-size: 17px !important; }
 
-/* Modo oscuro básico */
+/* Modo oscuro — aplica a los 11 módulos, no solo a un set fijo de clases */
 body.dark-mode {
   background: #0f172a !important;
   color: #e2e8f0 !important;
 
   .mat-toolbar.navbar { background: #1e293b !important; }
-  mat-sidenav { background: #0f172a !important; }
   mat-sidenav-content { background: #0f172a !important; }
+  .page-content { background: #0f172a !important; }
+  .footer { background: #1e293b !important; color: #94a3b8 !important; }
 
-  mat-card, .section-card, .page-header, .table-container,
-  .stat-card, .chart-card, .citas-card, .alertas-card {
+  /* Cualquier "tarjeta"/contenedor blanco usado en los módulos, sin importar el nombre
+     de clase particular que le haya puesto cada componente */
+  mat-card, .mat-mdc-card,
+  .section-card, .page-header, .page-wrap, .table-container, .table-wrapper,
+  .stat-card, .chart-card, .citas-card, .alertas-card, .lista-card,
+  .filtros-card, .categorias-card, .rep-card, .reporte-wrap, .reporte-info,
+  .hist-panel, .modal-card, .tabs-container, .calendario-card, .calendario,
+  .empty-report, .loading-state, .no-data, .config-item, .selector-card,
+  .main-grid > .section-card, .empty-state, .filtro-dia-banner {
     background: #1e293b !important;
     color: #e2e8f0 !important;
   }
 
-  h1, h2, h3, strong, .stat-info h3 { color: #f1f5f9 !important; }
-  p, .stat-info p, td, th { color: #94a3b8 !important; }
+  .modal-overlay { background: rgba(0, 0, 0, 0.6) !important; }
+
+  h1, h2, h3, h4, strong, .stat-info h3, .ci-value { color: #f1f5f9 !important; }
+  p, .stat-info p, td, th, span, label, .ci-left p { color: #94a3b8 !important; }
 
   table tbody td { border-color: #334155 !important; }
-  table thead th { background: #1e40af !important; }
+  table thead th, .mat-mdc-header-row { background: #1e40af !important; color: #f1f5f9 !important; }
+
+  /* Angular Material — inputs, selects, menús, diálogos y paginador
+     usan sus propios paneles blancos que no heredan el fondo del body */
+  .mat-mdc-form-field:not(.mat-form-field-invalid) .mat-mdc-text-field-wrapper {
+    background: #0f172a !important;
+  }
+  .mat-mdc-input-element, .mat-mdc-select-value, .mat-mdc-select-arrow,
+  .mdc-floating-label, .mat-mdc-form-field-hint, .mat-mdc-select-placeholder {
+    color: #e2e8f0 !important;
+  }
+  .mat-mdc-select-panel, .mat-mdc-autocomplete-panel, .mat-mdc-menu-panel,
+  .mat-mdc-dialog-container, .mat-datepicker-content, .cdk-overlay-pane .mat-mdc-card {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+  .mat-mdc-option, .mat-mdc-menu-item { color: #e2e8f0 !important; }
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+  .mat-mdc-menu-item:hover:not([disabled]) { background: rgba(196, 155, 99, 0.15) !important; }
+  .mat-mdc-paginator, .mat-mdc-tab-header, .mat-mdc-tab-body-wrapper {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+  .mat-mdc-tab .mdc-tab__text-label { color: #94a3b8 !important; }
+
+  /* Botones "stroked"/outline se vuelven ilegibles sobre fondo oscuro si el borde
+     y el texto quedan ambos oscuros */
+  .mat-mdc-outlined-button:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
+    color: #e2e8f0 !important;
+    border-color: #475569 !important;
+  }
 }

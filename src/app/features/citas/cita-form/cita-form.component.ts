@@ -17,6 +17,7 @@ import { PacienteService } from '../../../core/services/paciente.service';
 import { Paciente } from '../../../core/models/paciente.model';
 import { ToastrService } from 'ngx-toastr';
 import { Observable, startWith, map } from 'rxjs';
+import { CrcCurrencyPipe } from '../../../shared/pipes/crc-currency.pipe';
 
 @Component({
   selector: 'app-cita-form',
@@ -33,7 +34,8 @@ import { Observable, startWith, map } from 'rxjs';
     MatNativeDateModule,
     MatCardModule,
     MatAutocompleteModule,
-    MatDividerModule
+    MatDividerModule,
+    CrcCurrencyPipe
   ],
   templateUrl: './cita-form.component.html',
   styleUrl: './cita-form.component.scss'
@@ -45,6 +47,8 @@ export class CitaFormComponent implements OnInit {
   pacientes: Paciente[] = [];
   pacientesFiltrados!: Observable<Paciente[]>;
   odontologos: Odontologo[] = [];
+  odontologosSugeridos: Odontologo[] = [];
+  filtrandoPorEspecialidad = false;
   tratamientos: TipoCita[] = [];
   horariosDisponibles: string[] = [];
 
@@ -84,14 +88,36 @@ export class CitaFormComponent implements OnInit {
     this.citaForm.get('fecha')?.valueChanges.subscribe(() => this.cargarHorariosDisponibles());
     this.citaForm.get('odontologoId')?.valueChanges.subscribe(() => this.cargarHorariosDisponibles());
 
-    // Cuando cambia tratamiento → actualizar duración estimada
+    // Cuando cambia tratamiento → actualizar duración estimada y sugerir odontólogos por especialidad
     this.citaForm.get('tratamientoId')?.valueChanges.subscribe((id) => {
       const t = this.tratamientos.find(x => x.id === id);
       if (t) {
         this.duracionEstimada = t.duracionEstimada;
         this.citaForm.patchValue({ duracion: t.duracionEstimada }, { emitEvent: false });
+        this.actualizarOdontologosSugeridos(t.categoria);
       }
     });
+  }
+
+  // Filtra/prioriza odontólogos cuya especialidad coincide con la categoría del
+  // tratamiento seleccionado. Si ninguno coincide (o el tratamiento es "General"),
+  // se muestran todos para no bloquear el agendamiento.
+  private actualizarOdontologosSugeridos(categoria?: string): void {
+    if (!categoria || categoria === 'General') {
+      this.odontologosSugeridos = this.odontologos;
+      this.filtrandoPorEspecialidad = false;
+      return;
+    }
+    const coincidencias = this.odontologos.filter(o =>
+      (o.especialidad || '').toLowerCase().includes(categoria.toLowerCase())
+    );
+    if (coincidencias.length > 0) {
+      this.odontologosSugeridos = coincidencias;
+      this.filtrandoPorEspecialidad = true;
+    } else {
+      this.odontologosSugeridos = this.odontologos;
+      this.filtrandoPorEspecialidad = false;
+    }
   }
 
   cargarDatos(): void {
@@ -107,8 +133,9 @@ export class CitaFormComponent implements OnInit {
     this.citaService.getOdontologos().subscribe({
       next: (odontologos) => {
         this.odontologos = odontologos;
+        this.odontologosSugeridos = odontologos;
         if (odontologos.length === 0) {
-          this.toastr.warning('No hay empleados activos registrados. Crea un empleado primero.', 'Aviso');
+          this.toastr.warning('No hay odontólogos activos registrados. Crea un empleado con rol Odontólogo primero.', 'Aviso');
         }
       },
       error: () => this.toastr.error('Error al cargar odontólogos', 'Error')

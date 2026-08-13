@@ -5,9 +5,9 @@
       <div class="title-section">
         <h1>
           <mat-icon>people</mat-icon>
-          Gestión de Pacientes
+          {{ 'pacientes.titulo' | translate }}
         </h1>
-        <p>Administra la información de todos los pacientes de la clínica</p>
+        <p>{{ 'pacientes.subtitulo' | translate }}</p>
       </div>
 
       <button
@@ -17,46 +17,46 @@
         class="btn-nuevo"
         (click)="nuevoPaciente()">
         <mat-icon>add</mat-icon>
-        Nuevo Paciente
+        {{ 'pacientes.nuevo' | translate }}
       </button>
     </div>
 
     <!-- Tarjetas de estadísticas -->
     <div class="stats-cards">
-      <div class="stat-card total" data-aos="fade-up" data-aos-delay="100">
+      <div class="stat-card total">
         <div class="stat-icon">
           <mat-icon>people</mat-icon>
         </div>
         <div class="stat-info">
           <h3>{{ totalPacientes }}</h3>
-          <p>Total Pacientes</p>
+          <p>{{ 'pacientes.totalPacientes' | translate }}</p>
         </div>
       </div>
 
-      <div class="stat-card activos" data-aos="fade-up" data-aos-delay="200">
+      <div class="stat-card activos">
         <div class="stat-icon">
           <mat-icon>check_circle</mat-icon>
         </div>
         <div class="stat-info">
           <h3>{{ pacientesActivos }}</h3>
-          <p>Activos</p>
+          <p>{{ 'pacientes.activos' | translate }}</p>
         </div>
       </div>
 
-      <div class="stat-card inactivos" data-aos="fade-up" data-aos-delay="300">
+      <div class="stat-card inactivos">
         <div class="stat-icon">
           <mat-icon>cancel</mat-icon>
         </div>
         <div class="stat-info">
           <h3>{{ pacientesInactivos }}</h3>
-          <p>Inactivos</p>
+          <p>{{ 'pacientes.inactivos' | translate }}</p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Tabla de pacientes -->
-  <div class="table-container" data-aos="fade-up">
+  <div class="table-container">
     <div class="table-header">
       <!-- Filtro Estado -->
       <mat-form-field appearance="outline" class="filter-field">
@@ -178,12 +178,12 @@
                   <mat-icon>visibility</mat-icon>
                   <span>Ver Detalle</span>
                 </button>
-                <button mat-menu-item (click)="editarPaciente(paciente)">
+                <button mat-menu-item *ngIf="puedeEditar" (click)="editarPaciente(paciente)">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item (click)="eliminarPaciente(paciente)">
+                <mat-divider *ngIf="puedeEditar"></mat-divider>
+                <button mat-menu-item *ngIf="puedeEditar" (click)="eliminarPaciente(paciente)">
                   <mat-icon color="warn">block</mat-icon>
                   <span>Desactivar</span>
                 </button>
@@ -204,12 +204,12 @@
                   <mat-icon>visibility</mat-icon>
                   <span>Ver Detalle</span>
                 </button>
-                <button mat-menu-item (click)="editarPaciente(paciente)">
+                <button mat-menu-item *ngIf="puedeEditar" (click)="editarPaciente(paciente)">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item (click)="activarPaciente(paciente)">
+                <mat-divider *ngIf="puedeEditar"></mat-divider>
+                <button mat-menu-item *ngIf="puedeEditar" (click)="activarPaciente(paciente)">
                   <mat-icon color="primary">check_circle</mat-icon>
                   <span>Activar</span>
                 </button>

@@ -58,7 +58,7 @@
               <!-- Cédula -->
               <mat-form-field appearance="outline">
                 <mat-label>Cédula</mat-label>
-                <input matInput formControlName="cedula" placeholder="1-1234-5678">
+                <input matInput formControlName="cedula" placeholder="1-1234-5678" mask="0-0000-0000" [dropSpecialCharacters]="false">
                 <mat-icon matPrefix>credit_card</mat-icon>
                 <mat-error *ngIf="cedula?.hasError('required')">La cédula es requerida</mat-error>
                 <mat-error *ngIf="cedula?.hasError('pattern')">Formato: 1-1234-5678</mat-error>
@@ -109,7 +109,7 @@
               <!-- Teléfono -->
               <mat-form-field appearance="outline">
                 <mat-label>Teléfono Principal</mat-label>
-                <input matInput formControlName="telefono" placeholder="8888-1234">
+                <input matInput formControlName="telefono" placeholder="8888-1234" mask="0000-0000" [dropSpecialCharacters]="false">
                 <mat-icon matPrefix>phone</mat-icon>
                 <mat-error *ngIf="telefono?.hasError('required')">El teléfono es requerido</mat-error>
                 <mat-error *ngIf="telefono?.hasError('pattern')">Formato: 8888-1234</mat-error>
@@ -118,7 +118,7 @@
               <!-- Teléfono Secundario -->
               <mat-form-field appearance="outline">
                 <mat-label>Teléfono Secundario (Opcional)</mat-label>
-                <input matInput formControlName="telefonoSecundario" placeholder="8888-5678">
+                <input matInput formControlName="telefonoSecundario" placeholder="8888-5678" mask="0000-0000" [dropSpecialCharacters]="false">
                 <mat-icon matPrefix>phone</mat-icon>
                 <mat-error *ngIf="pacienteForm.get('telefonoSecundario')?.hasError('pattern')">Formato: 8888-5678</mat-error>
               </mat-form-field>
@@ -191,7 +191,7 @@
 
                 <mat-form-field appearance="outline">
                   <mat-label>Teléfono del Responsable</mat-label>
-                  <input matInput formControlName="responsableTelefono" placeholder="8888-1234">
+                  <input matInput formControlName="responsableTelefono" placeholder="8888-1234" mask="0000-0000" [dropSpecialCharacters]="false">
                   <mat-icon matPrefix>phone</mat-icon>
                   <mat-error *ngIf="responsableTelefono?.hasError('required')">El teléfono es requerido</mat-error>
                   <mat-error *ngIf="responsableTelefono?.hasError('pattern')">Formato: 8888-1234</mat-error>
@@ -199,7 +199,7 @@
 
                 <mat-form-field appearance="outline">
                   <mat-label>Cédula del Responsable (Opcional)</mat-label>
-                  <input matInput formControlName="responsableCedula" placeholder="1-1234-5678">
+                  <input matInput formControlName="responsableCedula" placeholder="1-1234-5678" mask="0-0000-0000" [dropSpecialCharacters]="false">
                   <mat-icon matPrefix>credit_card</mat-icon>
                   <mat-error *ngIf="pacienteForm.get('responsableCedula')?.hasError('pattern')">Formato: 1-1234-5678</mat-error>
                 </mat-form-field>

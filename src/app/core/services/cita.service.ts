@@ -37,6 +37,9 @@ export interface TipoCita {
   duracionEstimada: number;
   costo: number;
   activo: boolean;
+  // Especialidad orientativa para sugerir/filtrar odontólogos en el formulario de citas.
+  // 'General' = cualquier odontólogo puede atenderlo.
+  categoria: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -88,16 +91,18 @@ export class CitaService {
   }
 
   // ──────────────── ODONTÓLOGOS (API REAL) ───────────────────────
-  // ✅ Usa el endpoint real de empleados
+  // ✅ Usa el endpoint real de empleados, filtrando solo rol "odontologo"
+  // (el endpoint /api/Empleados devuelve TODO el personal, incluyendo
+  // recepcionistas y asistentes, que no deben poder agendarse como profesional)
   getOdontologos(): Observable<Odontologo[]> {
     return this.http.get<any[]>(this.empleadosUrl).pipe(
       map(empleados =>
         empleados
-          .filter((e: any) => e.activo !== false)
+          .filter((e: any) => e.activo !== false && this.esRolOdontologo(e.rol))
           .map((e: any) => ({
             id: e.id,
             nombre: `${e.nombre || ''} ${e.apellidos || ''}`.trim(),
-            especialidad: e.especialidad || e.rol || 'Sin especialidad',
+            especialidad: e.especialidad || 'Odontología general',
             activo: e.activo ?? true
           }))
       ),
@@ -105,22 +110,27 @@ export class CitaService {
     );
   }
 
+  private esRolOdontologo(rol?: string): boolean {
+    const r = (rol || '').toLowerCase().trim();
+    return r === 'odontologo' || r === 'doctor';
+  }
+
   // ──────────────── TIPOS DE CITA (para duración UX) ─────────────
   // No se envían al backend — son solo para que el form calcule la duración
   getTratamientos(): Observable<TipoCita[]> {
     return of([
-      { id: 1,  nombre: 'Consulta General',      descripcion: 'Revisión general', duracionEstimada: 30,  costo: 15000,  activo: true },
-      { id: 2,  nombre: 'Limpieza Dental',        descripcion: 'Profilaxis dental', duracionEstimada: 45,  costo: 25000,  activo: true },
-      { id: 3,  nombre: 'Blanqueamiento',          descripcion: 'Blanqueamiento profesional', duracionEstimada: 60,  costo: 120000, activo: true },
-      { id: 4,  nombre: 'Ortodoncia - Consulta',  descripcion: 'Primera consulta', duracionEstimada: 45,  costo: 15000,  activo: true },
-      { id: 5,  nombre: 'Ortodoncia - Control',   descripcion: 'Control mensual', duracionEstimada: 30,  costo: 35000,  activo: true },
-      { id: 6,  nombre: 'Endodoncia',              descripcion: 'Tratamiento de conducto', duracionEstimada: 90,  costo: 180000, activo: true },
-      { id: 7,  nombre: 'Extracción Simple',       descripcion: 'Extracción de pieza', duracionEstimada: 30,  costo: 35000,  activo: true },
-      { id: 8,  nombre: 'Extracción Compleja',     descripcion: 'Extracción quirúrgica', duracionEstimada: 60,  costo: 80000,  activo: true },
-      { id: 9,  nombre: 'Corona Dental',           descripcion: 'Colocación de corona', duracionEstimada: 60,  costo: 250000, activo: true },
-      { id: 10, nombre: 'Implante Dental',         descripcion: 'Colocación de implante', duracionEstimada: 120, costo: 800000, activo: true },
-      { id: 11, nombre: 'Resina Compuesta',        descripcion: 'Restauración con resina', duracionEstimada: 45,  costo: 40000,  activo: true },
-      { id: 12, nombre: 'Urgencia Dental',         descripcion: 'Atención de urgencia', duracionEstimada: 30,  costo: 20000,  activo: true },
+      { id: 1,  nombre: 'Consulta General',      descripcion: 'Revisión general', duracionEstimada: 30,  costo: 15000,  activo: true, categoria: 'General' },
+      { id: 2,  nombre: 'Limpieza Dental',        descripcion: 'Profilaxis dental', duracionEstimada: 45,  costo: 25000,  activo: true, categoria: 'General' },
+      { id: 3,  nombre: 'Blanqueamiento',          descripcion: 'Blanqueamiento profesional', duracionEstimada: 60,  costo: 120000, activo: true, categoria: 'General' },
+      { id: 4,  nombre: 'Ortodoncia - Consulta',  descripcion: 'Primera consulta', duracionEstimada: 45,  costo: 15000,  activo: true, categoria: 'Ortodoncia' },
+      { id: 5,  nombre: 'Ortodoncia - Control',   descripcion: 'Control mensual', duracionEstimada: 30,  costo: 35000,  activo: true, categoria: 'Ortodoncia' },
+      { id: 6,  nombre: 'Endodoncia',              descripcion: 'Tratamiento de conducto', duracionEstimada: 90,  costo: 180000, activo: true, categoria: 'Endodoncia' },
+      { id: 7,  nombre: 'Extracción Simple',       descripcion: 'Extracción de pieza', duracionEstimada: 30,  costo: 35000,  activo: true, categoria: 'General' },
+      { id: 8,  nombre: 'Extracción Compleja',     descripcion: 'Extracción quirúrgica', duracionEstimada: 60,  costo: 80000,  activo: true, categoria: 'Maxilofacial' },
+      { id: 9,  nombre: 'Corona Dental',           descripcion: 'Colocación de corona', duracionEstimada: 60,  costo: 250000, activo: true, categoria: 'General' },
+      { id: 10, nombre: 'Implante Dental',         descripcion: 'Colocación de implante', duracionEstimada: 120, costo: 800000, activo: true, categoria: 'Maxilofacial' },
+      { id: 11, nombre: 'Resina Compuesta',        descripcion: 'Restauración con resina', duracionEstimada: 45,  costo: 40000,  activo: true, categoria: 'General' },
+      { id: 12, nombre: 'Urgencia Dental',         descripcion: 'Atención de urgencia', duracionEstimada: 30,  costo: 20000,  activo: true, categoria: 'General' },
     ]);
   }
 

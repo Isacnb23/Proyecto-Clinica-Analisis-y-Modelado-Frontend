@@ -1,14 +1,13 @@
 <div class="inventario-container">
-  
   <!-- Header -->
   <div class="page-header">
     <div class="header-content">
       <div class="title-section">
         <h1>
           <mat-icon>inventory</mat-icon>
-          Gestión de Inventario
+          {{ 'inventario.titulo' | translate }}
         </h1>
-        <p>Administra el stock de productos e insumos</p>
+        <p>{{ 'inventario.subtitulo' | translate }}</p>
       </div>
       
       <div class="header-actions">
@@ -20,9 +19,9 @@
           matBadgeColor="warn"
           (click)="verStockBajo()">
           <mat-icon>warning</mat-icon>
-          Stock Bajo
+          {{ 'inventario.stockBajo' | translate }}
         </button>
-        
+
         <button
           *ngIf="puedeCrear"
           mat-raised-button
@@ -30,14 +29,14 @@
           class="btn-nuevo"
           (click)="nuevoProducto()">
           <mat-icon>add</mat-icon>
-          Nuevo Producto
+          {{ 'inventario.nuevo' | translate }}
         </button>
       </div>
     </div>
 
     <!-- Estadísticas -->
     <div class="stats-cards" *ngIf="estadisticas">
-      <div class="stat-card total" data-aos="fade-up" data-aos-delay="100">
+      <div class="stat-card total">
         <div class="stat-icon">
           <mat-icon>inventory_2</mat-icon>
         </div>
@@ -47,7 +46,7 @@
         </div>
       </div>
 
-      <div class="stat-card activos" data-aos="fade-up" data-aos-delay="200">
+      <div class="stat-card activos">
         <div class="stat-icon">
           <mat-icon>check_circle</mat-icon>
         </div>
@@ -57,7 +56,7 @@
         </div>
       </div>
 
-      <div class="stat-card alertas" data-aos="fade-up" data-aos-delay="300">
+      <div class="stat-card alertas">
         <div class="stat-icon">
           <mat-icon>warning</mat-icon>
         </div>
@@ -67,7 +66,7 @@
         </div>
       </div>
 
-      <div class="stat-card valor" data-aos="fade-up" data-aos-delay="400">
+      <div class="stat-card valor">
         <div class="stat-icon">
           <mat-icon>attach_money</mat-icon>
         </div>
@@ -80,7 +79,7 @@
   </div>
 
   <!-- Alertas de Stock Bajo -->
-  <mat-card class="alertas-card" *ngIf="estadisticas && estadisticas.productosStockBajo > 0" data-aos="fade-up">
+  <mat-card class="alertas-card" *ngIf="estadisticas && estadisticas.productosStockBajo > 0">
     <h3>
       <mat-icon>warning</mat-icon>
       Alertas de Stock
@@ -114,7 +113,7 @@
   </mat-card>
 
   <!-- Filtros por Categoría -->
-  <mat-card class="categorias-card" data-aos="fade-up">
+  <mat-card class="categorias-card">
     <h3>
       <mat-icon>category</mat-icon>
       Filtrar por Categoría
@@ -141,7 +140,7 @@
   </mat-card>
 
   <!-- Tabla de productos -->
-  <div class="table-container" data-aos="fade-up">
+  <div class="table-container">
     <div class="table-header">
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>Buscar producto</mat-label>
@@ -280,21 +279,21 @@
                 <mat-icon>visibility</mat-icon>
                 <span>Ver Detalle</span>
               </button>
-              <button mat-menu-item (click)="editarProducto(producto)">
+              <button mat-menu-item *ngIf="puedeCrear" (click)="editarProducto(producto)">
                 <mat-icon>edit</mat-icon>
                 <span>Editar</span>
               </button>
-              <mat-divider></mat-divider>
+              <mat-divider *ngIf="puedeCrear"></mat-divider>
               <button
                 mat-menu-item
-                *ngIf="producto.activo"
+                *ngIf="puedeCrear && producto.activo"
                 (click)="eliminarProducto(producto)">
                 <mat-icon color="warn">block</mat-icon>
                 <span>Desactivar</span>
               </button>
               <button
                 mat-menu-item
-                *ngIf="!producto.activo"
+                *ngIf="puedeCrear && !producto.activo"
                 (click)="activarProducto(producto)">
                 <mat-icon color="primary">check_circle</mat-icon>
                 <span>Activar</span>

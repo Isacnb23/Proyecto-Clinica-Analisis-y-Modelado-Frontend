@@ -1,8 +1,8 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { filter, catchError, takeUntil } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -23,6 +23,8 @@ import { ProductoInventario, CategoriaInventario, EstadisticasInventario } from 
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../core/services/auth.service';
 import { RolesService } from '../../core/services/roles.service';
+import { formatCRC } from '../../core/utils/currency.util';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-inventario',
@@ -43,12 +45,15 @@ import { RolesService } from '../../core/services/roles.service';
     MatCardModule,
     MatTabsModule,
     MatDividerModule,
-    MatBadgeModule
+    MatBadgeModule,
+    TranslatePipe
   ],
   templateUrl: './inventario.component.html',
   styleUrl: './inventario.component.scss'
 })
-export class InventarioComponent implements OnInit, AfterViewInit {
+export class InventarioComponent implements OnInit, AfterViewInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   displayedColumns: string[] = [
     'codigo',
     'nombre',
@@ -97,8 +102,13 @@ export class InventarioComponent implements OnInit, AfterViewInit {
     this.cargarEstadisticas();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargarProductos(): void {
-    this.inventarioService.getProductos().subscribe({
+    this.inventarioService.getProductos().pipe(takeUntil(this.destroy$)).subscribe({
       next: (productos) => {
         const normalized = productos.map((p: any) => ({
               ...p,
@@ -107,7 +117,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
             }));
             this.todosLosProductos = normalized;
             this.dataSource.data = normalized;
-        
+
         setTimeout(() => {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
@@ -130,7 +140,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   cargarCategorias(): void {
-    this.inventarioService.getCategorias().subscribe({
+    this.inventarioService.getCategorias().pipe(takeUntil(this.destroy$)).subscribe({
       next: (categorias) => {
         this.categorias = categorias;
       },
@@ -142,7 +152,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   cargarEstadisticas(): void {
-    this.inventarioService.getEstadisticas().subscribe({
+    this.inventarioService.getEstadisticas().pipe(takeUntil(this.destroy$)).subscribe({
       next: (stats) => {
         this.estadisticas = stats;
       },
@@ -173,7 +183,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   verStockBajo(): void {
-    this.inventarioService.getProductosStockBajo().subscribe({
+    this.inventarioService.getProductosStockBajo().pipe(takeUntil(this.destroy$)).subscribe({
       next: (productos) => {
         this.dataSource.data = productos;
         this.toastr.info(`${productos.length} productos con stock bajo`, 'Alertas');
@@ -193,7 +203,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
 
   eliminarProducto(producto: ProductoInventario): void {
     if (confirm(`¿Está seguro de desactivar el producto "${producto.nombre}"?`)) {
-      this.inventarioService.eliminarProducto(producto.id).subscribe({
+      this.inventarioService.eliminarProducto(producto.id).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
           this.toastr.success('Producto desactivado correctamente', 'Éxito');
           this.cargarProductos();
@@ -208,7 +218,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   activarProducto(producto: ProductoInventario): void {
-    this.inventarioService.activarProducto(producto.id).subscribe({
+    this.inventarioService.activarProducto(producto.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.toastr.success('Producto activado correctamente', 'Éxito');
         this.cargarProductos();
@@ -246,11 +256,7 @@ export class InventarioComponent implements OnInit, AfterViewInit {
   }
 
   formatCurrency(value: number): string {
-    return new Intl.NumberFormat('es-CR', {
-      style: 'currency',
-      currency: 'CRC',
-      minimumFractionDigits: 0
-    }).format(value);
+    return formatCRC(value);
   }
 
   getUrgenciaClass(urgencia: string): string {

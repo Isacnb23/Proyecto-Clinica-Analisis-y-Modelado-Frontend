@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
+import { TranslatePipe } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
@@ -24,12 +26,15 @@ interface PermisoGrupo { grupo: string; icon: string; permisos: string[]; }
   imports: [
     CommonModule, FormsModule, MatCardModule, MatSelectModule, MatButtonModule,
     MatIconModule, MatCheckboxModule, MatTooltipModule, MatDividerModule,
-    MatChipsModule, MatFormFieldModule, MatInputModule
+    MatChipsModule, MatFormFieldModule, MatInputModule,
+    TranslatePipe
   ],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss'
 })
-export class RolesComponent implements OnInit {
+export class RolesComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   roles: Rol[] = [];
   usuarios: UsuarioResumen[] = [];
   selectedUsuarioId: number | null = null;
@@ -60,8 +65,13 @@ export class RolesComponent implements OnInit {
 
   ngOnInit(): void { this.cargarDatos(); }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargarDatos(): void {
-    this.rolesService.getRoles().subscribe({
+    this.rolesService.getRoles().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         this.roles = data;
         if (!this.selectedRoleNameForPermissions && data.length) {
@@ -70,7 +80,7 @@ export class RolesComponent implements OnInit {
       },
       error: (e) => this.toast.httpError(e, 'Error al cargar roles')
     });
-    this.rolesService.getUsuarios().subscribe({
+    this.rolesService.getUsuarios().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => { this.usuarios = data; },
       error: (e) => this.toast.httpError(e, 'Error al cargar usuarios')
     });
@@ -78,7 +88,7 @@ export class RolesComponent implements OnInit {
 
   asignarRol(): void {
     if (!this.selectedUsuarioId || !this.selectedRolId) { this.toast.warning('Selecciona usuario y rol'); return; }
-    this.rolesService.assignRole({ usuarioId: this.selectedUsuarioId, rolId: this.selectedRolId }).subscribe({
+    this.rolesService.assignRole({ usuarioId: this.selectedUsuarioId, rolId: this.selectedRolId }).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => { this.toast.success('Rol asignado'); this.cargarDatos(); },
       error: (e) => this.toast.httpError(e, 'Error al asignar rol')
     });
@@ -86,7 +96,7 @@ export class RolesComponent implements OnInit {
 
   revocarRol(usuarioId: number): void {
     if (!confirm('¿Revocar el rol de este usuario?')) return;
-    this.rolesService.revokeRole(usuarioId).subscribe({
+    this.rolesService.revokeRole(usuarioId).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => { this.toast.success('Rol revocado'); this.cargarDatos(); },
       error: (e) => this.toast.httpError(e, 'Error al revocar')
     });
@@ -94,7 +104,7 @@ export class RolesComponent implements OnInit {
 
   cambiarEstadoRol(rol: Rol): void {
     const req = rol.activo ? this.rolesService.deactivateRole(rol.id) : this.rolesService.activateRole(rol.id);
-    req.subscribe({
+    req.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => { this.toast.success(`Rol ${rol.activo ? 'desactivado' : 'activado'}`); this.cargarDatos(); },
       error: (e) => this.toast.httpError(e, 'Error')
     });
@@ -140,7 +150,7 @@ export class RolesComponent implements OnInit {
     if (this.nuevoUsuario.password !== this.nuevoUsuario.confirmPassword) { this.toast.warning('Las contraseñas no coinciden'); return; }
     if (!this.nuevoUsuario.rolId) { this.toast.warning('Selecciona un rol'); return; }
     this.creandoUsuario = true;
-    this.usuarioService.crearUsuario({ ...this.nuevoUsuario }).subscribe({
+    this.usuarioService.crearUsuario({ ...this.nuevoUsuario }).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => { this.toast.success('Usuario creado'); this.cerrarModalUsuario(); this.cargarDatos(); },
       error: (e: any) => { this.toast.httpError(e, 'Error al crear usuario'); this.creandoUsuario = false; }
     });

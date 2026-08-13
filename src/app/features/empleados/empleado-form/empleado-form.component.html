@@ -36,9 +36,11 @@
           <mat-label>Usuario vinculado</mat-label>
           <mat-select formControlName="usuarioId" aria-label="Seleccionar usuario vinculado">
             <mat-option [value]="null">Sin vincular</mat-option>
-            <mat-option *ngFor="let usuario of usuarios" [value]="usuario.id">
-              {{ usuario.email }} - {{ usuario.rol }}
-            </mat-option>
+            <mat-optgroup *ngFor="let grupo of usuariosPorRol" [label]="grupo.rol | titlecase">
+              <mat-option *ngFor="let usuario of grupo.usuarios" [value]="usuario.id">
+                {{ usuario.email }}
+              </mat-option>
+            </mat-optgroup>
           </mat-select>
           <mat-hint>Opcional. Solo si ya existe un usuario creado.</mat-hint>
         </mat-form-field>
@@ -86,6 +88,8 @@
             matInput
             formControlName="cedula"
             placeholder="1-1234-5678"
+            mask="0-0000-0000"
+            [dropSpecialCharacters]="false"
             aria-label="Cédula del empleado">
           <mat-icon matPrefix>credit_card</mat-icon>
           <mat-error *ngIf="f['cedula'].hasError('required')">La cédula es requerida.</mat-error>
@@ -98,6 +102,8 @@
             matInput
             formControlName="telefono"
             placeholder="8888-1234"
+            mask="0000-0000"
+            [dropSpecialCharacters]="false"
             aria-label="Teléfono del empleado">
           <mat-icon matPrefix>phone</mat-icon>
           <mat-error *ngIf="f['telefono'].hasError('required')">El teléfono es requerido.</mat-error>

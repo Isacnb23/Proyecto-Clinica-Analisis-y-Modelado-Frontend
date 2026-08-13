@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +11,9 @@ import { CitaService } from '../../core/services/cita.service';
 import { EmpleadosService } from '../../core/services/empleados.service';
 import { InventarioService } from '../../core/services/inventario.service';
 import { TratamientoService } from '../../core/services/tratamiento.service';
-import { catchError, of } from 'rxjs';
+import { catchError, of, Subject, takeUntil } from 'rxjs';
+import { formatCRC } from '../../core/utils/currency.util';
+import { TranslatePipe } from '@ngx-translate/core';
 
 type TipoReporte = 'pacientes' | 'citas' | 'empleados' | 'inventario' | 'tratamientos';
 
@@ -29,12 +31,14 @@ interface ReporteCard {
   imports: [
     CommonModule,
     MatCardModule, MatButtonModule, MatIconModule,
-    MatDividerModule, MatProgressSpinnerModule, MatChipsModule
+    MatDividerModule, MatProgressSpinnerModule, MatChipsModule,
+    TranslatePipe
   ],
   templateUrl: './reportes.component.html',
   styleUrl: './reportes.component.scss'
 })
-export class ReportesComponent implements OnInit {
+export class ReportesComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   reporteActivo: TipoReporte | null = null;
   cargando = false;
@@ -67,6 +71,11 @@ export class ReportesComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   get tituloActivo(): string {
     return this.reportes.find(r => r.tipo === this.reporteActivo)?.titulo || '';
   }
@@ -90,7 +99,7 @@ export class ReportesComponent implements OnInit {
     };
     const obs$: any = mapa[tipo];
 
-    obs$.subscribe({
+    obs$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (data: any[]) => { this.datos = data; this.cargando = false; },
       error: () => { this.datos = []; this.cargando = false; }
     });
@@ -139,7 +148,7 @@ export class ReportesComponent implements OnInit {
           row.nombre || '',
           String(row.stockActual ?? 0),
           String(row.stockMinimo ?? 0),
-          `₡${(row.precioUnitario ?? row.costoUnitario ?? 0).toLocaleString('es-CR')}`,
+          formatCRC(row.precioUnitario ?? row.costoUnitario ?? 0),
           row.activo !== false ? 'Activo' : 'Inactivo'
         ];
       case 'tratamientos':
@@ -147,9 +156,9 @@ export class ReportesComponent implements OnInit {
           row.pacienteNombre || `Paciente #${row.pacienteId}`,
           row.nombre || '',
           row.empleadoNombre || '—',
-          `₡${(row.costoTotal ?? 0).toLocaleString('es-CR')}`,
-          `₡${(row.montoPagado ?? 0).toLocaleString('es-CR')}`,
-          `₡${(row.saldo ?? 0).toLocaleString('es-CR')}`
+          formatCRC(row.costoTotal ?? 0),
+          formatCRC(row.montoPagado ?? 0),
+          formatCRC(row.saldo ?? 0)
         ];
       default: return [];
     }

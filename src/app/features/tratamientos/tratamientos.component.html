@@ -4,11 +4,11 @@
   <div class="page-header">
     <div class="header-content">
       <div class="title-section">
-        <h1><mat-icon>medical_services</mat-icon> Tratamientos</h1>
-        <p>Historial de tratamientos asignados a pacientes</p>
+        <h1><mat-icon>medical_services</mat-icon> {{ 'tratamientos.titulo' | translate }}</h1>
+        <p>{{ 'tratamientos.subtitulo' | translate }}</p>
       </div>
       <button *ngIf="puedeCrear" mat-raised-button class="btn-nuevo no-print" (click)="nuevoTratamiento()">
-        <mat-icon>add</mat-icon> Nuevo Tratamiento
+        <mat-icon>add</mat-icon> {{ 'tratamientos.nuevo' | translate }}
       </button>
     </div>
   </div>
@@ -137,10 +137,10 @@
             <button mat-menu-item (click)="irAPaciente(t)">
               <mat-icon>person</mat-icon> Ver paciente
             </button>
-            <button mat-menu-item (click)="editarTratamiento(t)">
+            <button mat-menu-item *ngIf="puedeCrear" (click)="editarTratamiento(t)">
               <mat-icon>edit</mat-icon> Editar
             </button>
-            <button mat-menu-item (click)="cancelarTratamiento(t)" *ngIf="t.estadoId !== 3">
+            <button mat-menu-item *ngIf="puedeCrear && t.estadoId !== 3" (click)="cancelarTratamiento(t)">
               <mat-icon color="warn">cancel</mat-icon> Cancelar
             </button>
           </mat-menu>

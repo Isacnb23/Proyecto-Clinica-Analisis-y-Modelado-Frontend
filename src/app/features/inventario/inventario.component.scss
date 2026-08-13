@@ -151,19 +151,19 @@
       }
     }
 
-    // Activos - Cyan/Azul claro
+    // Activos - Azul institucional (familia navy)
     &.activos {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      background: linear-gradient(135deg, #1B3A6F 0%, #2C5299 100%);
 
       .stat-icon {
         background: rgba(255, 255, 255, 0.2);
       }
     }
 
-    // Stock Bajo / Alertas - Rosa/Naranja
+    // Stock Bajo / Alertas - Rojo institucional apagado
     &.bajo-stock,
     &.alertas {
-      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      background: linear-gradient(135deg, #B71C1C 0%, #D32F2F 100%);
 
       .stat-icon {
         background: rgba(255, 255, 255, 0.2);

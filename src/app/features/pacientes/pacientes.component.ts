@@ -17,10 +17,11 @@ import { FormsModule } from '@angular/forms';
 import { PacienteService } from '../../core/services/paciente.service';
 import { Paciente } from '../../core/models/paciente.model';
 import { ToastrService } from 'ngx-toastr';
-import { Subscription, filter } from 'rxjs';
+import { Subject, filter, skip, takeUntil } from 'rxjs';
 import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../core/services/auth.service';
 import { RolesService } from '../../core/services/roles.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-pacientes',
@@ -41,6 +42,7 @@ import { RolesService } from '../../core/services/roles.service';
     MatDialogModule,
     MatDividerModule,
     MatSelectModule,
+    TranslatePipe,
   ],
   templateUrl: './pacientes.component.html',
   styleUrl: './pacientes.component.scss'
@@ -63,9 +65,10 @@ export class PacientesComponent implements OnInit, OnDestroy {
   pacientesInactivos = 0;
   filtroEstado: 'todos' | 'activos' | 'inactivos' = 'todos';
 
-  private routerSubscription?: Subscription;
+  private destroy$ = new Subject<void>();
 
   puedeCrear = false;
+  puedeEditar = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -85,12 +88,19 @@ export class PacientesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const rol = this.authService.currentUserValue?.rol;
     this.puedeCrear = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('pacientes.crear');
+    this.puedeEditar = !rol || rol.toLowerCase() === 'admin' || this.rolesService.getRolePermissions(rol).includes('pacientes.editar');
 
     this.cargarPacientes();
 
-    // Suscribirse a eventos de navegación
-    this.routerSubscription = this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
+    // Suscribirse a eventos de navegación (solo para recargar si se vuelve a
+    // navegar a /pacientes estando ya en ella; NoReuseStrategy ya recrea el
+    // componente en cualquier otra navegación). skip(1) descarta el
+    // NavigationEnd de la navegación que creó esta instancia, evitando una
+    // doble carga inicial.
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      skip(1),
+      takeUntil(this.destroy$)
     ).subscribe((event: any) => {
       // Si la ruta actual es /pacientes, recargar
       if (event.url === '/pacientes') {
@@ -100,12 +110,12 @@ export class PacientesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Limpiar suscripción al destruir el componente
-    this.routerSubscription?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   cargarPacientes(): void {
-    this.pacienteService.getPacientes().subscribe({
+    this.pacienteService.getPacientes().pipe(takeUntil(this.destroy$)).subscribe({
       next: (pacientes) => {
         // Guardar todos los pacientes
         this.allPacientes = pacientes;
@@ -187,7 +197,7 @@ export class PacientesComponent implements OnInit, OnDestroy {
 
   eliminarPaciente(paciente: Paciente): void {
     if (confirm(`¿Está seguro de desactivar al paciente ${this.getNombreCompleto(paciente)}?`)) {
-      this.pacienteService.eliminarPaciente(paciente.id).subscribe({
+      this.pacienteService.eliminarPaciente(paciente.id).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
           this.toastr.success('Paciente desactivado correctamente', 'Éxito');
           this.filtroEstado = 'todos';  // Volver a todos para ver el inactivo
@@ -203,7 +213,7 @@ export class PacientesComponent implements OnInit, OnDestroy {
 
   activarPaciente(paciente: Paciente): void {
     if (confirm(`¿Está seguro de activar al paciente ${this.getNombreCompleto(paciente)}?`)) {
-      this.pacienteService.activarPaciente(paciente.id).subscribe({
+      this.pacienteService.activarPaciente(paciente.id).pipe(takeUntil(this.destroy$)).subscribe({
         next: () => {
           this.toastr.success('Paciente activado correctamente', 'Éxito');
           this.cargarPacientes();

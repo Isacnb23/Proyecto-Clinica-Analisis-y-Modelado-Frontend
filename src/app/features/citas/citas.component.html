@@ -6,11 +6,11 @@
       <div class="title-section">
         <h1>
           <mat-icon>event</mat-icon>
-          Gestión de Citas
+          {{ 'citas.titulo' | translate }}
         </h1>
-        <p>Administra las citas de la clínica</p>
+        <p>{{ 'citas.subtitulo' | translate }}</p>
       </div>
-      
+
       <button
         *ngIf="puedeCrear"
         mat-raised-button
@@ -18,7 +18,7 @@
         class="btn-nueva no-print"
         (click)="nuevaCita()">
         <mat-icon>add</mat-icon>
-        Nueva Cita
+        {{ 'citas.nueva' | translate }}
       </button>
     </div>
 
@@ -246,9 +246,9 @@
                       <span>Completar</span>
                     </button>
                     
-                    <button 
-                      mat-menu-item 
-                      *ngIf="cita.estado !== 'Cancelada' && cita.estado !== 'Completada'"
+                    <button
+                      mat-menu-item
+                      *ngIf="puedeCancelar && cita.estado !== 'Cancelada' && cita.estado !== 'Completada'"
                       (click)="cancelarCita(cita)">
                       <mat-icon color="warn">cancel</mat-icon>
                       <span>Cancelar</span>

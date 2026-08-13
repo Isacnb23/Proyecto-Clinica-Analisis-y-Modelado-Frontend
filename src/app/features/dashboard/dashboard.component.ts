@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +11,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { EstadisticaService } from '../../core/services/estadistica.service';
 import { EstadisticasDashboard, CitaProxima } from '../../core/models/estadistica.model';
+import { formatCRC } from '../../core/utils/currency.util';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,12 +20,15 @@ import { EstadisticasDashboard, CitaProxima } from '../../core/models/estadistic
   imports: [
     CommonModule,
     MatCardModule, MatIconModule, MatButtonModule,
-    MatTableModule, MatChipsModule, MatProgressBarModule, MatDividerModule
+    MatTableModule, MatChipsModule, MatProgressBarModule, MatDividerModule,
+    TranslatePipe
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   estadisticas?: EstadisticasDashboard;
   loading = true;
 
@@ -38,8 +44,13 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void { this.cargarEstadisticas(); }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargarEstadisticas(): void {
-    this.estadisticaService.getEstadisticas().subscribe({
+    this.estadisticaService.getEstadisticas().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
         this.estadisticas = data;
         this.dataSource.data = data.proximasCitas;
@@ -74,7 +85,7 @@ export class DashboardComponent implements OnInit {
 
   // ── Helpers ────────────────────────────────────────────────────────────
   formatCurrency(v: number): string {
-    return new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', minimumFractionDigits: 0 }).format(v);
+    return formatCRC(v);
   }
 
   getUrgenciaClass(u: string): string { return `urgencia-${u}`; }

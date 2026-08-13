@@ -225,6 +225,37 @@
     flex: 1 1 auto;
   }
 
+  .lang-toggle {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-right: 4px;
+    border: 1px solid rgba(196, 155, 99, 0.4);
+    border-radius: 8px;
+    padding: 2px;
+
+    button {
+      min-width: 36px;
+      padding: 0 8px;
+      line-height: 28px;
+      height: 28px;
+      margin: 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #667085;
+      border-radius: 6px;
+
+      &.lang-active {
+        background: #030e24;
+        color: #C49B63;
+      }
+    }
+
+    .lang-sep {
+      color: rgba(196, 155, 99, 0.4);
+    }
+  }
+
   button {
     margin: 0 4px;
     color: #030e24;
