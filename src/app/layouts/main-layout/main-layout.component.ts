@@ -19,6 +19,9 @@ import { PacienteService } from '../../core/services/paciente.service';
 import { CitaService } from '../../core/services/cita.service';
 import { InventarioService } from '../../core/services/inventario.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 interface MenuItem {
     icon: string;
@@ -57,6 +60,10 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     currentUser!: User | null;
     sidenavOpened = true;
 
+    isMobile = false;
+    mobileMenuOpen = false;
+    private destroy$ = new Subject<void>();
+
     private storageListener = () => {
         this.currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
     };
@@ -73,6 +80,10 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         { icon: 'admin_panel_settings', label: 'Roles y Permisos', labelKey: 'nav.roles',        route: '/roles',        permission: 'roles.ver'        },
         { icon: 'assessment',           label: 'Reportes',         labelKey: 'nav.reportes',     route: '/reportes',     permission: 'reportes.ver'     },
     ];
+
+    get showLabels(): boolean {
+        return this.isMobile ? this.mobileMenuOpen : this.sidenavOpened;
+    }
 
     get visibleMenuItems(): MenuItem[] {
         if (!this.currentUser) return [];
@@ -102,7 +113,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         private pacienteService: PacienteService,
         private citaService: CitaService,
         private inventarioService: InventarioService,
-        public translate: TranslateService
+        public translate: TranslateService,
+        private breakpointObserver: BreakpointObserver
     ) { }
 
     setLang(lang: string): void {
@@ -117,10 +129,19 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
         const savedLang = localStorage.getItem('appLang');
         if (savedLang) this.translate.use(savedLang);
+
+        this.breakpointObserver.observe(['(max-width: 768px)'])
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(result => {
+                this.isMobile = result.matches;
+                if (!this.isMobile) this.mobileMenuOpen = false;
+            });
     }
 
     ngOnDestroy(): void {
         window.removeEventListener('storage', this.storageListener);
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     cargarContadores(): void {
@@ -154,7 +175,18 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
         });
     }
 
-    toggleSidenav(): void { this.sidenavOpened = !this.sidenavOpened; }
+    toggleSidenav(): void {
+        if (this.isMobile) {
+            this.mobileMenuOpen = !this.mobileMenuOpen;
+        } else {
+            this.sidenavOpened = !this.sidenavOpened;
+        }
+    }
+
+    closeMobileMenu(): void {
+        if (this.isMobile) this.mobileMenuOpen = false;
+    }
+
     logout(): void { this.authService.logout(); }
     navigateTo(route: string): void { this.router.navigate([route]); }
 

@@ -3,8 +3,10 @@
     <!-- SIDEBAR -->
     <mat-sidenav
       #sidenav
-      mode="side"
-      [opened]="sidenavOpened"
+      [mode]="isMobile ? 'over' : 'side'"
+      [opened]="isMobile ? mobileMenuOpen : sidenavOpened"
+      (closed)="closeMobileMenu()"
+      [class.sidenav-mobile]="isMobile"
       class="sidenav">
 
       <!-- Logo y Nombre de la Clínica -->
